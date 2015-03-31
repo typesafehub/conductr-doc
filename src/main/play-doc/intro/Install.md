@@ -36,7 +36,13 @@ sudo update-alternatives --config java
 
 ### Installing ConductR on the first machine
 
-This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. Please substitute your addresses as appropriate. The tutorial also assumes that you have obtained the `conductr_%PLAY_VERSION%_all.deb` Debian package.
+This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
+
+```bash
+sudo hostname 172.17.0.1
+```
+
+The tutorial also assumes that you have obtained the `conductr_%PLAY_VERSION%_all.deb` Debian package.
 
 Install ConductR as any other Debian package.
 
@@ -73,7 +79,7 @@ A typical response contains the current members of the cluster (shown here as ju
 The IP addresses in the response indicate that ConductR is listening to the `localhost` address. To be able to form an inter-machine cluster, ConductR must be configured to listen to the machine's host interface. This can be enabled adding a property declaration for `CONDUCTR_IP` to the start command as follows:
 
 ``` bash
-[172.17.0.1]$ echo -DCONDUCTR_IP=172.17.0.1 | sudo tee -a /etc/default/conductr
+[172.17.0.1]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /etc/default/conductr
 [172.17.0.1]$ sudo /etc/init.d/conductr restart
 ```
 
@@ -116,7 +122,7 @@ The node running on the `172.17.0.1` machine is called a seed node, which is a n
 
 ``` bash
 [172.17.0.2]$ sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
-[172.17.0.2]$ echo -DCONDUCTR_IP=172.17.0.2 | sudo tee -a /etc/default/conductr
+[172.17.0.2]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /etc/default/conductr
 [172.17.0.2]$ echo --seed 172.17.0.1:9004 | sudo tee -a /etc/default/conductr
 [172.17.0.2]$ sudo /etc/init.d/conductr restart
 ```
@@ -131,7 +137,7 @@ Install optional dependencies if required. Each ConductR node requires same opti
 
 ### Installing a Proxy
 
-_Repeat each step in this section also on the `172.17.0.2` and `172.17.0.3` machines. For full resilience a proxy should be installed for each machine that ConductR is installed on._
+_Perform each step in this section on all nodes: `172.17.0.1`, `172.17.0.2` and `172.17.0.3`. For full resilience a proxy should be installed for each machine that ConductR is installed on._
 
 Proxying application endpoints is required when running more than one instance of ConductR; which should be always for production style scenarios. Proxying endpoints permits connectivity from both external callers and for bundle components to communicate with other bundle components. This also allows an external caller to contact an application that is running on any ConductR node by contacting any proxy instance.
 
@@ -164,7 +170,7 @@ After updating the configuration file ConductR-HAProxy is going to signal HAProx
 Set the ConductR IP address which is going to be used by ConductR-HAProxy to listen to bundle events in the cluster:
 
 ``` bash
-[172.17.0.1]$ echo -Dconductr-haproxy.ip=172.17.0.1 | sudo tee -a /etc/default/conductr-haproxy
+[172.17.0.1]$ echo -Dconductr-haproxy.ip=$(hostname)| sudo tee -a /etc/default/conductr-haproxy
 [172.17.0.1]$ sudo /etc/init.d/conductr-haproxy restart
 ```
 
