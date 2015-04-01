@@ -152,10 +152,10 @@ You should see that there is one service called `9000/visualizer` provided by th
 
 ```bash
 SERVICE       BUNDLE ID       BUNDLE NAME       STATUS
-http://:8080  23391d4-3cc322b visualizer-0.1.0  Running
+http://:9999  23391d4-3cc322b visualizer-0.1.0  Running
 ```
 
-To access Visualizer point your browser to any ConductR node and add the name of the service to the URL, e.g. `http://172.17.0.1:8080`. Alternatively, if you can only access ConductR nodes using SSH, create a SSH tunnel that tunnels local port from your machine to the Visualizer service `ssh -L 8080:172.17.0.1:8080 172.17.0.1` (don't forget to substitute the `172.17.0.1`) and then access Visualizer by pointing your browser to `http://localhost:8080`.
+To access Visualizer point your browser to any ConductR node and add the name of the service to the URL, e.g. `http://172.17.0.1:9999`. Alternatively, if you can only access ConductR nodes using SSH, create a SSH tunnel that tunnels local port from your machine to the Visualizer service `ssh -L 8080:172.17.0.1:9999 172.17.0.1` (don't forget to substitute the `172.17.0.1`) and then access Visualizer by pointing your browser to `http://localhost:9999`.
 
 Visualizer shows ConductR nodes as small blue circles with IP addresses next to them. Green circles denote bundles, and spinning circle means that a bundle is running. You should see one instance of bundle running. Try starting Visualizer on more nodes by executing:
 
@@ -331,7 +331,7 @@ Note that the description here is just to provide a feel of how `sbt-bundle` is 
 Firstly add the sbt plugin, typically to your project's `project/plugins.sbt` file (check [here](https://github.com/sbt/sbt-bundle#usage) for the latest release of sbt-bundle):
 
 ```scala
-addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "0.18.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "0.19.1")
 ```
 
 You will then need to declare what are known as "scheduling parameters" for ConductR. These parameters effectively describe what resources are used by your application or service and are used to determine which machine they will run on. Here's a minimum set of parameter specifying that 1 cpu, 64MiB memory and 5MB of disk space is required when your application or service runs:
@@ -454,7 +454,7 @@ The following description is intended to provide a taste of what `sbt-typesafe-c
 To use `sbt-typesafe-conductr` first add the plugin your build (typically your `project/plugins.sbt` file); be sure to check at [the plugin's website](https://github.com/sbt/sbt-typesafe-conductr#sbt-typesafe-conductr) for the latest version to use:
 
 ```scala
-addSbtPlugin("com.typesafe.conductr" % "sbt-typesafe-conductr" % "0.25.0")
+addSbtPlugin("com.typesafe.conductr" % "sbt-typesafe-conductr" % "0.27.0")
 ```
 
 Note that if you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-typesafe-conductr`.
@@ -477,13 +477,13 @@ A bundle will be produced from the native packager settings of this project. A b
 packager distribution and includes some component configuration. To load the bundle first declare the location of ConductR (supposing that ConductR is running on `172.14.0.1`:
 
 ```bash
-conductr "http://172.14.0.1:9005"
+conductr:controlServer 172.14.0.1
 ```
 
 ...and then load:
 
 ```bash
-loadBundle <HIT THE TAB KEY AND THEN RETURN>
+conductr:load <HIT THE TAB KEY AND THEN RETURN>
 ```
 
 Using the tab completion feature of sbt will produce a URI representing the location of the last distribution
