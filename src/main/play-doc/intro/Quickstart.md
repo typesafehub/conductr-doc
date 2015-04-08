@@ -392,7 +392,7 @@ Typesafe config provides the ability to substitute environment variables if they
 
 
 ```scala
-BundleKeys.endpoints := Map("customer-service" -> Endpoint("http", 0, Set(URI("http://:5444/customers"))))
+BundleKeys.endpoints := Map("customer-service" -> Endpoint("http", services = Set(URI("http://:5444/customers"))))
 ```
 
 With the above Typesafe config you can then access the host and ip to use from within your application using code along the lines of following and using akka-http as an example:
