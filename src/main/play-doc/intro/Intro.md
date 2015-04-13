@@ -141,9 +141,9 @@ Starting a bundle entails invoking the command line declared by the `bundle.conf
 ```
 endpoints = {
   web = {
-    protocol  = "http"
-    bind-port = 0
-    services  = ["http://:9000/someservice"]
+    bind-protocol = "http"
+    bind-port     = 0
+    services      = ["http://:9000/someservice"]
   }
 }
 ```
