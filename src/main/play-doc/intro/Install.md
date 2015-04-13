@@ -93,10 +93,7 @@ Check for the cluster information once again, but now use the host address of th
 
 The ConductR service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
 
-ConductR logs to `/var/log/conductr` and supports two log files:
-
-* `conductr.log` - for logging ConductR related operations; and
-* `bundle.log` - for logging the output of bundle execution.
+ConductR logs to syslog which is explained under "Consolidated Logging", below.
 
 By default the logging is quite sparse. Unless an error or warning occurs then there will be no log output. To increase the verbosity of the logging you can use this command:
 
@@ -174,7 +171,7 @@ Set the ConductR IP address which is going to be used by ConductR-HAProxy to lis
 [172.17.0.1]$ sudo /etc/init.d/conductr-haproxy restart
 ```
 
-Open up ConductR-HAProxy logs which are written to the `/var/log/conductr-haproxy/conductr-haproxy.log`. You should see a successfully opened connection to ConductR.
+Observe ConductR-HAProxy logs. You should see a successfully opened connection to ConductR.
 
 That's it! You now have a cluster of three ConductR nodes ready to start running applications. ConductR comes with a `visualizer` sample application. Head over to the next [Quickstart](Quickstart.html) section to learn how to deploy visualizer application to your fresh ConductR cluster.
 

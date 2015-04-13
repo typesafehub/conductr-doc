@@ -191,7 +191,7 @@ The library comes in multiple flavours: pure Scala/JDK, Akka and Play. To add Sc
 ```scala
 resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
 
-libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "0.6.1"
+libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "0.7.0"
 ```
 
 `scala-conductr-bundle-lib` has no dependencies other than the JDK and as such, a blocking implementation is used for its http calls (the JDK offers no non-blocking APIs for this). However when using Akka or Play then substitute `"akka-conductr-bundle-lib"` or `"play-conductr-bundle-lib"` respectively. Doing so will ensure that the types used are consistent with Akka and Play, and that non-blocking implementations using akka-http and Play.WS are used.
@@ -331,7 +331,7 @@ Note that the description here is just to provide a feel of how `sbt-bundle` is 
 Firstly add the sbt plugin, typically to your project's `project/plugins.sbt` file (check [here](https://github.com/sbt/sbt-bundle#usage) for the latest release of sbt-bundle):
 
 ```scala
-addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "0.19.1")
+addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "0.20.0")
 ```
 
 You will then need to declare what are known as "scheduling parameters" for ConductR. These parameters effectively describe what resources are used by your application or service and are used to determine which machine they will run on. Here's a minimum set of parameter specifying that 1 cpu, 64MiB memory and 5MB of disk space is required when your application or service runs:
@@ -447,24 +447,24 @@ Docker becomes relevant when there are specific runtime dependencies that are di
 
 The fun part!
 
-Once you've created a bundle you can deploy it using ConductR's RESTful API, even using [curl](http://curl.haxx.se/) if you want. However we've made it a little easier than that. You can of course use ConductR's CLI as discussed in the _Operator Quickstart_ above. Alternatively given that we've been discussing bundling your application or service mostly from an sbt perspective, you can use another plugin named [`sbt-typesafe-conductr`](https://github.com/sbt/sbt-typesafe-conductr#sbt-typesafe-conductr).
+Once you've created a bundle you can deploy it using ConductR's RESTful API, even using [curl](http://curl.haxx.se/) if you want. However we've made it a little easier than that. You can of course use ConductR's CLI as discussed in the _Operator Quickstart_ above. Alternatively given that we've been discussing bundling your application or service mostly from an sbt perspective, you can use another plugin named [`sbt-conductr`](https://github.com/sbt/sbt-conductr#sbt-conductr).
 
-The following description is intended to provide a taste of what `sbt-typesafe-conductr` can do for you. Please refer to [its documentation](https://github.com/sbt/sbt-typesafe-conductr/blob/master/README.md) as there are some small considerations when dealing with the pre 1.0 `sbt-native-packager` e.g. the one used with Play 2.3.
+The following description is intended to provide a taste of what `sbt-conductr` can do for you. Please refer to [its documentation](https://github.com/sbt/sbt-conductr/blob/master/README.md) as there are some small considerations when dealing with the pre 1.0 `sbt-native-packager` e.g. the one used with Play 2.3.
 
-To use `sbt-typesafe-conductr` first add the plugin your build (typically your `project/plugins.sbt` file); be sure to check at [the plugin's website](https://github.com/sbt/sbt-typesafe-conductr#sbt-typesafe-conductr) for the latest version to use:
+To use `sbt-conductr` first add the plugin your build (typically your `project/plugins.sbt` file); be sure to check at [the plugin's website](https://github.com/sbt/sbt-conductr#sbt-conductr) for the latest version to use:
 
 ```scala
-addSbtPlugin("com.typesafe.conductr" % "sbt-typesafe-conductr" % "0.27.0")
+addSbtPlugin("com.typesafe.conductr" % "sbt-typesafe-conductr" % "0.28.0")
 ```
 
-Note that if you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-typesafe-conductr`.
+Note that if you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr`.
 
-The `sbt-typesafe-conductr` plugin must then be enabled for your project. Supposing that your project has one module that will use the plugin which is the root of the sbt project (the most typical situation for a single `build.sbt`):
+The `sbt-conductr` plugin must then be enabled for your project. Supposing that your project has one module that will use the plugin which is the root of the sbt project (the most typical situation for a single `build.sbt`):
 
 ```scala
 lazy val root = project
   .in(file("."))
-  .enablePlugins(SbtTypesafeConductR, <your other plugins go here>)
+  .enablePlugins(ConductRPlugin, <your other plugins go here>)
 ```
 
 With your declarations out of the way, you can produce a bundle by typing:
@@ -477,13 +477,13 @@ A bundle will be produced from the native packager settings of this project. A b
 packager distribution and includes some component configuration. To load the bundle first declare the location of ConductR (supposing that ConductR is running on `172.14.0.1`:
 
 ```bash
-conductr:controlServer 172.14.0.1
+controlServer 172.14.0.1
 ```
 
 ...and then load:
 
 ```bash
-conductr:load <HIT THE TAB KEY AND THEN RETURN>
+conduct load <HIT THE TAB KEY AND THEN RETURN>
 ```
 
 Using the tab completion feature of sbt will produce a URI representing the location of the last distribution
@@ -494,6 +494,6 @@ the `BundleId` to use for subsequent commands on that bundle.
 
 You can also run, stop and unload bundles by using this plugin. This may be useful to support your development lifecycle without having to jump into the operator's CLI.
 
-That is all that is required in essence, but as stated, you should read [`sbt-typesafe-conductr`'s documentation](https://github.com/sbt/sbt-typesafe-conductr/blob/master/README.md) as there are a few additional requirements, particularly if you are managing a Play 2.3 application.
+That is all that is required in essence, but as stated, you should read [`sbt-conductr`'s documentation](https://github.com/sbt/sbt-conductr/blob/master/README.md) as there are a few additional requirements, particularly if you are managing a Play 2.3 application.
 
 Now go and develop reactive applications or services for ConductR!
