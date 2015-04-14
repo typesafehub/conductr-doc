@@ -191,7 +191,7 @@ The library comes in multiple flavours: pure Scala/JDK, Akka and Play. To add Sc
 ```scala
 resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
 
-libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "0.7.0"
+libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "0.7.1"
 ```
 
 `scala-conductr-bundle-lib` has no dependencies other than the JDK and as such, a blocking implementation is used for its http calls (the JDK offers no non-blocking APIs for this). However when using Akka or Play then substitute `"akka-conductr-bundle-lib"` or `"play-conductr-bundle-lib"` respectively. Doing so will ensure that the types used are consistent with Akka and Play, and that non-blocking implementations using akka-http and Play.WS are used.
@@ -420,9 +420,9 @@ components = {
     start-command    = []
     endpoints        = {
       "jms" = {
-        protocol     = "tcp"
-        bind-port    = 61616
-        services     = ["tcp://:61616"]
+        bind-protocol = "tcp"
+        bind-port     = 61616
+        services      = ["tcp://:61616"]
       }
     }
   }
