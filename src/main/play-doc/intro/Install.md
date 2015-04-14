@@ -79,7 +79,8 @@ A typical response contains the current members of the cluster (shown here as ju
 The IP addresses in the response indicate that ConductR is listening to the `localhost` address. To be able to form an inter-machine cluster, ConductR must be configured to listen to the machine's host interface. This can be enabled adding a property declaration for `CONDUCTR_IP` to the start command as follows:
 
 ``` bash
-[172.17.0.1]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /etc/default/conductr
+[172.17.0.1]$ sudo mkdir /usr/share/conductr/conf
+[172.17.0.1]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/application.ini
 [172.17.0.1]$ sudo /etc/init.d/conductr restart
 ```
 
@@ -98,7 +99,7 @@ ConductR logs to syslog which is explained under "Consolidated Logging", below.
 By default the logging is quite sparse. Unless an error or warning occurs then there will be no log output. To increase the verbosity of the logging you can use this command:
 
 ```bash
-[172.17.0.1]$ echo -Dakka.loglevel=debug | sudo tee -a /etc/default/conductr
+[172.17.0.1]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr/conf/application.ini
 ```
 
 #### Optional dependencies
@@ -119,8 +120,9 @@ The node running on the `172.17.0.1` machine is called a seed node, which is a n
 
 ``` bash
 [172.17.0.2]$ sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
-[172.17.0.2]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /etc/default/conductr
-[172.17.0.2]$ echo --seed 172.17.0.1:9004 | sudo tee -a /etc/default/conductr
+[172.17.0.2]$ sudo mkdir /usr/share/conductr/conf
+[172.17.0.2]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/application.ini
+[172.17.0.2]$ echo --seed 172.17.0.1:9004 | sudo tee -a /usr/share/conductr/conf/application.ini
 [172.17.0.2]$ sudo /etc/init.d/conductr restart
 ```
 
@@ -167,7 +169,8 @@ After updating the configuration file ConductR-HAProxy is going to signal HAProx
 Set the ConductR IP address which is going to be used by ConductR-HAProxy to listen to bundle events in the cluster:
 
 ``` bash
-[172.17.0.1]$ echo -Dconductr-haproxy.ip=$(hostname)| sudo tee -a /etc/default/conductr-haproxy
+[172.17.0.1]$ sudo mkdir /usr/share/conductr-haproxy/conf
+[172.17.0.1]$ echo -Dconductr-haproxy.ip=$(hostname)| sudo tee -a /usr/share/conductr-haproxy/conf/application.ini
 [172.17.0.1]$ sudo /etc/init.d/conductr-haproxy restart
 ```
 
@@ -189,7 +192,7 @@ Supposing that the address assigned to your at Papertrail is `logs2.papertrailap
 [172.17.0.1]$ echo \
   -Dcontrail.syslog.server.host=logs2.papertrailapp.com \
   -Dcontrail.syslog.server.port=38564 | \
-  sudo tee -a /etc/default/conductr
+  sudo tee -a /usr/share/conductr/conf/application.ini
 [172.17.0.1]$ sudo /etc/init.d/conductr restart
 ```
 
