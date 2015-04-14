@@ -140,7 +140,7 @@ _Perform each step in this section on all nodes: `172.17.0.1`, `172.17.0.2` and 
 
 Proxying application endpoints is required when running more than one instance of ConductR; which should be always for production style scenarios. Proxying endpoints permits connectivity from both external callers and for bundle components to communicate with other bundle components. This also allows an external caller to contact an application that is running on any ConductR node by contacting any proxy instance.
 
-In this tutorial we will be using `HAProxy`. Add a dedicated Personal Package Archive (PPA) and install HAProxy.
+We will be using `HAProxy`. Add a dedicated Personal Package Archive (PPA) and install HAProxy.
 
 ``` bash
 [172.17.0.1]$ sudo add-apt-repository -y ppa:vbernat/haproxy-1.5
