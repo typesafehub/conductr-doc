@@ -79,7 +79,6 @@ A typical response contains the current members of the cluster (shown here as ju
 The IP addresses in the response indicate that ConductR is listening to the `localhost` address. To be able to form an inter-machine cluster, ConductR must be configured to listen to the machine's host interface. This can be enabled adding a property declaration for `CONDUCTR_IP` to the start command as follows:
 
 ``` bash
-[172.17.0.1]$ sudo mkdir /usr/share/conductr/conf
 [172.17.0.1]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/application.ini
 [172.17.0.1]$ sudo /etc/init.d/conductr restart
 ```
@@ -87,7 +86,7 @@ The IP addresses in the response indicate that ConductR is listening to the `loc
 Check for the cluster information once again, but now use the host address of the machine.
 
 ``` bash
-[172.17.0.1]$ curl -s 172.17.0.1:9005/members | python3 -m json.tool
+[172.17.0.1]$ curl -s $(hostname):9005/members | python3 -m json.tool
 ```
 
 #### Installation miscellany
@@ -130,7 +129,6 @@ The node running on the `172.17.0.1` machine is called a seed node, which is a n
 
 ``` bash
 [172.17.0.2]$ sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
-[172.17.0.2]$ sudo mkdir /usr/share/conductr/conf
 [172.17.0.2]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/application.ini
 [172.17.0.2]$ echo --seed 172.17.0.1:9004 | sudo tee -a /usr/share/conductr/conf/application.ini
 [172.17.0.2]$ sudo /etc/init.d/conductr restart
@@ -179,7 +177,6 @@ After updating the configuration file ConductR-HAProxy is going to signal HAProx
 Set the ConductR IP address which is going to be used by ConductR-HAProxy to listen to bundle events in the cluster:
 
 ``` bash
-[172.17.0.1]$ sudo mkdir /usr/share/conductr-haproxy/conf
 [172.17.0.1]$ echo -Dconductr-haproxy.ip=$(hostname)| sudo tee -a /usr/share/conductr-haproxy/conf/application.ini
 [172.17.0.1]$ sudo /etc/init.d/conductr-haproxy restart
 ```
@@ -194,7 +191,9 @@ When multiple machines are involved in a cluster it quickly becomes difficult to
 
 We expect that you will install a syslog collector such as [rsyslog](http://www.rsyslog.com/) within ConductR's network. You do not want to send lots of log traffic across the internet as it should be at least filtered first. The collector should be configured to accept TCP connections.
 
-However to quickly demonstrate consolidated logging, a cloud service named [Papertrail](https://papertrailapp.com/) can be used. Papertrail is a very simple "tail like" service for viewing distributed logs. We will use it to show how to configure the simplest possible static endpoint. Once you configure an account with Papertrail then you will be provided with a host and a port. ConductR logs over TCP so make sure that you configure papertrail so that it accepts plain text connections (tip: _Accounts/Log Destinations/Edit Settings/Accept connections via_).
+However to quickly demonstrate consolidated logging, a cloud service named [Papertrail](https://papertrailapp.com/) can be used. Papertrail is a very simple "tail like" service for viewing distributed logs. We will use it to show how to configure the simplest possible static endpoint. Once you configure an account with Papertrail then you will be provided with a host and a port. 
+
+**Important**: ConductR logs over TCP so make sure that you configure papertrail so that it accepts plain text connections (tip: _Accounts/Log Destinations/Edit Settings/Accept connections via_).
 
 Supposing that the address assigned to your at Papertrail is `logs2.papertrailapp.com` and `38564` then you configure ConductR like so:
 
