@@ -128,6 +128,7 @@ _Repeat each step in this section also on the `172.17.0.3` machine._
 First ensure that the following ports are available between the machines forming the cluster:
 
 * 9004 - Akka remoting for ConductR
+* 9006 - Bundle streaming between ConductR nodes
 * 10000 to 10999 - the default range of ports allocated to bundle component endpoints
 
 The node running on the `172.17.0.1` machine is called a seed node, which is a node that is going to be used as the initial contact point when joining a cluster. Install ConductR on the new machine and configure the address of a seed node:
