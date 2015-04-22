@@ -354,7 +354,9 @@ BundleKeys.memory := 64.MiB
 BundleKeys.diskSpace := 5.MB
 ```
 
-(You'll note that the international standards for supporting [binary prefixes](http://en.wikipedia.org/wiki/Binary_prefix), as in `MiB`, is supported).
+You'll note that the international standards for supporting [binary prefixes](http://en.wikipedia.org/wiki/Binary_prefix), as in `MiB`, is supported.
+
+Also note that while `BundleKeys.memory` is honored, the other two are ignored by ConductR when running in standalone mode i.e. when not running on a resource provider such as [Mesos](http://mesos.apache.org/). However it is good practice to specify these parameters, and future ConductR releases may indeed honor them.
 
 Now create a bundle:
 
