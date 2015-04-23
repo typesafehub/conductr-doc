@@ -15,20 +15,15 @@ The requirements of a ConductR host are:
 
 #### Installing JRE 8
 
-First ensure that you have the `default-jre` package installed (the default is JRE 7 at the time of writing):
+Install Java 8 as the default JRE. You will need to accept the Oracle license agreement.
 
 ```bash
-sudo apt-get install default-jre
+sudo add-apt-repository -y ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get -y install oracle-java8-installer && sudo apt-get clean
+sudo apt-get -y install oracle-java8-set-default
+echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
 ```
-
-Oracle does not provide JRE 8 as a debian package at this time. Please follow Oracle's installation instructions for JRE 8 and then make it your default Java. Supposing that `/usr/share/jre1.8.0_31` is the path where you installed the JRE:
-
-```bash
-sudo update-alternatives --install /usr/bin/java java /usr/share/jre1.8.0_31/bin/java 100
-sudo update-alternatives --config java
-```
-
-...and select Java 8 as the default.
 
 #### Optional dependencies
 
