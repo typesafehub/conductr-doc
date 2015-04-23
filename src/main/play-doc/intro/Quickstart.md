@@ -191,7 +191,7 @@ The library comes in multiple flavours: pure Scala/JDK, Akka and Play. To add Sc
 ```scala
 resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
 
-libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "0.7.1"
+libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "0.10.0"
 ```
 
 `scala-conductr-bundle-lib` has no dependencies other than the JDK and as such, a blocking implementation is used for its http calls (the JDK offers no non-blocking APIs for this). However when using Akka or Play then substitute `"akka-conductr-bundle-lib"` or `"play-conductr-bundle-lib"` respectively. Doing so will ensure that the types used are consistent with Akka and Play, and that non-blocking implementations using akka-http and Play.WS are used.
@@ -341,7 +341,7 @@ Note that the description here is just to provide a feel of how `sbt-bundle` is 
 Firstly add the sbt plugin, typically to your project's `project/plugins.sbt` file (check [here](https://github.com/sbt/sbt-bundle#usage) for the latest release of sbt-bundle):
 
 ```scala
-addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "0.20.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "0.21.0")
 ```
 
 You will then need to declare what are known as "scheduling parameters" for ConductR. These parameters effectively describe what resources are used by your application or service and are used to determine which machine they will run on. Here's a minimum set of parameter specifying that 1 cpu, 64MiB memory and 5MB of disk space is required when your application or service runs:
@@ -466,7 +466,7 @@ The following description is intended to provide a taste of what `sbt-conductr` 
 To use `sbt-conductr` first add the plugin your build (typically your `project/plugins.sbt` file); be sure to check at [the plugin's website](https://github.com/sbt/sbt-conductr#sbt-conductr) for the latest version to use:
 
 ```scala
-addSbtPlugin("com.typesafe.conductr" % "sbt-typesafe-conductr" % "0.28.0")
+addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "0.30.0")
 ```
 
 Note that if you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr`.
