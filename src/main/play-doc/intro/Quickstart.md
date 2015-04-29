@@ -115,6 +115,8 @@ conduct load --ip 172.17.0.1 \
              ./visualizer-poll-interval.sh-...zip
 ```
 
+Note that by default, bundles have a maximum size of 100MB. This can be altered via the `akka.http.server.parsing.max-content-length` setting.
+
 Use `conduct info` command to list all loaded bundles. You should see Visualizer replicated but not running (note that the example below shows 3 replications - you'll only get that if you have 3 or more nodes as the bundle cannot replicate beyond the cluster size).
 
 ```bash
