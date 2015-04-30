@@ -191,7 +191,10 @@ ConductR's only requirement of you is to use a library and call a single functio
 The library comes in multiple flavours: pure Scala/JDK, Akka and Play. To add Scala the library to your dependencies using `build.sbt`:
 
 ```scala
-resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
+resolvers ++= Seq(
+  "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases",
+  bintrayRepo("typesafe", "maven-releases")
+  )
 
 libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "0.13.0"
 ```
