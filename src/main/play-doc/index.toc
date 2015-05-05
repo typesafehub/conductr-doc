@@ -1,2 +1,3 @@
 Home:Home
 intro:Introduction
+developer:Developer Guide
