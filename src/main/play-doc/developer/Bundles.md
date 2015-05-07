@@ -47,7 +47,7 @@ Name         | Description
 service-port | The port number to be used as the public-facing port. It is proxied to the host-port.
 service-name | A name to be used to address the service. In the case of http protocols, this is interpreted as a path to be used for proxying. Other protocols will have different interpretations.
 host-port    | This is not declared but is dynamically allocated if bundle is running in a container. Otherwise it has the same value as bind-port.
-bind-port    | The port the bundle component’s application or service actually binds to. When this is 0 it will be dynamically allocated (which is the default).
+bind-port    | The port the bundle component's application or service actually binds to. When this is 0 it will be dynamically allocated (which is the default).
 
 Endpoints are declared using an `endpoint` setting using a Map of endpoint-name/`Endpoint(bindProtocol, bindPort, services)` pairs.
 
