@@ -12,14 +12,14 @@ Name                      | Description
 --------------------------|------------
 BUNDLE_ID                 | The bundle identifier associated with the bundle and its optional configuration.
 BUNDLE_SYSTEM             | A logical name that can be used to associate multiple bundles with each other. This could be an application or service association and should include a version e.g. myapp-1.0.0.
-BUNDLE_HOST_IP            | The IP address of a bundle component’s host.
+BUNDLE_HOST_IP            | The IP address of a bundle component's host.
 CONDUCTR_CONTROL          | A URL for the control protocol of ConductR, composed as $CONDUCTR_CONTROL_PROTOCOL://$CONDUCTR_CONTROL_IP:$CONDUCTR_CONTROL_PORT
 CONDUCTR_CONTROL_PROTOCOL | The protocol of the above.
-CONDUCTR_CONTROL_IP       | The assigned ConductR’s bind IP address.
+CONDUCTR_CONTROL_IP       | The assigned ConductR's bind IP address.
 CONDUCTR_CONTROL_PORT     | The port for the above. Inaccessible to containerized bundles such as those hosted by Docker.
 CONDUCTR_STATUS           | A URL for components to report their start status, composed as $CONDUCTR_STATUS_PROTOCOL://$CONDUCTR_STATUS_IP:$CONDUCTR_STATUS_PORT
 CONDUCTR_STATUS_PROTOCOL  | The protocol of the above.
-CONDUCTR_STATUS_IP        | The assigned ConductR’s bind IP address.
+CONDUCTR_STATUS_IP        | The assigned ConductR's bind IP address.
 CONDUCTR_STATUS_PORT      | The port for the above.
 SERVICE_LOCATOR           | A URL composed as $SERVICE_LOCATOR_PROTOCOL://$SERVICE_LOCATOR_IP:$SERVICE_LOCATOR_PORT
 SERVICE_LOCATOR_PROTOCOL  | The protocol of the above.
@@ -32,9 +32,9 @@ In addition the following environment variables are declared for each component 
 
 Name                 | Description
 ---------------------|------------
-name_PROTOCOL        | The protocol of a bundle component’s endpoint.
-name_HOST            | A bundle component’s host URL composed as $name_PROTOCOL://$name_HOST_IP:$name_HOST_PORT
-name_HOST_PORT       | The port exposed on a bundle’s host.
+name_PROTOCOL        | The protocol of a bundle component's endpoint.
+name_HOST            | A bundle component's host URL composed as $name_PROTOCOL://$name_HOST_IP:$name_HOST_PORT
+name_HOST_PORT       | The port exposed on a bundle's host.
 name_BIND_IP         | The interface the component should bind to.
 name_BIND_PORT       | The port the component should bind to.
 name_OTHER_PROTOCOLS | Any other protocols shared by this bundle with the same endpoint name and system
