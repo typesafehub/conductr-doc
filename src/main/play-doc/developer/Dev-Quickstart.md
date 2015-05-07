@@ -86,80 +86,7 @@ WS
 
 How easy is that!
 
-Where you have non-HTTP services to locate, you can use the ServiceLocator API directly. The following example attempts to locate a fictitious JMS broker service:
-
-```scala
-// This will require an implicit ConnectionContext to
-// hold a Scala ExecutionContext. There are different
-// ConnectionContexts depending on which flavor of the
-// library is being used. For the Scala flavor, a Scala
-// ExecutionContext is composed. The ExecutionContext
-// is needed as "service" is returned as a Future.
-// For convenience, we provide a global ConnectionContext
-// that may be imported.
-import com.typesafe.conductr.bundlelib.scala.ConnectionContext.Implicits.global
-
-// We also provide a cache designed specifically to
-// hold location values. Caches are optional to the
-// lookup, but they are encouraged.
-val locationCache = LocationCache()
-
-// ...and the lookup itself...
-val jmsBroker = LocationService.lookup("/jms", locationCache)
-```
-
-`jmsBroker` is typed `Future[Option[String]]` meaning that an optional response with the resolved URI will be returned at some time in the future. Supposing that this lookup is made during the initialisation of your program, the service you're looking for may not exist. However calling the same function later may yield the service. This is because services can come and go.
-
-#### Non HTTP Static service lookup
-
-Some bundle components cannot proceed with their initialisation unless the service can be located. We encourage you to re-factor these components so that they look up services at the time when they are required, given that services can come and go. However if you are somehow stuck with this style of code then you may consider the following blocking code as a temporary measure:
-
-```scala
-val resultUri = Await.result(
-  LocationService.lookup("/someservice"),
-  sometimeout)
-val serviceUri = resultUri.getOrElse {
-  if (Env.isRunByConductR) System.exit(70)
-  "http://127.0.0.1:9000"
-}
-```
-
-In the above, the program will exit if a service cannot be located at the time the program initializes; unless the program has not been started by ConductR in which case an alternate URI is provided. Instead of blocking you may also consider using an Akka actor:
-
-```scala
-// bundlelib types are imported from com.typesafe.conductr.bundlelib.akka
-
-// ImplicitConnectionContext is a convenience that we provide for obtaining
-// a connection context within an actor.
-
-class MyService extends Actor with ImplicitConnectionContext {
-
-  import context.dispatcher
-
-  override def preStart(): Unit =
-    LocationService.lookup("/someservice").pipeTo(self)
-
-  override def receive: Receive =
-    initial
-
-  private def initial: Receive = {
-    case Some(someService: String) =>
-      // We now have the service
-
-      context.become(service(someService))
-
-    case None =>
-      self ! (if (Env.isRunByConductR) PoisonPill else Some("http://127.0.0.1:9000"))
-  }
-
-  private def service(someService: String): Receive = {
-    // Regular actor receive handling goes here given that we have a service URI now.
-    ...
-  }
-}
-```
-
-This type of actor is used to handle service processing and should only receive service oriented messages once its dependent service URI is known. This is an improvement on the blocking example provided before, as it will not block. However it still has the requirement that `someservice` must be running at the point of initialisation, and that it continues to run. Neither of these requirements may always be satisfied with a distributed system.
+Where you have non-HTTP services to locate, you can use the ServiceLocator API directly. See the section on [TCP and UDP service lookups](TCP-Lookups.html) for more information on that.
 
 ### Bundling your Application or Service
 
@@ -169,6 +96,8 @@ We offer two methods of building a bundle:
 
 * using an [sbt](http://www.scala-sbt.org/) plugin with your build; and/or
 * using `shazar` (we invented that name!)
+
+If you can make changes to the application or service that you bundle then `sbt-bundle` is what you will typically use. In fact you can even use sbt-bundle to produce bundles for other applications or services. However you may find yourself crafting a bundle from scratch and for the latter scenario. See the "legacy & third party bundles" section of the [bundles](Bundling-Existing.html) document for more information on that, and for a deep dive on bundles in general. For now, let's look at bundling a project that you have control of.
 
 #### sbt-bundle
 
@@ -253,46 +182,6 @@ With the above Typesafe config you can then access the host and ip to use from w
   Http(system).bind(ip, port) // ... and so forth
 
 ```
-
-#### When you cannot change your source
-
-On the subject of bundling, it is sometimes not possible or practical to change source code in order to signal successful startup or have it use the environment variables that ConductR provides.
-
-We provide a [CLI](https://github.com/typesafehub/typesafe-conductr-cli#command-line-interface-cli-for-typesafe-conductr) command named [`shazar`](https://github.com/typesafehub/typesafe-conductr-cli#shazar) for bundling the contents of any folder. You can therefore hand-craft a `bundle.conf` and its component folders and use `shazar` to bundle it. See [our documentation](TODO) for a full description on the layout of a bundle including its `bundle.conf` file.
-
-As a quick example, suppose that you wish to bundle [ActiveMQ](http://activemq.apache.org/) as a Docker component with a `Dockerfile`. You can do something like this (btw: we appreciate that you cannot change the world in one go and don't always have the luxury of using Akka for messaging!):
-
-```
-components = {
-  "jms" = {
-    description      = "A Docker container for Active/MQ"
-    file-system-type = "docker"
-    start-command    = []
-    endpoints        = {
-      "jms" = {
-        bind-protocol = "tcp"
-        bind-port     = 61616
-        services      = ["tcp://:61616"]
-      }
-    }
-  }
-  "jms-status" = {
-    description      = "Status check for the jms component"
-    file-system-type = "universal"
-    start-command    = ["check", "docker+$JMS_HOST"]
-    endpoints        = {}
-  }
-}
-```
-
-The declaration of interest is the `jms-status` component. ConductR provides a `check` command that bundle components may use to poll a tcp endpoint until it becomes available. `docker` instructs `check` to wait for all Docker components of this bundle to start and `JMS_HOST` is a [standard environment variable](https://github.com/sbt/sbt-bundle#standard-environment-variables) that will be provided at runtime given the `"jms"` endpoint declaration; it is a URI describing the JMS endpoint. You can similarly poll http endpoints and wait for them to become available. [Consult `check`'s documentation](TODO) for more information.
-
-#### To Docker or Not
-
-[Docker](https://www.docker.com/) is a technology that provides containers for your application or service. Most Typesafe Reactive Platform (Typesafe RP) based programs should not require Docker as the host OS's Java Runtime Environment 8 (JRE 8) environment should be sufficient. Bundles generally contain all that is required for a Typesafe RP program to run, with exception to the Host OS and the host JRE. Typesafe RP bundles will start faster and incur less system resources when used without Docker.
-
-Docker becomes relevant when there are specific runtime dependencies that are different to ConductR's host OS environment. In particular if a binary program that does not use the JVM is required to be launched from a bundle then it becomes more likely to benefit from using a Docker container.
-
 ### Loading and Running your Application or Service
 
 The fun part!
