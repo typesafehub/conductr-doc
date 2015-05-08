@@ -2,12 +2,12 @@
 
 ## Introduction
 
-The Typesafe ConductR is a technology for Operators to manage and deploy applications based on the Typesafe Reactive Platform (TRP). Typesafe ConductR belongs to a new generation of application server that manages applications as processes across a networked cluster. Typesafe ConductR is light and unencumbered in its design, leveraging our expertise of the Reactive domain.
-
 Quoting the [Reactive Manifesto](http://www.reactivemanifesto.org/):
 > Application requirements have changed dramatically in recent years. Only a few years ago a large application had tens of servers, seconds of response time, hours of offline maintenance and gigabytes of data. Today applications are deployed on everything from mobile devices to cloud-based clusters running thousands of multicore processors. Users expect millisecond or even microsecond response times and 100% uptime.
 
-Typesafe ConductR provides an easy, consistent and dependable solution to facilitate the full lifecycle of applications built using the TRP. These activities demand a coordinated configuration in terms of upgrades across clusters of machines, operating systems, processes and services, all with zero downtime.
+The Typesafe ConductR is a technology for Operators to manage and deploy applications based on the Typesafe Reactive Platform (Typesafe RP). Typesafe ConductR belongs to a new generation of application server that manages applications as processes across a networked cluster. Typesafe ConductR is light and unencumbered in its design, leveraging our expertise of the Reactive domain.
+
+Typesafe ConductR provides an easy, consistent and dependable solution to facilitate the full lifecycle of applications built using the Typesafe RP. These activities demand a coordinated configuration in terms of upgrades across clusters of machines, operating systems, processes and services, all with zero downtime.
 
 ## Glossary
 

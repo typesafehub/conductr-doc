@@ -1,8 +1,8 @@
 # Typesafe ConductR %PLAY_VERSION%
 
-## Introduction
+## Developer introduction
 
-There is nothing particularly special about having your applications and services live within ConductR. In fact, while we have a particular love for Typesafe RP based applications and services, you can run almost anything within ConductR. Furthermore you can run applications and services without any source level change whatsoever.
+This section describes how applications and services can be developed for use with ConductR. However please note that your applications and services can run unchanged wrapped up in what we call a "bundle"". Furthermore, while we have a particular love for Typesafe RP based applications and services, you can run almost anything within ConductR.
 
 One change that we do encourage is the move toward your application or service being a reactive one. If you've not read the [Reactive Manifesto](http://www.reactivemanifesto.org/) then please do so now. The manifesto is the DNA of ConductR and so if you want to understand ConductR then it will enlighten you. Your application should be designed with resilience in mind in particular. Because ConductR encourages an application or service to exist across many nodes, and that they can access services of other resources that may come and go, resilience is particularly important.
 
