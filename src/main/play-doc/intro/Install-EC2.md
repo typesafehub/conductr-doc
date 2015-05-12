@@ -35,11 +35,12 @@ The controller host is the host from which we will run the playbooks. The contro
 From a shell on the controller host, clone the Ansible and ConductR-Ansible repositories.
 
 ```bash
-sudo apt-get install python-setuptools autoconf g++ python2.7-dev
+sudo apt-get -y install python-setuptools autoconf g++ python2.7-dev
 sudo easy_install pip
 sudo pip install paramiko PyYAML Jinja2 httplib2 boto
 sudo mkdir /etc/ansible
 echo -e "[local]\n127.0.0.1" | sudo tee -a /etc/ansible/hosts
+sudo apt-get -y install git
 git clone https://github.com/ansible/ansible.git --recursive
 cd ansible
 source ./hacking/env-setup -q
