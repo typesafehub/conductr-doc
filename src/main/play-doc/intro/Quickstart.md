@@ -22,7 +22,7 @@ sudo easy_install3 -U pip
 ...then:
 
 ```bash
-pip3 install --user typesafe-conductr-cli
+pip3 install --user conductr-cli
 ```
 
 `pip3` will install the CLI in your home folder under the .local folder (at least on Ubuntu). Ensure that your path captures this:
@@ -63,7 +63,7 @@ subcommands:
 ### Upgrading the CLI
 
 ```bash
-pip3 install --user --upgrade typesafe-conductr-cli
+pip3 install --user --upgrade conductr-cli
 ```
 
 ### Packaging configuration
