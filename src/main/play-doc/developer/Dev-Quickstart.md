@@ -19,20 +19,28 @@ For a [Play](https://www.playframework.com/) application or service, signalling 
 
 ConductR's only requirement of you is to use a library and call a single function as `StatusService.signalStartedOrExit()`. Note that if you call this function outside of running within ConductR then it does nothing so you can continue to develop and debug as you have always done.
 
-The library comes in multiple flavours: pure Scala/JDK, Akka and Play. To add Scala the library to your dependencies using `build.sbt`:
+The library comes in multiple flavours: 
+- Scala / JDK: `scala-conductr-bundle-lib`
+- Akka: `akka23-conductr-bundle-lib`
+- Play 2.3.x: `play23-conductr-bundle-lib`
+- Play 2.4.x: `play24-conductr-bundle-lib`
+
+To use it add one of the libraries as a dependency to your `build.sbt`:
 
 ```scala
-resolvers ++= Seq(
-  "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases",
-  bintrayRepo("typesafe", "maven-releases")
-  )
+resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
 
 libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "0.13.0"
 ```
 
-`scala-conductr-bundle-lib` has no dependencies other than the JDK and as such, a blocking implementation is used for its http calls (the JDK offers no non-blocking APIs for this). However when using Akka or Play then substitute `"akka-conductr-bundle-lib"` or `"play-conductr-bundle-lib"` respectively. Doing so will ensure that the types used are consistent with Akka and Play, and that non-blocking implementations using akka-http and Play.WS are used.
+The Scala / JDK library has no dependencies other than the JDK and as such, a blocking implementation is used for its HTTP calls (the JDK offers no non-blocking APIs for this). Using the Akka or Play library will ensure that the library is consistent with the respective Akka or Play application and that non-blocking implementations are used:
+- Akka: akka-http
+- Play: Play.WS
 
-When you are reasonably sure that your code is ready to start processing (it doesn't have to be exactly at that time - ConductR tolerates services being unavailable), call the `signalStartedOrExit` function. Here's an example using just the `"scala-conductr-bundle-lib"`:
+When you are reasonably sure that your code is ready to start processing (it doesn't have to be exactly at that time - ConductR tolerates services being unavailable), call the `signalStartedOrExit` function. 
+
+**Scala Example**
+Library: `scala-conductr-bundle-lib`
 
 ```scala
 import com.typesafe.conductr.bundlelib.scala.ConnectionContext.Implicits.global
@@ -42,7 +50,8 @@ import com.typesafe.conductr.bundlelib.scala.ConnectionContext.Implicits.global
 StatusService.signalStartedOrExit()
 ```
 
-Here's another example using Play and Scala having included a dependency for `"play-conductr-bundle-lib"` instead of `"scala-conductr-bundle-lib"`:
+**Play example**
+Library: `play23-conductr-bundle-lib`
 
 ```scala
 import com.typesafe.conductr.bundlelib.play.StatusService
