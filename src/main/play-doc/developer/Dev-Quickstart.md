@@ -140,7 +140,7 @@ Now create a bundle:
 sbt bundle:dist
 ```
 
-Take a look in your `target/typesafe-conductr` folder - you'll see your new bundle with a hash string, something like this:
+Take a look in your `target/bundle` folder - you'll see your new bundle with a hash string, something like this:
 
 ```
 visualizer-0.1.0-b07601b2bd015c94de0514ad698760d0396cb6f95881396d37981b271c0e7142.zip
