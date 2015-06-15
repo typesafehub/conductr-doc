@@ -93,6 +93,14 @@ We provide a [CLI](https://github.com/typesafehub/typesafe-conductr-cli#command-
 As a quick example, suppose that you wish to bundle [ActiveMQ](http://activemq.apache.org/) as a Docker component with a `Dockerfile`. You can do something like this (btw: we appreciate that you cannot change the world in one go and don't always have the luxury of using Akka for messaging!):
 
 ```
+version    = "1.0.0"
+name       = "jms-docker"
+
+nrOfCpus   = 1.0
+memory     = 67108864
+diskSpace  = 10485760
+roles      = ["jms"]
+
 components = {
   "jms" = {
     description      = "A Docker container for Active/MQ"
@@ -115,7 +123,7 @@ components = {
 }
 ```
 
-The declaration of interest is the `jms-status` component. ConductR provides a `check` command that bundle components may use to poll a tcp endpoint until it becomes available. `docker` instructs `check` to wait for all Docker components of this bundle to start and `JMS_HOST` is a [standard environment variable](https://github.com/sbt/sbt-bundle#standard-environment-variables) that will be provided at runtime given the `"jms"` endpoint declaration; it is a URI describing the JMS endpoint. You can similarly poll http endpoints and wait for them to become available. [Consult `check`'s documentation](TODO) for more information.
+The declaration of interest is the `jms-status` component. ConductR provides a `check` command that bundle components may use to poll a tcp endpoint until it becomes available. `docker` instructs `check` to wait for all Docker components of this bundle to start and `JMS_HOST` is a [standard environment variable](https://github.com/sbt/sbt-bundle#standard-environment-variables) that will be provided at runtime given the `"jms"` endpoint declaration; it is a URI describing the JMS endpoint. You can similarly poll http endpoints and wait for them to become available. Note in this examples that the check parameter `docker+$JMS_HOST` is specific to the endpoint `jms.` An endpoint of `webserver` would use `docker+$WEBSERVER_HOST` instead.
 
 #### To Docker or Not
 
