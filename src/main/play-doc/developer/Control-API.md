@@ -9,8 +9,7 @@ ConductR's control protocol is RESTful and has the following functional scope:
 * [scale a bundle i.e. starting it and possibly stopping it](#Scale-a-bundle)
 * [unload a bundle](#Unload-a-bundle)
 * [query bundle state](#Query-bundle-state)
-* query member state
-* subscribe to Server Sent Events (SSEs) regarding state changes to bundles and members
+* [query member state](#Query-member-state)
 
 ## Load a bundle
 
@@ -340,10 +339,10 @@ unreachable         | The members who are seen to be unreachable.
 Field               | Description
 --------------------|------------
 node                | The host of the member.
-nodeUid             | The unique identifier of the member within the `node`.`
+nodeUid             | The unique identifier of the member within the `node`.
 roles               | An array of strings representing the roles that the ConductR cluster member is able to handle. Role names are user-supplied with exception to `all-conductrs`. The latter means that the member will accept any role for the purposes of scheduling a bundle's loading or execution.
 selfNode            | The host of the member serving this response.
-selfNodeUid         | The unique identifier of the member within the `selfNode`.`
+selfNodeUid         | The unique identifier of the member within the `selfNode`.
 status              | `Joining`, `Up`, `Leaving`, `Exiting`, `Down` or `Removed` as per Akka Cluster's `MemberStatus`.
 
 
