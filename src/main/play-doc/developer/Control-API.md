@@ -5,11 +5,11 @@
 
 ConductR's control protocol is RESTful and has the following functional scope:
 
-* [load a bundle and optionally its configuration](#Load-a-bundle)
-* [scale a bundle i.e. starting it and possibly stopping it](#Scale-a-bundle)
-* [unload a bundle](#Unload-a-bundle)
-* [query bundle state](#Query-bundle-state)
-* [query member state](#Query-member-state)
+* [load a bundle and optionally its configuration](#load-a-bundle)
+* [scale a bundle i.e. starting it and possibly stopping it](#scale-a-bundle)
+* [unload a bundle](#unload-a-bundle)
+* [query bundle state](#query-bundle-state)
+* [query member state](#query-member-state)
 
 ## Load a bundle
 
