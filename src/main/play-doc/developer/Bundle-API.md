@@ -8,8 +8,8 @@ The [ConductR bundle library](https://github.com/typesafehub/conductr-bundle-lib
 
 Two services are covered by the bundle API:
 
-* [Location lookup service](#The-Location-Lookup-Service)
-* [Status service](#The-Status-Service)
+* [Location lookup service](#the-location-lookup-service)
+* [Status service](#the-status-service)
 
 ## The Location Lookup Service
 
