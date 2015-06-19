@@ -106,7 +106,7 @@ We offer two methods of building a bundle:
 * using an [sbt](http://www.scala-sbt.org/) plugin with your build; and/or
 * using `shazar` (we invented that name!)
 
-If you can make changes to the application or service that you bundle then `sbt-bundle` is what you will typically use. In fact you can even use sbt-bundle to produce bundles for other applications or services. However you may find yourself crafting a bundle from scratch and for the latter scenario. See the "legacy & third party bundles" section of the [bundles](Bundling-Existing.html) document for more information on that, and for a deep dive on bundles in general. For now, let's look at bundling a project that you have control of.
+If you can make changes to the application or service that you bundle then `sbt-bundle` is what you will typically use. In fact you can even use sbt-bundle to produce bundles for other applications or services. However you may find yourself crafting a bundle from scratch and for the latter scenario. See the [postgres-bdr](https://github.com/huntc/postgres-bdr) project for an example of wrapping a project that you do not have control over. For now though, let's look at bundling a project that you have control of.
 
 #### sbt-bundle
 
