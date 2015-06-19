@@ -117,7 +117,7 @@ Note that the description here is just to provide a feel of how `sbt-bundle` is 
 Firstly add the sbt plugin, typically to your project's `project/plugins.sbt` file (check [here](https://github.com/sbt/sbt-bundle#usage) for the latest release of sbt-bundle):
 
 ```scala
-addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "0.23.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "1.0.0")
 ```
 
 You will then need to declare what are known as "scheduling parameters" for ConductR. These parameters effectively describe what resources are used by your application or service and are used to determine which machine they will run on. Here's a minimum set of parameter specifying that 1 cpu, 64MiB memory and 5MB of disk space is required when your application or service runs:
@@ -202,7 +202,7 @@ The following description is intended to provide a taste of what `sbt-conductr` 
 To use `sbt-conductr` first add the plugin your build (typically your `project/plugins.sbt` file); be sure to check at [the plugin's website](https://github.com/sbt/sbt-conductr#sbt-conductr) for the latest version to use:
 
 ```scala
-addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "0.36.0")
+addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.0.0")
 ```
 
 Note that if you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr`.
