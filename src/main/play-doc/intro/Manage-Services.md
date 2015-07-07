@@ -5,8 +5,8 @@
 
 During installation ConductR registers a new linux service `conductr`. If HAProxy is installed, the service `conductr-haproxy` is registered as well. Both services are started automatically during boot-up.
 
-### User
-The `conductr` service runs as the daemon user `conductr` in the daemon group `conductr`. When the service is started the first time it creates the user and group itself.
+### Service User
+The `conductr` service runs as the daemon user `conductr` in the user group `conductr`. When the service is started the first time it creates the user and group itself.
 
 The `conductr` user executes the commands in the background without any shell. You can specify additional environment variables in `/etc/default/conductr`. This file will be sourced before the actual service gets started.
 
@@ -14,14 +14,6 @@ The `conductr` user executes the commands in the background without any shell. Y
 ### Change Service State
 
 In order to start, stop or restart ConductR on one node simply change the state of the service. Each linux distribution uses different service managers:
-
-**systemd**
-
-```bash
-sudo systemctl conductr start
-sudo systemctl conductr stop
-sudo systemctl conductr restart
-```
 
 **sysvinit**
 
@@ -31,6 +23,13 @@ sudo service conductr stop
 sudo service conductr restart
 ```
 
+**systemd**
+
+```bash
+sudo systemctl conductr start
+sudo systemctl conductr stop
+sudo systemctl conductr restart
+```
 
 #### Restart Cluster
 
@@ -40,9 +39,9 @@ Restarting the entire ConductR cluster should only be considered in a face of di
 In case a node has accidentally formed its own cluster you can stop this node and remove the seed node information. Afterwards start this node again.
 
 ```bash
-sudo systemctl conductr stop
+sudo service conductr stop
 sudo rm /usr/share/conductr/conf/seed-nodes
-sudo systemctl conductr start
+sudo service conductr start
 ```
 
 During startup the node will now join another running cluster as a cluster member.
