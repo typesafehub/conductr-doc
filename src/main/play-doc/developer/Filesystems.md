@@ -13,7 +13,7 @@ myapp-0.1.0
   bin
   conf
   lib
-````
+```
 
 In the above case, `myapp-0.1.0` will be the current working directory for `myapp-0.1.0` component.
 
