@@ -1,15 +1,12 @@
-# Typesafe ConductR %PLAY_VERSION%
-
-
-## The Control API
+# Control API
 
 ConductR's control protocol is RESTful and has the following functional scope:
 
-* [load a bundle and optionally its configuration](#load-a-bundle)
-* [scale a bundle i.e. starting it and possibly stopping it](#scale-a-bundle)
-* [unload a bundle](#unload-a-bundle)
-* [query bundle state](#query-bundle-state)
-* [query member state](#query-member-state)
+* [Load a bundle and optionally its configuration](#Load-a-bundle)
+* [Scale a bundle i.e. starting it and possibly stopping it](#Scale-a-bundle)
+* [Unload a bundle](#Unload-a-bundle)
+* [Query bundle state](#Query-bundle-state)
+* [Query member state](#Query-member-state)
 
 ## Load a bundle
 
@@ -17,7 +14,7 @@ Request an upload a bundle and optionally, its configuration to ConductR.
 
 Here is an example of uploading a Visualizer bundle without any configuration. [Curl](http://curl.haxx.se/) is being used.
 
-```
+```bash
 curl \
   --form system=sys \
   --form bundleName=http-server \
@@ -51,7 +48,7 @@ configuration    | Optional. Similar in form to the bundle, only that is the fil
 
 #### Success
 
-```
+```json
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -95,7 +92,7 @@ scale            | The number of instances of the bundle to start. A scale value
 
 #### Success
 
-```
+```json
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -199,7 +196,7 @@ Content-Type: application/json
 
 There are no bundles JSON array is empty.
 
-```
+```json
 HTTP/1.1 200 OK
 Content-Type: application/json
 
@@ -307,7 +304,7 @@ GET /members
 
 #### Success
 
-```
+```json
 HTTP/1.1 200 OK
 Content-Type: application/json
 

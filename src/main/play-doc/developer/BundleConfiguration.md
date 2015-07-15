@@ -1,7 +1,4 @@
-# Typesafe ConductR %PLAY_VERSION%
-
-
-## Bundles
+# Bundle configuration
 
 ConductR has a bundle format in order for components to be described. In general there is a one-to-one correlation between a bundle and a component.
 
@@ -81,7 +78,7 @@ The services define the protocol, port, and/or path under which your service wil
     }
 ```
 
-## Legacy & third party bundles
+### Legacy & third party bundles
 
 
 #### When you cannot change your source
