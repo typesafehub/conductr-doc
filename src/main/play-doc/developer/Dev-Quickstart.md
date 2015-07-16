@@ -30,7 +30,7 @@ To use it add one of the libraries as a dependency to your `build.sbt`:
 ```scala
 resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
 
-libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "0.13.0"
+libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "1.0.0"
 ```
 
 The Scala / JDK library has no dependencies other than the JDK and as such, a blocking implementation is used for its HTTP calls (the JDK offers no non-blocking APIs for this). Using the Akka or Play library will ensure that the library is consistent with the respective Akka or Play application and that non-blocking implementations are used:
@@ -106,7 +106,7 @@ We offer two methods of building a bundle:
 * using an [sbt](http://www.scala-sbt.org/) plugin with your build; and/or
 * using `shazar` (we invented that name!)
 
-If you can make changes to the application or service that you bundle then `sbt-bundle` is what you will typically use. In fact you can even use sbt-bundle to produce bundles for other applications or services. However you may find yourself crafting a bundle from scratch and for the latter scenario. See the "legacy & third party bundles" section of the [bundles](Bundling-Existing.html) document for more information on that, and for a deep dive on bundles in general. For now, let's look at bundling a project that you have control of.
+If you can make changes to the application or service that you bundle then `sbt-bundle` is what you will typically use. In fact you can even use sbt-bundle to produce bundles for other applications or services. However you may find yourself crafting a bundle from scratch and for the latter scenario. See the [postgres-bdr](https://github.com/huntc/postgres-bdr) project for an example of wrapping a project that you do not have control over. For now though, let's look at bundling a project that you have control of.
 
 #### sbt-bundle
 
@@ -117,7 +117,7 @@ Note that the description here is just to provide a feel of how `sbt-bundle` is 
 Firstly add the sbt plugin, typically to your project's `project/plugins.sbt` file (check [here](https://github.com/sbt/sbt-bundle#usage) for the latest release of sbt-bundle):
 
 ```scala
-addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "0.23.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "1.0.0")
 ```
 
 You will then need to declare what are known as "scheduling parameters" for ConductR. These parameters effectively describe what resources are used by your application or service and are used to determine which machine they will run on. Here's a minimum set of parameter specifying that 1 cpu, 64MiB memory and 5MB of disk space is required when your application or service runs:
@@ -202,7 +202,7 @@ The following description is intended to provide a taste of what `sbt-conductr` 
 To use `sbt-conductr` first add the plugin your build (typically your `project/plugins.sbt` file); be sure to check at [the plugin's website](https://github.com/sbt/sbt-conductr#sbt-conductr) for the latest version to use:
 
 ```scala
-addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "0.36.0")
+addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.0.0")
 ```
 
 Note that if you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr`.

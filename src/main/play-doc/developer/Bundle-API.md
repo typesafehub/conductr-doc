@@ -8,8 +8,8 @@ The [ConductR bundle library](https://github.com/typesafehub/conductr-bundle-lib
 
 Two services are covered by the bundle API:
 
-* Location lookup service
-* Status service
+* [Location lookup service](#the-location-lookup-service)
+* [Status service](#the-status-service)
 
 ## The Location Lookup Service
 
@@ -28,7 +28,7 @@ service-name     | The name of the service required and expressed as a path e.g.
 
 ### Responses
 
-##### Success
+#### Success
 
 ```
 HTTP/1.1 307 Temporary Redirect
@@ -41,7 +41,7 @@ Field        | Description
 location-url | The location of the requested service including any trailing parts to the path requested e.g. `/customers/123` would result in `http://10.0.1.22:8080/customers/123` supposing that ConductR's proxy service's address is `10.0.1.22`, and the endpoint service port is `8080`. If the protocol for the service was TCP then that will be reflected in the returned location's protocol field. For example looking up `/jms` may yield `tcp://10.0.1.22:61616` supposing that the Active/MQ JMS broker's service is offered on port 61616.
 max-age      | The Time-To-Live (TTL) seconds before it is recommended to retain any previous value returned by this service. You should also evict any cached value if any subsequent request on the `location-url` fails.
 
-##### Failure
+#### Failure
 
 ```
 HTTP/1.1 404 Not Found
@@ -68,7 +68,7 @@ service-name     | The name of the service required and expressed as a path e.g.
 
 ### Responses
 
-##### Success
+#### Success
 
 ```
 HTTP/1.1 204 No Content
@@ -76,7 +76,7 @@ HTTP/1.1 204 No Content
 
 The bundle is successfully signalled if any status code within the 2xx series is returned.
 
-##### Failure
+#### Failure
 
 All other types of response outside of the 2xx status code range are an error, including no response at all i.e. use a timeout.
 

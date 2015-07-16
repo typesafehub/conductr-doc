@@ -8,10 +8,10 @@ This is a tutorial for installing ConductR and shows how this is done for a smal
 
 The requirements of a ConductR host are:
 
-* Debian based system (recommended: Ubuntu 14.04 LTS)
+* Debian or Rpm based system (recommended: Ubuntu 14.04 LTS)
 * Oracle Java Runtime Environment 8 (JRE 8)
 * Python 3.4 (supplied with Ubuntu 14.04)
-* Debian package of ConductR
+* Debian or Rpm package of ConductR
 
 #### Installing JRE 8
 
@@ -37,12 +37,16 @@ This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simpl
 sudo hostname 172.17.0.1
 ```
 
-The tutorial also assumes that you have obtained the `conductr_%PLAY_VERSION%_all.deb` Debian package.
+The tutorial also assumes that you have obtained the `conductr_%PLAY_VERSION%_all.deb` Debian or `conductr_%PLAY_VERSION%-1.noarch.rpm` Rpm package.
 
-Install ConductR as any other Debian package.
+Install ConductR as any other Debian or Rpm package.
 
 ``` bash
 [172.17.0.1]$ sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
+```
+or
+``` bash
+[172.17.0.1]$ sudo yum install conductr-%PLAY_VERSION%-1.noarch.rpm
 ```
 
 ConductR is automatically registered as a service and started. ConductR provides cluster and application information as well as its control interface via a REST API.
@@ -75,7 +79,7 @@ The IP addresses in the response indicate that ConductR is listening to the `loc
 
 ``` bash
 [172.17.0.1]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/application.ini
-[172.17.0.1]$ sudo /etc/init.d/conductr restart
+[172.17.0.1]$ sudo service conductr restart
 ```
 
 Check for the cluster information once again, but now use the host address of the machine.
@@ -88,7 +92,7 @@ Check for the cluster information once again, but now use the host address of th
 
 The ConductR service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
 
-ConductR logs via the syslog protocol using TCP destined locally on port 514. Debian distributions such as Ubuntu come with the [RSYSLOG](http://www.rsyslog.com/) logging service and so its configuration is shown next:
+ConductR logs via the syslog protocol using TCP destined locally on port 514. Debian distributions such as Ubuntu come with the [RSYSLOG](http://www.rsyslog.com/) logging service and so its configuration is shown next. Other distributions may require installing RYSLOG.
 
 ``` bash
 [172.17.0.1]$ echo '$ModLoad imtcp' | sudo tee -a /etc/rsyslog.d/conductr.conf
@@ -96,7 +100,7 @@ ConductR logs via the syslog protocol using TCP destined locally on port 514. De
 [172.17.0.1]$ sudo service rsyslog restart
 ```
 
-Viewing `/var/log/syslog` will then show ConductR and bundle output.
+Viewing `/var/log/syslog` (Debian) or `/var/log/messages` (Rpm) will then show ConductR and bundle output.
 
 By default ConductR's logging is quite sparse. Unless an error or warning occurs then there will be no log output. To increase the verbosity of the logging you can use this command:
 
@@ -130,10 +134,15 @@ The node running on the `172.17.0.1` machine is called a seed node, which is a n
 
 ``` bash
 [172.17.0.2]$ sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
+```
+or
+```bash
 [172.17.0.2]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/application.ini
 [172.17.0.2]$ echo --seed 172.17.0.1:9004 | sudo tee -a /usr/share/conductr/conf/application.ini
-[172.17.0.2]$ sudo /etc/init.d/conductr restart
+[172.17.0.2]$ sudo service conductr restart
 ```
+
+sudo yum install conductr_%PLAY_VERSION%-1.noarch.rpm
 
 You should now see a new node in the cluster members list by using the following query:
 
@@ -157,10 +166,14 @@ We will be using `HAProxy`. Add a dedicated Personal Package Archive (PPA) and i
 [172.17.0.1]$ sudo apt-get -y install haproxy
 ```
 
-ConductR provides an application that listens for bundle events from ConductR and updates HAProxy configuration accordingly. Install ConductR-HAProxy debian package which comes with the ConductR:
+ConductR provides an application that listens for bundle events from ConductR and updates HAProxy configuration accordingly. Install ConductR-HAProxy debian or RPM package which comes with the ConductR:
 
 ``` bash
 [172.17.0.1]$ sudo dpkg -i /usr/share/conductr/extra/conductr-haproxy_%PLAY_VERSION%_all.deb
+```
+or
+``` bash
+[172.17.0.1]$ sudo yum install  /usr/share/conductr/extra/conductr-haproxy-%PLAY_VERSION%-1.noarch.rpm
 ```
 
 Grant HAProxy configuration file read and write access to ConductR-HAProxy application:
@@ -174,12 +187,11 @@ After updating the configuration file ConductR-HAProxy is going to signal HAProx
 ``` bash
 [172.17.0.1]$ echo "conductr-haproxy ALL=(root) NOPASSWD: /etc/init.d/haproxy reload" | sudo tee -a /etc/sudoers
 ```
-
 Set the ConductR IP address which is going to be used by ConductR-HAProxy to listen to bundle events in the cluster:
 
 ``` bash
 [172.17.0.1]$ echo -Dconductr-haproxy.ip=$(hostname)| sudo tee -a /usr/share/conductr-haproxy/conf/application.ini
-[172.17.0.1]$ sudo /etc/init.d/conductr-haproxy restart
+[172.17.0.1]$ sudo service conductr-haproxy restart
 ```
 
 Observe ConductR-HAProxy logs. You should see a successfully opened connection to ConductR.
@@ -203,7 +215,7 @@ Supposing that the address assigned to your at Papertrail is `logs2.papertrailap
   -Dcontrail.syslog.server.host=logs2.papertrailapp.com \
   -Dcontrail.syslog.server.port=38564 | \
   sudo tee -a /usr/share/conductr/conf/application.ini
-[172.17.0.1]$ sudo /etc/init.d/conductr restart
+[172.17.0.1]$ sudo service conductr restart
 ```
 
 You can also apply a similar configuration to `conductr-haproxy` by substituting `conductr`.

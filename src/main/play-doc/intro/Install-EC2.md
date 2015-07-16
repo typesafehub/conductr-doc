@@ -234,14 +234,14 @@ To be able to form an inter-machine cluster, ConductR must be configured to list
 
 ``` bash
 echo -DCONDUCTR_IP=$(hostname -i) | sudo tee -a /usr/share/conductr/conf/application.ini
-sudo /etc/init.d/conductr restart
+sudo service conductr restart
 ```
 
 Set the ConductR IP address which is going to be used by ConductR-HAProxy to listen to bundle events in the cluster:
 
 ``` bash
 echo -Dconductr-haproxy.ip=$(hostname -i)| sudo tee -a /usr/share/conductr-haproxy/conf/application.ini
-sudo /etc/init.d/conductr-haproxy restart
+sudo service conductr-haproxy restart
 ```
 
 #### Specifying the seed node
@@ -250,7 +250,7 @@ Pick one node as the seed node and instruct the other two instances to use the o
 
 ``` bash
 echo --seed 10.0.2.20:9004 | sudo tee -a /usr/share/conductr/conf/application.ini
-sudo /etc/init.d/conductr restart
+sudo service conductr restart
 ```
 
 ### Check the cluster
@@ -319,7 +319,7 @@ echo \
   -Dcontrail.syslog.server.host=logs2.papertrailapp.com \
   -Dcontrail.syslog.server.port=38564 | \
   sudo tee -a /usr/share/conductr/conf/application.ini
-sudo /etc/init.d/conductr restart
+sudo service conductr restart
 ```
 
 You can also apply a similar configuration to `conductr-haproxy` by substituting `conductr`.

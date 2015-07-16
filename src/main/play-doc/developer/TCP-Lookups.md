@@ -18,16 +18,19 @@ The general idea is that you call a lookup function each time that you need to m
 // that may be imported.
 import com.typesafe.conductr.bundlelib.scala.ConnectionContext.Implicits.global
 
+// Some URI help
+import com.typesafe.conductr.bundlelib.scala.URI
+
 // We also provide a cache designed specifically to
 // hold location values. Caches are optional to the
 // lookup, but they are encouraged.
 val locationCache = LocationCache()
 
 // ...and the lookup itself...
-val jmsBroker = LocationService.lookup("/jms", locationCache)
+val jmsBroker = LocationService.lookup("/jms", URI("tcp://localhost:61616"), locationCache)
 ```
 
-`jmsBroker` is typed `Future[Option[String]]` meaning that an optional response with the resolved URI will be returned at some time in the future. Supposing that this lookup is made during the initialisation of your program, the service you're looking for may not exist. However calling the same function later may yield the service. This is because services can come and go.
+`jmsBroker` is typed `Future[Option[URI]]` meaning that an optional response with the resolved URI will be returned at some time in the future. Supposing that this lookup is made during the initialisation of your program, the service you're looking for may not exist. However calling the same function later may yield the service. This is because services can come and go.
 
 Ideally, we would push the resolution of a service back on ConductR in a similar manner to how HTTP paths are resolved and use DNS for looking up services. Unfortunately [DNS A-records](http://support.simpledns.com/kb/a35/can-i-specify-a-tcp-ip-port-number-for-my-web-server-in-dns-other-than-the-standard-port-80.aspx) do not yield a port number, and there is little library usage of [DNS SVC-record](http://en.wikipedia.org/wiki/SRV_record) types and, by extension, [zeroconf](http://en.wikipedia.org/wiki/Zero-configuration_networking#Link-local_IPv4_addresses).
 
@@ -37,12 +40,9 @@ Some bundle components cannot proceed with their initialization unless the servi
 
 ```scala
 val resultUri = Await.result(
-  LocationService.lookup("/someservice"),
+  LocationService.lookup("/someservice", URI("http://127.0.0.1:9000"), locationCache),
   sometimeout)
-val serviceUri = resultUri.getOrElse {
-  if (Env.isRunByConductR) System.exit(70)
-  "http://127.0.0.1:9000"
-}
+val serviceUri = resultUri.getOrElse(System.exit(70))
 ```
 
 In the above, the program will exit if a service cannot be located at the time the program initializes; unless the program has not been started by ConductR in which case an alternate URI is provided. Instead of blocking you may also consider using an Akka actor:
@@ -53,27 +53,27 @@ In the above, the program will exit if a service cannot be located at the time t
 // ImplicitConnectionContext is a convenience that we provide for obtaining
 // a connection context within an actor.
 
-class MyService extends Actor with ImplicitConnectionContext {
+class MyService(cache: CacheLike) extends Actor with ImplicitConnectionContext {
 
   import context.dispatcher
 
   override def preStart(): Unit =
-    LocationService.lookup("/someservice").pipeTo(self)
+    LocationService.lookup("/someservice", URI("http://127.0.0.1:9000"), cache).pipeTo(self)
 
   override def receive: Receive =
     initial
 
   private def initial: Receive = {
-    case Some(someService: String) =>
+    case Some(someService: URI) =>
       // We now have the service
 
       context.become(service(someService))
 
     case None =>
-      self ! (if (Env.isRunByConductR) PoisonPill else Some("http://127.0.0.1:9000"))
+      self ! PoisonPill
   }
 
-  private def service(someService: String): Receive = {
+  private def service(someService: URI): Receive = {
     // Regular actor receive handling goes here given that we have a service URI now.
     ...
   }
