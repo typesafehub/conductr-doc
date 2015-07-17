@@ -1,31 +1,10 @@
-# Typesafe ConductR %PLAY_VERSION%
-
-## Introduction
-
-Quoting the [Reactive Manifesto](http://www.reactivemanifesto.org/):
-> Application requirements have changed dramatically in recent years. Only a few years ago a large application had tens of servers, seconds of response time, hours of offline maintenance and gigabytes of data. Today applications are deployed on everything from mobile devices to cloud-based clusters running thousands of multicore processors. Users expect millisecond or even microsecond response times and 100% uptime.
-
-The Typesafe ConductR is a technology for Operators to manage and deploy applications based on the Typesafe Reactive Platform (Typesafe RP). Typesafe ConductR belongs to a new generation of application server that manages applications as processes across a networked cluster. Typesafe ConductR is light and unencumbered in its design, leveraging our expertise of the Reactive domain.
-
-Typesafe ConductR provides an easy, consistent and dependable solution to facilitate the full lifecycle of applications built using the Typesafe RP. These activities demand a coordinated configuration in terms of upgrades across clusters of machines, operating systems, processes and services, all with zero downtime.
-
-## Glossary
-
-Term        | Description
-         ---|---
-Application | A collection of one or more bundles representing a meaningful business purpose. A Developer determines what constitutes an Application. Typesafe ConductR recognises the aggregation of bundles through a "system" attribute assigned to the bundle. This attribute can be used by a component to associate themselves with an Akka cluster (for example).
-Bundle      | A bundle is an archive of components along with meta data (a bundle descriptor file) describing how the files should be executed. Bundles are similar to executable JARs with the difference being that they are not constrained to executing just JVM code. Bundles are also named using a digest of their contents so that their integrity may be assured. Bundles represent a unit of software that may have a release cycle which is distinct from other bundles.
-Component   | A bundle can have many components although it typically has just one. A component in Typesafe ConductR represents a unit of software that  describes what will become a process when a bundle is started.
-Configuration | Configuration alters a component's behavior at runtime and may declare the location of a database, credentials, logging file levels and so forth. Configuration is primarily sourced from within a bundle's components. In addition external configuration may be applied across all of a bundle's components when a bundle is loaded. This additional configuration would typically relate to values for production, testing and so forth.
-Developer   | Developers who develop using Scala/Java, Akka, Play and/or other Typesafe technologies.
-Operator    | Targets the "linux admins" of the Ops world and covers both IT Ops and Dev Ops style roles.
-Service     | An Application can be broken down into logical services, comprised of generalised services or not even have services. What constitutes a service is left to the Developer. Typesafe ConductR recognises the aggregation of bundles through a "system" attribute assigned to the bundle. This attribute can be used by a component to associate itself with an Akka cluster (for example).
+# ConductR components
 
 ## Functional Scope
 
 The following use-case diagram illustrates the scope of Typesafe ConductR:
 
-![scope](scope.png)
+[[images/scope.png]]
 
 During the latter part of development of a project developers will typically package their artifacts and start running them for near-production style scenarios. An example of this is with a Play application development. During the early stages developers will typically run their project from within Activator, making changes to their code having gathered rapid feedback from the browser window. Once most of the project's functionality is written developers will then issue a "stage" command to produce a distribution on the file system that they can run their project from. The project will run differently given things such as CDN resolution, asset fingerprinting, minification; activities that would otherwise degrade the speed required for development mode. As a part of the staging activity build tools permit the staging of a bundle that can be used by Typesafe ConductR ( _Create Bundle_ and _Run Bundle Locally_). This bundle is able to be deployed and run on the developer's machine.
 
@@ -39,7 +18,7 @@ When a component is ready for deploying (for example, into testing or production
 
 The following component diagram illustrates the components of Typesafe ConductR:
 
-![architecture](arch.png)
+[[images/arch.png]]
 
 Typesafe ConductR fundamentally consists of the _ConductR_ process; an application that is responsible for deploying components throughout a medium to large networked cluster of machines. We see that a medium sized cluster begins at where more than 3 host machines are involved. ConductR provides a control protocol via HTTP/REST/JSON so that many types of client may communicate with it.
 
@@ -167,7 +146,3 @@ When starting a bundle the number of instances required can be provided. This is
 #### Unloading a Bundle
 
 Unloading a bundle requires that all executions of it are stopped. Unloading involves the file system removal of all bundles across the cluster as one operation. Any attempt to start a bundle that is in the process of unloading are ignored.
-
-## Conclusion
-
-This document has provided an overview of Typesafe ConductR and you should now be in a position to understand its functional scope. Typesafe ConductR is a modern application server that has been built to ease the deployment and management of the Typesafe Reactive Platform applications and services across medium to large clusters.

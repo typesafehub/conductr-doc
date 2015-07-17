@@ -1,11 +1,8 @@
-# Typesafe ConductR %PLAY_VERSION%
-
-
-## The bundle component environment
+# Bundle environment variables
 
 When your application or service runs then it is presented with a swarth of environment variables that can be used to assist it to run. One popular set of environment variables is that which tells your application or service on which address and port to bind (the _name_\_BIND\_PORT and _name_\_BIND\_IP).
 
-## Standard Environment Variables
+## Standard environment variables
 For reference, the following standard environment variables are available to a bundle component at runtime:
 
 Name                      | Description

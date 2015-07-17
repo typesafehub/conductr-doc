@@ -1,7 +1,4 @@
-# Typesafe ConductR %PLAY_VERSION%
-
-
-## Quickstart
+# Command line interface (CLI)
 
 ConductR provides REST API which allows you as the operator to:
 
@@ -10,7 +7,7 @@ ConductR provides REST API which allows you as the operator to:
 
 The API can be used by any HTTP client, but ConductR comes with CLI tool implemented in Python. To get the latest version of the CLI install it locally as a pip package.
 
-### New CLI installation
+## New CLI installation
 
 Firstly `pip3` is required:
 
@@ -60,19 +57,19 @@ subcommands:
     unload              unload a bundle
 ```
 
-### Upgrading the CLI
+## Upgrading the CLI
 
 ```bash
 pip3 install --user --upgrade conductr-cli
 ```
 
-### Packaging configuration
+## Packaging configuration
 
 In addition to consuming services provided by ConductR, the CLI also provides a quick way of packaging custom configuration to a bundle. We will go through most of the CLI features by deploying the Visualizer bundle to ConductR that comes together with the ConductR installation. The Visualizer can be found in the `/usr/share/conductr/samples` directory.
 
 Visualizer is a sample Play Framework application that queries ConductR API endpoints and visualizes the ConductR cluster together with deployed and running bundles.
 
-![scope](visualizer.png)
+[[images/visualizer.png]]
 
 Some applications require additional configuration when deployed to different environments. Visualizer allows setting `POLL_INTERVAL` environment variable which controls how quickly ConductR is polled after receiving events that state has changed.
 
@@ -93,7 +90,7 @@ shazar ./visualizer-poll-interval.sh
 
 The configuration is now ready to be loaded along with a bundle. Configuration is always provided as the second param to the `conduct load` command.
 
-### Deploying bundles
+## Deploying bundles
 
 The standard bundle lifecycle in the ConductR is:
 
@@ -139,7 +136,7 @@ ID               NAME              #REP  #STR  #RUN
 23391d4-3cc322b  visualizer-0.1.0  3     0     1
 ```
 
-### Accessing services provided by bundles
+## Accessing services provided by bundles
 
 Access to services in ConductR is proxied for high availability and load balancing. To list all the currently running services in the ConductR execute the `conduct services` command.
 
