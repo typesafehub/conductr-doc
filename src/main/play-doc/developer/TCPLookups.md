@@ -1,7 +1,4 @@
-# Typesafe ConductR %PLAY_VERSION%
-
-
-## TCP and UDP service lookup
+# TCP and UDP service lookup
 
 ConductR offers an [`/etc/services`](http://www.lehman.cuny.edu/cgi-bin/man-cgi?services+4) style of experience for situations where you need to resolve a TCP or UDP port (note that if you're using [HAProxy](http://www.haproxy.org/) for proxying then UDP is not supported at this time). Resolving ports at runtime is a good practice given that your application or service becomes de-coupled from the actual port in use.
 
