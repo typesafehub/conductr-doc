@@ -1,6 +1,6 @@
 # Typesafe ConductR %PLAY_VERSION%
 
-## Installation
+## Linux Installation
 
 This is a tutorial for installing ConductR and shows how this is done for a small cluster of 3 machines.
 
@@ -8,14 +8,16 @@ This is a tutorial for installing ConductR and shows how this is done for a smal
 
 The requirements of a ConductR host are:
 
-* Debian or Rpm based system (recommended: Ubuntu 14.04 LTS)
+* Debian or Rpm based system (recommended: Ubuntu 14.04 LTS or RHEL/CentOS 6.6)
 * Oracle Java Runtime Environment 8 (JRE 8)
-* Python 3.4 (supplied with Ubuntu 14.04)
+* Python 3.4
 * Debian or Rpm package of ConductR
 
 #### Installing JRE 8
 
-Install Java 8 as the default JRE. You will need to accept the Oracle license agreement.
+Install Java 8 as the default JRE on the system.
+
+On Ubuntu, you can use the webupd8team repository provided that you accept the Oracle license agreement.
 
 ```bash
 sudo add-apt-repository -y ppa:webupd8team/java
@@ -34,7 +36,7 @@ echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
 This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
 
 ```bash
-sudo hostname 172.17.0.1
+sudo hostname $(hostname -i)
 ```
 
 The tutorial also assumes that you have obtained the `conductr_%PLAY_VERSION%_all.deb` Debian or `conductr_%PLAY_VERSION%-1.noarch.rpm` Rpm package.
@@ -100,7 +102,7 @@ ConductR logs via the syslog protocol using TCP destined locally on port 514. De
 [172.17.0.1]$ sudo service rsyslog restart
 ```
 
-Viewing `/var/log/syslog` (Debian) or `/var/log/messages` (Rpm) will then show ConductR and bundle output.
+Viewing `/var/log/syslog` (Ubuntu) or `/var/log/messages` (RHEL) will then show ConductR and bundle output.
 
 By default ConductR's logging is quite sparse. Unless an error or warning occurs then there will be no log output. To increase the verbosity of the logging you can use this command:
 
@@ -158,8 +160,19 @@ _Perform each step in this section on all nodes: `172.17.0.1`, `172.17.0.2` and 
 
 Proxying application endpoints is required when running more than one instance of ConductR; which should be always for production style scenarios. Proxying endpoints permits connectivity from both external callers and for bundle components to communicate with other bundle components. This also allows an external caller to contact an application that is running on any ConductR node by contacting any proxy instance.
 
-We will be using `HAProxy`. Add a dedicated Personal Package Archive (PPA) and install HAProxy.
+We will be using `HAProxy`. Install HAProxy version 1.5 or newer.
 
+``` bash
+[172.17.0.1]$ sudo apt-get -y install haproxy
+```
+or
+``` bash
+[172.17.0.1]$ sudo yum install haproxy
+```
+
+On Red Hat Enterprise Linux (RHEL) 6, haproxy is in the RHEL Server Load Balancer (v6 for 64-bit x86_64) rhel-lb-for-rhel-6-server-rpms channel. You'll need to add this channel to your server.
+
+On some Debian distributions you may need to add a dedicated Personal Package Archive (PPA) in order to install HAProxy 1.5 via the package manager. For example:
 ``` bash
 [172.17.0.1]$ sudo add-apt-repository -y ppa:vbernat/haproxy-1.5
 [172.17.0.1]$ sudo apt-get update
@@ -187,6 +200,12 @@ After updating the configuration file ConductR-HAProxy is going to signal HAProx
 ``` bash
 [172.17.0.1]$ echo "conductr-haproxy ALL=(root) NOPASSWD: /etc/init.d/haproxy reload" | sudo tee -a /etc/sudoers
 ```
+
+On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the conductr-haproxy user.
+``` bash
+[172.17.0.1]$ echo 'Defaults: conductr-haproxy  !requiretty' | sudo tee -a /etc/sudoers
+```
+
 Set the ConductR IP address which is going to be used by ConductR-HAProxy to listen to bundle events in the cluster:
 
 ``` bash
