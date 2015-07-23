@@ -10,7 +10,7 @@ The `conductr` user executes the commands in the background without any shell. Y
 
 ## Change service state
 
-In order to start, stop or restart ConductR on one node change the state of the service. Each linux distribution uses different service managers:
+In order to start, stop or restart ConductR on one node change the state of the service.
 
 **sysvinit**
 
@@ -18,14 +18,6 @@ In order to start, stop or restart ConductR on one node change the state of the 
 sudo service conductr start
 sudo service conductr stop
 sudo service conductr restart
-```
-
-**systemd**
-
-```bash
-sudo systemctl conductr start
-sudo systemctl conductr stop
-sudo systemctl conductr restart
 ```
 
 ### Restart cluster
