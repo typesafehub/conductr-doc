@@ -1,3 +1,5 @@
 CLI:CLI
 Logging:Logging
 ManageServices:Managing ConductR Services
+ClusterSetupConsiderations:Cluster Setup Considerations
+ClusterTroubleshooting:Cluster Troubleshooting
