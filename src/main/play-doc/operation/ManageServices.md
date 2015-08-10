@@ -19,3 +19,16 @@ sudo service conductr start
 sudo service conductr stop
 sudo service conductr restart
 ```
+
+## Configuring ConductR
+
+The application.ini file, located in /usr/share/conductr/conf, is the primary configuration file for the ConductR service. This file is used to specify ConductR service settings, such as '-Dconductr.ip' used during installation. See the comments section of the application.ini file for more examples.
+
+Akka module configuration can also be set using this file. For example, to assign a ConductR node the role of `megaIOPS` instead of the default, `all-conductrs`, set `akka.cluster.roles` in application.ini:
+
+```bash
+ -Dakka.cluster.roles.0=“megaIOPS"
+ ```
+With this setting only bundles with a `BundleKeys.roles` of `megaIOPS` will be scheduled to execute on this node.
+
+The ConductR service must be restarted for changes to this file to take effect.

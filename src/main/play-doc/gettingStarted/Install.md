@@ -191,7 +191,7 @@ On some Debian distributions you may need to add a dedicated Personal Package Ar
 [172.17.0.1]$ sudo apt-get -y install haproxy
 ```
 
-ConductR provides an application that listens for bundle events from ConductR and updates HAProxy configuration accordingly. Install ConductR-HAProxy debian or RPM package which comes with the ConductR:
+ConductR provides an application that listens for bundle events from ConductR and updates HAProxy configuration accordingly. The ConductR-HAProxy installation package can be found in the ConductR installation in the `extra` folder. Install ConductR-HAProxy debian or RPM package:
 
 ``` bash
 [172.17.0.1]$ sudo dpkg -i /usr/share/conductr/extra/conductr-haproxy_%PLAY_VERSION%_all.deb
