@@ -29,7 +29,7 @@ val jmsBroker = LocationService.lookup("/jms", URI("tcp://localhost:61616"), loc
 
 `jmsBroker` is typed `Future[Option[URI]]` meaning that an optional response with the resolved URI will be returned at some time in the future. Supposing that this lookup is made during the initialisation of your program, the service you're looking for may not exist. However calling the same function later may yield the service. This is because services can come and go.
 
-Ideally, we would push the resolution of a service back on ConductR in a similar manner to how HTTP paths are resolved and use DNS for looking up services. Unfortunately [DNS A-records](http://support.simpledns.com/kb/a35/can-i-specify-a-tcp-ip-port-number-for-my-web-server-in-dns-other-than-the-standard-port-80.aspx) do not yield a port number, and there is little library usage of [DNS SVC-record](http://en.wikipedia.org/wiki/SRV_record) types and, by extension, [zeroconf](http://en.wikipedia.org/wiki/Zero-configuration_networking#Link-local_IPv4_addresses).
+Ideally, we would push the resolution of a service back on ConductR in a similar manner to how HTTP paths are resolved and use DNS for looking up services. Unfortunately [DNS A-records](http://support.simpledns.com/kb/a35/can-i-specify-a-tcp-ip-port-number-for-my-web-server-in-dns-other-than-the-standard-port-80.aspx) do not yield a port number, and there is little library usage of [DNS SRV-record](http://en.wikipedia.org/wiki/SRV_record) types and, by extension, [zeroconf](http://en.wikipedia.org/wiki/Zero-configuration_networking#Link-local_IPv4_addresses).
 
 ## TCP and UDP static service lookup
 
