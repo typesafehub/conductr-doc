@@ -32,3 +32,7 @@ Akka module configuration can also be set using this file. For example, to assig
 With this setting only bundles with a `BundleKeys.roles` of `megaIOPS` will be scheduled to execute on this node.
 
 The ConductR service must be restarted for changes to this file to take effect.
+
+## Service Monitoring
+
+For best resilience, the ConductR service daemons should be monitored and restarted in the event of failure. [sbt-native-packager](https://github.com/sbt/sbt-native-packager) has experimental [systemd support](http://www.scala-sbt.org/sbt-native-packager/archetypes/java_server/customize.html#systemd-support). As systemd support matures, ConductR will made available as a package manged by systemd with restart on failure enabled. Until that time, third party daemon monitors can be utilized to provide restart on failure.
