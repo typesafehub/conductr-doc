@@ -25,13 +25,15 @@ The requirements of a ConductR host are:
 * Python 3.4
 * Debian or Rpm package of ConductR
 
+RHEL/CentOS 7 support is waiting for stable [sbt-native-packer systemd support](https://github.com/sbt/sbt-native-packager#experimental-systemd-bootsystem-support).
+
 #### Installing JRE 8
 
 Install Java 8 as the default JRE on the system.
 
 On Ubuntu, you can use the webupd8team repository provided that you accept the Oracle license agreement.
 
-```bash
+``` bash
 sudo add-apt-repository -y ppa:webupd8team/java
 sudo apt-get update
 sudo apt-get -y install oracle-java8-installer && sudo apt-get clean
@@ -47,7 +49,7 @@ echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
 
 This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
 
-```bash
+``` bash
 sudo hostname $(hostname -i)
 ```
 
@@ -59,6 +61,7 @@ Install ConductR as any other Debian or Rpm package.
 [172.17.0.1]$ sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
 ```
 or
+
 ``` bash
 [172.17.0.1]$ sudo yum install conductr-%PLAY_VERSION%-1.noarch.rpm
 ```
@@ -118,7 +121,7 @@ Viewing `/var/log/syslog` (Ubuntu) or `/var/log/messages` (RHEL) will then show 
 
 By default ConductR's logging is quite sparse. Unless an error or warning occurs then there will be no log output. To increase the verbosity of the logging you can use this command:
 
-```bash
+``` bash
 [172.17.0.1]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr/conf/application.ini
 ```
 
@@ -150,13 +153,17 @@ The node running on the `172.17.0.1` machine is called a seed node, which is a n
 [172.17.0.2]$ sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
 ```
 or
-```bash
+
+``` bash
+sudo yum install conductr_%PLAY_VERSION%-1.noarch.rpm
+```
+then
+
+``` bash
 [172.17.0.2]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/application.ini
 [172.17.0.2]$ echo --seed 172.17.0.1:9004 | sudo tee -a /usr/share/conductr/conf/application.ini
 [172.17.0.2]$ sudo service conductr restart
 ```
-
-sudo yum install conductr_%PLAY_VERSION%-1.noarch.rpm
 
 You should now see a new node in the cluster members list by using the following query:
 
@@ -185,6 +192,7 @@ or
 On Red Hat Enterprise Linux (RHEL) 6, haproxy is in the RHEL Server Load Balancer (v6 for 64-bit x86_64) rhel-lb-for-rhel-6-server-rpms channel. You'll need to add this channel to your server.
 
 On some Debian distributions you may need to add a dedicated Personal Package Archive (PPA) in order to install HAProxy 1.5 via the package manager. For example:
+
 ``` bash
 [172.17.0.1]$ sudo add-apt-repository -y ppa:vbernat/haproxy-1.5
 [172.17.0.1]$ sudo apt-get update
@@ -197,6 +205,7 @@ ConductR provides an application that listens for bundle events from ConductR an
 [172.17.0.1]$ sudo dpkg -i /usr/share/conductr/extra/conductr-haproxy_%PLAY_VERSION%_all.deb
 ```
 or
+
 ``` bash
 [172.17.0.1]$ sudo yum install  /usr/share/conductr/extra/conductr-haproxy-%PLAY_VERSION%-1.noarch.rpm
 ```
@@ -214,6 +223,7 @@ After updating the configuration file ConductR-HAProxy is going to signal HAProx
 ```
 
 On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the conductr-haproxy user.
+
 ``` bash
 [172.17.0.1]$ echo 'Defaults: conductr-haproxy  !requiretty' | sudo tee -a /etc/sudoers
 ```
@@ -265,7 +275,7 @@ The controller host is the host from which we will run the playbooks. The contro
 
 From a shell on the controller host, clone the Ansible and ConductR-Ansible repositories.
 
-```bash
+``` bash
 sudo apt-get -y install python-setuptools autoconf g++ python2.7-dev
 sudo easy_install pip
 sudo pip install paramiko PyYAML Jinja2 httplib2 boto
@@ -282,7 +292,7 @@ cd conductr-ansible
 
 Export your AWS access key id and secret.
 
-```bash
+``` bash
 export AWS_ACCESS_KEY_ID='ABC123'
 export AWS_SECRET_ACCESS_KEY='abc123'
 export ANSIBLE_HOST_KEY_CHECKING=False
@@ -296,13 +306,13 @@ Your controller host is now ready to run plays.
 
 ConductR-Ansible can create and prepare a new VPC for use with ConductR. Running ConductR in it's own VPC isolates the cluster from the rest of your EC2 network. If you have existing services in EC2 that ConductR needs to be able to access on the local network using an EC2 private ip address, you need to use your existing VPC. In all other cases, creating a ConductR VPC is recommended, but is not required if you are comfortabling setting up the network yourself.
 
-```bash
+``` bash
 ansible-playbook create-network-ec2.yml
 ```
 
 Runing the playbook creates a new VPC named "ConductR VPC" in the us-east-1 region. To specify a different [EC2 region](http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region) in which to execute, pass `EC2_REGION` using a -e key value pair. For example to execute in eu-west-1 we would use: 
 
-```bash
+``` bash
 ansible-playbook create-network-ec2.yml -e "EC2_REGION=eu-west-1"
 ```
 
@@ -320,7 +330,7 @@ We pass both our vars file and EC2 PEM key file to our playbook as command line 
 
 The private-key value must be the local path and filename of the keypair that has the key pair name `KEYPAIR` specified in the vars file. For example our key pair may be named `ConductR_Key` in AWS and reside locally as `~/secrets/ConductR.pem`. In which case we would set `KEYPAIR` to `ConductR_Key` and pass `~/secrets/ConductR.pem` as our private-key argument. The private key file must be only accessible to owner and will require using `chmod 600 /path/to/{{keypair}}` if accessible to others.
 
-```bash
+``` bash
 ansible-playbook build-cluster-ec2.yml -e "VARS_FILE=vars/{{EC2_REGION}}_vars.yml" --private-key /path/to/{{keypair}}
 ```
 
@@ -379,7 +389,7 @@ Access the console of the image instance with root access. For Ubuntu AMIs this 
 
 Install Java 8 as the default JRE. You will need to accept the Oracle license agreement.
 
-```bash
+``` bash
 sudo add-apt-repository -y ppa:webupd8team/java
 sudo apt-get update
 sudo apt-get -y install oracle-java8-installer && sudo apt-get clean
