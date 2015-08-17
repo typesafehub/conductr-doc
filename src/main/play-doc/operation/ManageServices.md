@@ -33,6 +33,15 @@ With this setting only bundles with a `BundleKeys.roles` of `megaIOPS` will be s
 
 The ConductR service must be restarted for changes to this file to take effect.
 
+## Roles
+
+Roles allow machines to be targetted for specific purposes. Some machines may have greater IO capabilities than others, some may have more CPU, memory and other resources. Some may also be required to maintain a volume that holds a database.
+
+When getting started with ConductR it is reasonable to have each ConductR service rely on its default role of "all-conductrs". However when moving into a production scenario you should plan and assign roles for your ConductR cluster.
+
+When a bundle is to be scheduled for loading or scaling, a check is made to first see whether a resource offer has the "all-conductrs" role. If it does then it is eligible. However if it does not then it must have a roles that intersect with the roles that a bundle requires. Note that you should not assign the "all-conductrs" role to a member that has other roles declared as "all-conductrs" will supercede the others.
+
+
 ## Service Monitoring
 
 For best resilience, the ConductR service daemons should be monitored and restarted in the event of failure. [sbt-native-packager](https://github.com/sbt/sbt-native-packager) has experimental [systemd support](http://www.scala-sbt.org/sbt-native-packager/archetypes/java_server/customize.html#systemd-support). As systemd support matures, ConductR will made available as a package manged by systemd with restart on failure enabled. Until that time, third party daemon monitors can be utilized to provide restart on failure.
