@@ -17,7 +17,7 @@ To use it add one of the libraries as a dependency to your `build.sbt`:
 ```scala
 resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
 
-libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "0.13.0"
+libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "1.0.1"
 ```
 
 The Scala / JDK library has no dependencies other than the JDK and as such, a blocking implementation is used for its HTTP calls (the JDK offers no non-blocking APIs for this). Using the Akka or Play library will ensure that the library is consistent with the respective Akka or Play application and that non-blocking implementations are used:
