@@ -1,4 +1,4 @@
-# Signalling application state
+# Signaling application state
 
 Your application or service should tell ConductR when it has completed its initialization and is ready for work. We have a fall-back strategy for where this is not possible or practical (more on that later), but for now, let's assume that you can modify your source code.
 
