@@ -1,6 +1,14 @@
 # ConductR release notes
 
 
+## 1.0.7
+
+* Improved bundle scaling reliability
+* Corrected an issue where the name_OTHER_IPS was only being populated with one other IP (same goes for ports)
+* The default max size of bundles accepted by ConductR is now 200MB
+* Dropped the use of CEE cookies for syslog - structured data is used exclusively
+* Arguments can now be provided for bundle components that use Docker
+
 ## 1.0.6
 
 * Escaped bash chars in start command
