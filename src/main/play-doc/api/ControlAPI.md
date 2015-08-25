@@ -36,11 +36,12 @@ The following fields are provided as multipart/form-data fields:
 
 Field            | Description
 -----------------|------------
-system           | As per its equivalent property in [bundle.conf](Bundles.html)
-bundleName       | As per its equivalent property in [bundle.conf](Bundles.html)
-nrOfCpus         | As per its equivalent property in [bundle.conf](Bundles.html)
-memory           | As per its equivalent property in [bundle.conf](Bundles.html)
-roles            | As per its equivalent property in [bundle.conf](Bundles.html)
+system           | As per its equivalent property in [bundle.conf](BundleConfiguration)
+bundleName       | As per its equivalent property in [bundle.conf](BundleConfiguration)
+nrOfCpus         | As per its equivalent property in [bundle.conf](BundleConfiguration)
+memory           | As per its equivalent property in [bundle.conf](BundleConfiguration)
+diskSpace        | As per its equivalent property in [bundle.conf](BundleConfiguration)
+roles            | As per its equivalent property in [bundle.conf](BundleConfiguration)
 bundle           | The file that is the bundle. The filename is important with its hex digest string and is required to be consistent with the SHA-256 hash of the bundle's contents. Any inconsistency between the hashes will result in the load being rejected.
 configuration    | Optional. Similar in form to the bundle, only that is the file that describes the configuration. Again any inconsistency between the hex digest string in the filename, and the SHA-256 digest of the actual contents will result in the load being rejected.
 
