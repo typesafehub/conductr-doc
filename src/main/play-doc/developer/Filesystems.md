@@ -1,7 +1,4 @@
-# Typesafe ConductR %PLAY_VERSION%
-
-
-## Filesystems
+# Filesystems
 
 File systems in distributed systems should be regarded as emphemeral. Your application or service can come and go for many reasons e.g. as the result of scaling up and down, a network partition occuring and then a ConductR node being ejected from the cluster and so forth.
 

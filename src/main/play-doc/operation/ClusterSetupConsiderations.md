@@ -1,4 +1,4 @@
-# Cluster Resiliency Considerations
+# Cluster resiliency considerations
 
 In order to achieve cluster resilience, it’s recommended for the cluster to be separated into at least 3 distinct parts, e.g.
 

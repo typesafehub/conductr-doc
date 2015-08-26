@@ -5,20 +5,22 @@ Choose on of the following installation guides to get started:
 * [Linux Installation](#Linux-Installation)
 * [EC2 Installation](#EC2-Installation)
 
-If you want to first get familiar with the terms and components of ConductR go to:
+# Dev Installation
 
-* [[ConductR terms|ConductrTerms]]
-* [[ConductR components|ConductrComponents]]
+> Follow this guide to install and run ConductR inside Docker on your development environment in the context of an sbt application.
 
+## Prerequisites
 
+* [Docker](https://www.docker.com)
+* [SBT](http://www.scala-sbt.org) or [Activator](https://www.typesafe.com/get-started)
 
-## Linux Installation
+For development purpose we provide a Docker image which has pre-installed all the neccessary software to use ConductR. Head over to the [[Developers guide|DevQuickStart]] to get started.
 
-This is a tutorial for installing ConductR and shows how this is done for a small cluster of 3 machines.
+# Linux Installation
 
-### Requirements
+> This is a tutorial for installing ConductR on linux in production mode. It shows how this is done for a small cluster of 3 machines.
 
-The requirements of a ConductR host are:
+## Prerequisites
 
 * Debian or Rpm based system (recommended: Ubuntu 14.04 LTS or RHEL/CentOS 6.6)
 * Oracle Java Runtime Environment 8 (JRE 8)
@@ -27,7 +29,7 @@ The requirements of a ConductR host are:
 
 RHEL/CentOS 7 support is waiting for stable [sbt-native-packer systemd support](https://github.com/sbt/sbt-native-packager#experimental-systemd-bootsystem-support).
 
-#### Installing JRE 8
+### Installing JRE 8
 
 Install Java 8 as the default JRE on the system.
 
@@ -41,11 +43,11 @@ sudo apt-get -y install oracle-java8-set-default
 echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
 ```
 
-#### Optional dependencies
+### Optional dependencies
 
 * Docker - for running bundles inside a Docker container
 
-### Installing ConductR on the first machine
+## Installing ConductR on the first machine
 
 This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
 
@@ -105,7 +107,7 @@ Check for the cluster information once again, but now use the host address of th
 [172.17.0.1]$ curl -s $(hostname):9005/members | python3 -m json.tool
 ```
 
-#### Installation miscellany
+### Installation miscellany
 
 The ConductR service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
 
@@ -127,9 +129,9 @@ By default ConductR's logging is quite sparse. Unless an error or warning occurs
 
 Consolidated logging is discussed further down.
 
-#### Optional dependencies
+### Optional dependencies
 
-##### Docker
+#### Docker
 
 ConductR supports running applications and services within Docker. If you plan on running Docker based bundles, you will need to install [Docker](https://docs.docker.com/) according to [the official documentation](https://docs.docker.com/installation/ubuntulinux/). Once Docker is installed then add ConductR's user/group to the `docker` group so that it has [the correct permissions in order to access Docker](http://docs.docker.com/installation/ubuntulinux/#giving-non-root-access):
 
@@ -137,7 +139,7 @@ ConductR supports running applications and services within Docker. If you plan o
 [172.17.0.1]$ sudo usermod -a -G docker conductr
 ```
 
-### Installing ConductR on the remaining machines
+## Installing ConductR on the remaining machines
 
 _Repeat each step in this section also on the `172.17.0.3` machine._
 
@@ -173,7 +175,7 @@ You should now see a new node in the cluster members list by using the following
 
 Install optional dependencies if required. Each ConductR node requires same optional dependencies to be installed.
 
-### Installing a Proxy
+## Installing a Proxy
 
 _Perform each step in this section on all nodes: `172.17.0.1`, `172.17.0.2` and `172.17.0.3`. For full resilience a proxy should be installed for each machine that ConductR is installed on._
 
@@ -237,17 +239,15 @@ Set the ConductR IP address which is going to be used by ConductR-HAProxy to lis
 
 Observe ConductR-HAProxy logs. You should see a successfully opened connection to ConductR.
 
-That's it! You now have a cluster of three ConductR nodes ready to start running applications. ConductR comes with a `visualizer` sample application. Head over to the next section [[Deploying application|DeployingApplication]] to learn how to deploy visualizer application to your fresh ConductR cluster.
+That's it! You now have a cluster of three ConductR nodes ready to start running applications. ConductR comes with a `visualizer` sample application. Head over to the next section [[CLI|CLI]] to learn how to deploy visualizer application to your fresh ConductR cluster.
 
 
 
-## EC2 Installation
+# EC2 Installation
 
-This is a tutorial for setting up a ConductR cluster on [Amazon Web Services EC2](http://aws.amazon.com/ec2/) provided in two forms. The first uses [Ansible](http://www.ansible.com) to automate the installation. The second achieves the same result using the EC2 Management Console and ssh'ing into the instances. For general installation instructions, please see [Linux Installation][#Linux-Installation).
+> This is a tutorial for setting up a ConductR cluster on [Amazon Web Services EC2](http://aws.amazon.com/ec2/) provided in two forms. The first uses [Ansible](http://www.ansible.com) to automate the installation. The second achieves the same result using the EC2 Management Console and ssh'ing into the instances. For general installation instructions, please see [Linux Installation][#Linux-Installation).
 
-### Requirements
-
-To run a ConductR cluster in EC2 you will need:
+## Prerequisites
 
 * Amazon Web Services(AWS) account with EC2 admin rights
 * Debian package of ConductR
@@ -336,7 +336,7 @@ ansible-playbook build-cluster-ec2.yml -e "VARS_FILE=vars/{{EC2_REGION}}_vars.ym
 
 If the playbook completes successfully, you will have a three node cluster that can be accessed using the ELB DNS name. ConductR comes with a `visualizer` sample application. The playbook created ELB includes a listener mapping port 80 to Visualizer's port 9999 port mapping. 
 
-Head over to the next section [[Deploying application|DeployingApplication]] to learn how to deploy visualizer application to your fresh ConductR cluster. You can ssh into one of the cluster nodes using it's public ip address to deploy Visualizer. Use the username from the `REMOTE_USER` (currently "ubuntu") and the PEM file as for the identify file (-i). The ConductR CLI has been installed to all nodes for you. Once deployed, you can view the Visualizer via port 80 using the ELB DNS name in your browser.
+Head over to the next section [[Managing application|ManagingApplication]] to learn how to deploy visualizer application to your fresh ConductR cluster. You can ssh into one of the cluster nodes using it's public ip address to deploy Visualizer. Use the username from the `REMOTE_USER` (currently "ubuntu") and the PEM file as for the identify file (-i). The ConductR CLI has been installed to all nodes for you. Once deployed, you can view the Visualizer via port 80 using the ELB DNS name in your browser.
 
 Re-running this playbook launches a new set of instances. This means it can be re-run to create additional ConductR clusters. For example we might re-run the playbook to create a new cluster using a new version of ConductR to test new features. If we change only the values of `CONDUCTR_PKG` and `ELB` in the vars file to a new ConductR version package and new ELB, running the playbook again will create a new cluster using the new version in the same subnets as the previous version.
 
@@ -541,4 +541,4 @@ A typical response contains the current members of the cluster (shown here is a 
 
 That's it! You now have a cluster of three ConductR nodes ready to start running applications. Add all cluster instances to the load balancer. Your cluster will be reachable by the DNS name specified in the load balancer description. You can add this as a CNAME to your DNS zone file to make the cluster reachable using a hostname from your domain.
 
-ConductR comes with a `visualizer` sample application. Head over to the next section [[Deploying application|DeployingApplication]] to learn how to deploy visualizer application to your fresh ConductR cluster.
+ConductR comes with a `visualizer` sample application. Head over to the next section [[CLI|CLI]] to learn how to deploy visualizer application to your fresh ConductR cluster.

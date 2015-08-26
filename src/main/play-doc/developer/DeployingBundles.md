@@ -1,4 +1,4 @@
-# Deploying application bundle
+# Deploying application bundles
 
 Once you've created a bundle you can deploy it using ConductR's RESTful API, even using [curl](http://curl.haxx.se/) if you want. However we've made it a little easier than that. You can of course use ConductR's CLI as discussed in the _Operator Quickstart_ above. Alternatively given that we've been discussing bundling your application or service mostly from an sbt perspective, you can use another plugin named [`sbt-conductr`](https://github.com/sbt/sbt-conductr#sbt-conductr).
 
@@ -10,7 +10,7 @@ To use `sbt-conductr` first add the plugin your build (typically your `project/p
 addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.0.0")
 ```
 
-Note that if you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr`.
+> If you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr`.
 
 The `sbt-conductr` plugin must then be enabled for your project. Supposing that your project has one module that will use the plugin which is the root of the sbt project (the most typical situation for a single `build.sbt`):
 
@@ -32,6 +32,8 @@ packager distribution and includes some component configuration. To load the bun
 ```bash
 controlServer 172.14.0.1
 ```
+
+> When using `sbt-conductr-sandbox` the location of ConductR is automatically set to the docker host ip.
 
 ...and then load:
 

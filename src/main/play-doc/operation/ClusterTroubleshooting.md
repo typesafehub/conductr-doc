@@ -1,4 +1,4 @@
-# Cluster Troubleshooting
+# Cluster troubleshooting
 
 ## Cluster Split Recovery
 
