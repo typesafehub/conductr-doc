@@ -127,3 +127,24 @@ The declaration of interest is the `jms-status` component. ConductR provides a `
 [Docker](https://www.docker.com/) is a technology that provides containers for your application or service. Most Typesafe Reactive Platform (Typesafe RP) based programs should not require Docker as the host OS's Java Runtime Environment 8 (JRE 8) environment should be sufficient. Bundles generally contain all that is required for a Typesafe RP program to run, with exception to the Host OS and the host JRE. Typesafe RP bundles will start faster and incur less system resources when used without Docker.
 
 Docker becomes relevant when there are specific runtime dependencies that are different to ConductR's host OS environment. In particular if a binary program that does not use the JVM is required to be launched from a bundle then it becomes more likely to benefit from using a Docker container.
+
+
+### Configuration Bundles
+
+Configuration bundles are bundles containing only configuration values such as API keys and secrets. Configuration bundles are deployed together with application bundles. This keeps the configuration out of the application code and enables application bundles to be deployed to various environments without repackaging the application bundle.
+
+To create a configuration bundle, run [`shazar`](https://github.com/typesafehub/typesafe-conductr-cli#shazar) on a directory containing a `runtime-conf.sh` and/or `bundle.conf` file. The runtime-conf.sh file should export any environment variables to be set. The bundle.conf file should contain any bundle key settings to be overridden. Only the values to be overridden need to be specified. Bundle key values already defined the application bundle do not need to be redefined.
+
+For example to set an application secret and override the application's declared role, simply create the configuration files into a directory and shazar the directory containing the files. The configuration bundle will take its name from the directory name.
+
+```bash
+mkdir test-config
+echo 'export "APPLICATION_SECRET=thisismyapplicationsecret-pleasedonttellanyone"'> test-config/runtime-conf.sh
+echo 'roles      = ["partner-frontend"]' > test-config/bundle.conf
+shazar test-config
+```
+The resultant bundle, i.e. `test-config-2ddf3c2453ad16589b7bfae316e6ec746418491292f874b72236741bbd8f84ab.zip` is then loaded together with the application.
+```bash
+conduct load webserver-015f73613aa48d397b0dbab6d7f96d687c56d72a275a5ea43d7da44a21c27482.zip test-config-2ddf3c2453ad16589b7bfae316e6ec746418491292f874b72236741bbd8f84ab.zip
+```
+Where `webserver-015f73613aa48d397b0dbab6d7f96d687c56d72a275a5ea43d7da44a21c27482.zip` is the application bundle.
