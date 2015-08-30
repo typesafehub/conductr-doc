@@ -1,5 +1,5 @@
 Home:Home
-gettingStarted:Getting started
+introduction:Introduction
 operation:Operations guide
-developer:Developer guide
+developer:Developers guide
 api:API

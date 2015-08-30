@@ -1,0 +1,131 @@
+# Developer quick start
+
+ConductR simplifies the deployment of applications with resilience and elasticity without disrupting the application development lifecycle. Developers continue to develop and test their applications as they normally would prior to deployment.
+
+This guide describes based on a Play 2.4 application how to:
+
+* Signal that application is started
+* Create application bundle
+* Start ConductR cluster
+* Deploy application bundle to ConductR
+
+The focus of this section is to get started quickly. The full documentation of these parts are described in these sections:
+
+* [[Signaling application state|SignalingApplicationState]]
+* [[Creating bundles|CreatingBundles]]
+* [[Deploying bundles|DeployingBundles]]
+* [[ConductR sandbox cluster|ConductrSandboxCluster]]
+
+## Signal application readiness
+
+Your application should tell ConductR when it has completed its initialization and is ready for work. For a Play 2.4 application add these dependency to your `build.sbt`:
+
+```scala
+resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
+
+libraryDependencies += "com.typesafe.conductr" %% "play24-conductr-bundle-lib" % "1.0.1"
+```
+
+Now you can override the `onStart` method to tell ConductR that your application has been started and is ready to start processing requests:
+
+```scala
+import com.typesafe.conductr.bundlelib.play.StatusService
+import play.api.{ Application, GlobalSettings }
+import com.typesafe.conductr.bundlelib.play.ConnectionContext.Implicits.defaultContext
+
+object Global extends GlobalSettings {
+  override def onStart(app: Application): Unit = {
+    StatusService.signalStartedOrExit()
+  }
+}
+```
+
+## Create application bundle
+
+[sbt-conductr](https://github.com/sbt/sbt-conductr) is an sbt plugin to easily manage your application bundle inside ConductR. This plugin includes [sbt-bundle](https://github.com/sbt/sbt-bundle#typesafe-conductr-bundle-plugin) which we will use to create the application bundle for our Play application. 
+
+1. Add `sbt-conductr` to the `project/plugins.sbt`:
+
+    ```scala
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.0.0")
+    ```
+2. Enable the plugin in the `build.sbt`:  
+
+    ```scala
+    lazy val root = project.in(file(".")).enablePlugins(ConductRPlugin)
+    ```
+3. Specify `sbt-bundle` keys in the `build.sbt`:   
+
+    ```scala
+    import ByteConversions._
+    BundleKeys.nrOfCpus := 1.0
+    BundleKeys.memory := 64.MiB
+    BundleKeys.diskSpace := 10.MB
+    BundleKeys.roles := Set("web")
+    BundleKeys.endpoints := Map("my-app" -> Endpoint("http", services = Set(URI("http://:9000"))))
+    BundleKeys.startCommand += "-Dhttp.address=$MY_APP_BIND_IP -Dhttp.port=$MY_APP_BIND_PORT"
+    ```
+4. Reload the sbt session:
+
+    ```scala
+    reload
+    ```     
+5. Create the bundle inside you sbt session with:
+
+    ```scala
+    bundle:dist
+    ```
+
+The new bundle should be created in your `target/bundle` directory. The `sbt-bundle` effectively describe what resources are used by your application and are used to determine which machine they will run on in the ConductR cluster.
+
+## Start ConductR cluster
+
+In order to manage a ConductR cluster we provide a sbt plugin [sbt-conductr-sandbox](https://github.com/typesafehub/sbt-conductr-sandbox). Follow these steps to start the ConductR cluster.
+
+
+1. Add the sbt plugin to the `project/plugins.sbt` of your project:
+
+    ```scala
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.0.3")
+    ```
+2. Enable the sbt plugin in the `build.sbt`:    
+
+    ```scala
+    lazy val root = (project in file(".")).enablePlugins(ConductRPlugin, ConductRSandbox)
+    ```
+3. Reload the sbt session:
+
+    ```scala
+    reload
+    ```     
+4. Start ConductR cluster with visualization feature:
+    
+    ```scala
+    [my-app] sandbox run --withFeatures visualization
+    [info] Running ConductR...
+    [info] Running container cond-0 exposing 192.168.59.103:9909...
+    ```
+4. Access ConductR visualizer at http://docker-host-ip:9909. For convience, the url of the visualizer app is displayed in the sbt session, e.g. http://192.168.59.103:9909.
+
+[[images/visualizer_simple.png]]
+
+## Deploy application bundle to ConductR
+
+1. Load your application bundle to ConductR:
+    
+    ```scala
+    conduct load <HIT THE TAB KEY AND THEN RETURN>
+    ```
+2. Run bundle on one node:
+    
+    ```scala
+    conduct run my-app
+    ```
+
+3. Access your application at http://docker-host-ip:9000.
+
+In the visualizer web interface you should see now two bundles running, the visualizer bundle itself and your application bundle.
+
+[[images/visualizer_with_app.png]]
+
+That's it! You now have ConductR running with the visualizer and your own application.

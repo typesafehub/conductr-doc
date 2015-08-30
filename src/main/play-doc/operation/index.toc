@@ -1,6 +1,7 @@
+Install:Installation
 CLI:CLI
 Logging:Logging
-ManageServices:Managing ConductR Services
-ClusterSetupConsiderations:Cluster Setup Considerations
-ClusterTroubleshooting:Cluster Troubleshooting
-ReleaseNotes:Release Notes
+ManageServices:Managing ConductR services
+ClusterSetupConsiderations:Cluster setup considerations
+ClusterTroubleshooting:Cluster troubleshooting
+ReleaseNotes:Release notes

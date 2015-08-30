@@ -1,4 +1,0 @@
-Install:Installation
-DeployingApplication:Deploying application
-ConductrTerms:ConductR terms
-ConductrComponents:ConductR components
