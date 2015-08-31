@@ -1,8 +1,10 @@
 # Overview
 
-One change that we do encourage is the move toward your application or service being a reactive one. If you've not read the Reactive Manifesto then please do so now. The manifesto is the DNA of ConductR and so if you want to understand ConductR then it will enlighten you. Your application should be designed with resilience in mind in particular. Because ConductR encourages an application or service to exist across many nodes, and that they can access services of other resources that may come and go, resilience is particularly important.
+## Go Reactive
 
+Before we start, one change that we encourage is the move toward your application or service being a reactive one. If you've not read the [Reactive Manifesto](http://www.reactivemanifesto.org/) then please do so. The manifesto is the DNA of ConductR and so if you want to understand ConductR then it will enlighten you. Your application should be designed with resilience in mind in particular. Because ConductR encourages an application or service to exist across many nodes, and that they can access services of other resources that may come and go, resilience is particularly important.
 
+The remainder of this section will familiarize you with ConductR's architecture.
 
 ## Functional Scope
 
@@ -15,10 +17,6 @@ During the latter part of development of a project developers will typically pac
 During the course of development the developer will create a configuration that is also used for running a bundle locally ( _Develop Config_). This configuration names a project's component declaring its environmental requirements. These configurations are versioned and provide an audit trail of the changes to a component overall.
 
 When a component is ready for deploying (for example, into testing or production) the developer will provide the component's bundle to operations ( _Stage Bundle_). Operations will develop a component's configuration further for suitability with target environments ( _Develop Config_). Not only can configurations be versioned but they can also be isolated in terms of target environments. For example there may be a configuration targeting production deployment, another for functional testing and so forth. Once configurations have been developed they can be deployed. Staged bundles are referenced by the deployed configuration and are deployed onto infrastructure as a consequence. Operations also take care of preparing physical or virtual hardware and operating systems in order that they can receive these deployments. Operations are responsible for maintaining Typesafe ConductR by configuring networks, databases and so forth. ( _Maintain Infrastructure_).
-
-## Vendor lock-in
-
-We think it is important for you to avoid vendor lock-in as much as is reasonable. Furthermore all of the interfaces that we provide we do so in an open and transparent manner so that you can understand what is going on at all times.
 
 ## Solution Architecture
 

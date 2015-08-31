@@ -16,6 +16,10 @@ The focus of this section is to get started quickly. The full documentation of t
 * [[Deploying bundles|DeployingBundles]]
 * [[ConductR sandbox cluster|ConductrSandboxCluster]]
 
+## Vendor lock-in
+
+A quick word on [vendor lock-in](https://en.wikipedia.org/wiki/Vendor_lock-in) as a philosophical point. We think it is important for you to avoid vendor lock-in as much as is reasonable. Furthermore all of the interfaces that we provide we do so in an open and transparent manner so that you can understand what is going on at all times.
+
 ## Signal application readiness
 
 Your application should tell ConductR when it has completed its initialization and is ready for work. For a Play 2.4 application add these dependency to your `build.sbt`:

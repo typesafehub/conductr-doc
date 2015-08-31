@@ -39,6 +39,13 @@ Given the above you will then have a ConductR process running in the background 
 
 #### ConductR features
 
+> In order to use the following features then you should ensure that the machine that runs Docker has enough memory, typically at least 2GB. VM configurations such as those provided via `boot2docker` and Oracle's VirtualBox can be configured like so:
+> ```
+> boot2docker down
+> VBoxManage modifyvm boot2docker-vm --memory 2048
+> boot2docker up
+> ```
+
 ConductR gets shipped with features which can be optionally enabled during startup by specifying the `--withFeatures` option, e.g.:
     
 ```scala

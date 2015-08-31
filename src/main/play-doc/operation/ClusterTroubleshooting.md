@@ -1,6 +1,6 @@
 # Cluster troubleshooting
 
-## Cluster Split Recovery
+## Cluster Split Brain Recovery
 
 Cluster partition is a failure that may occur when running a cluster based application. To recover from this situation ConductR utilizes Akka SBR (Split Brain Recovery). Akka SBR is a part of Akka in the [Typesafe Reactive Platform](http://www.typesafe.com/products/typesafe-reactive-platform) version `15v01p05`.
 
