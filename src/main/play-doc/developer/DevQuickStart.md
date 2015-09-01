@@ -109,7 +109,7 @@ In order to manage a ConductR cluster we provide a sbt plugin [sbt-conductr-sand
     [info] Running ConductR...
     [info] Running container cond-0 exposing 192.168.59.103:9909...
     ```
-4. Access ConductR visualizer at `http://{docker-host-ip}:9909` where `docker-host-ip` is the host of your docker environment. For example, `boot2docker ip` might yield this as being `192.168.59.103`. For convenience, the url of the visualizer app is displayed in the sbt session, e.g. http://192.168.59.103:9909.
+4. Access ConductR visualizer at `http://{docker-host-ip}:9909` where `docker-host-ip` is the host of your docker environment. For convenience, the url of the visualizer app is displayed in the sbt session, e.g. http://192.168.59.103:9909.
 
 [[images/visualizer_simple.png]]
 
