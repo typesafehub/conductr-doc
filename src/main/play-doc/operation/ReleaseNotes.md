@@ -1,6 +1,13 @@
 # ConductR release notes
 
 
+## 1.0.9
+
+* Fixed the current working directory for the RPM packaging of ConductR
+* Enhancements to the experimental Elasticsearch support for consolidated logging
+* Improved bundle replication and scaling and tested them to be both reliable within larger clusters on EC2
+* Bundles are now restarted when they fail. In the case of a bundle starting and not registering that it has started, ConductR will attempt 3 retries. If a bundle signals that it starts successfully and then fails with a non-zero exit code, ConductR will schedule it for a restart. If a bundle signals that it starts successfully and then exits with a zero exit code (success), ConductR will leave it alone.
+
 ## 1.0.8
 
 * Bundle replication and scaling have again been improved given further testing. A 9 node cluster on EC2 with 6 bundles, replicated 9 times and each receiving a scale factor of 4 has shown to be resilient to 3 nodes (1 AZ) disappearing. All bundles are re-balanced on the other nodes. One important and helpful change here is the introduction of a configurable parameter for dampening the ConductR's reaction to cluster membership changes. By default each ConductR service will wait for 2 seconds post receiving any membership change event before acting upon it. This dampening can reduce jitter. Other areas have also been addressed where some of the assumptions about nodes being in a certain state have been removed.
