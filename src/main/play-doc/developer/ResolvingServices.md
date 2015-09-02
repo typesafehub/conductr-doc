@@ -5,7 +5,9 @@ When you create a bundle you can declare service names to ConductR. You can reso
 Firstly establish the URL for locating the accounts service. Note that your code should look toward factoring out this type of behavior so that you do not hard-code host addresses or ports. For this example though, we'll relax that recommendation for the sake of clarity:
 
 ```Scala
-val accounts = LocationService.getLookupUrl("/accounts", "http://127.0.0.1:9000/accounts")
+import com.typesafe.conductr.bundlelib.scala.URL
+
+val accounts = LocationService.getLookupUrl("/accounts", URL("http://127.0.0.1:9000/accounts")
 ```
 
 If the above code is run with your component has been started by ConductR then the `accounts` value will contain a URL to ConductR's service locator. Otherwise, when not running via ConductR then a service running on the loopback interface will be used; this latter one being something generally useful to you when in development mode, or an address for when running your component outside of ConductR.
