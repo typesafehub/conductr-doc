@@ -14,7 +14,7 @@ The focus of this section is to get started quickly. The full documentation of t
 * [[Signaling application state|SignalingApplicationState]]
 * [[Creating bundles|CreatingBundles]]
 * [[Deploying bundles|DeployingBundles]]
-* [[ConductR sandbox cluster|ConductrSandboxCluster]]
+* [[ConductR sandbox cluster|ConductrSandbox]]
 
 ## Vendor lock-in
 
