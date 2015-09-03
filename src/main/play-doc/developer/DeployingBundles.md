@@ -49,6 +49,8 @@ the `BundleId` to use for subsequent commands on that bundle.
 
 You can also run, stop and unload bundles by using this plugin. This may be useful to support your development lifecycle without having to jump into the operator's CLI.
 
+> The host running sbt in this example must have access to the ConductR daemon ports. Please see  [[Cluster security considerations|ClusterSetupConsiderations#Cluster-security-considerations]] for further information on controlling cluster access.
+
 That is all that is required in essence, but as stated, you should read [`sbt-conductr`'s documentation](https://github.com/sbt/sbt-conductr/blob/master/README.md) as there are a few additional requirements, particularly if you are managing a Play 2.3 application.
 
 Now go and develop reactive applications or services for ConductR!
