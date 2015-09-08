@@ -2,7 +2,7 @@
 
 ConductR simplifies the deployment of applications with resilience and elasticity without disrupting the application development lifecycle. Developers continue to develop and test their applications as they normally would prior to deployment.
 
-This guide describes based on a Play 2.4 application how to:
+This guide describes how to use a Play 2.4 Scala application to:
 
 * Signal that application is started
 * Create application bundle
@@ -51,12 +51,12 @@ object Global extends GlobalSettings {
 1. Add `sbt-conductr` to the `project/plugins.sbt`:
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.0.0")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.0.1")
     ```
 2. Enable the plugin in the `build.sbt`:  
 
     ```scala
-    lazy val root = project.in(file(".")).enablePlugins(ConductRPlugin)
+    lazy val root = project.in(file(".")).enablePlugins(PlayScala)
     ```
 3. Specify `sbt-bundle` keys in the `build.sbt`:   
 
@@ -87,22 +87,17 @@ The new bundle should be created in your `target/bundle` directory. The `sbt-bun
 In order to manage a ConductR cluster we provide a sbt plugin [sbt-conductr-sandbox](https://github.com/typesafehub/sbt-conductr-sandbox). Follow these steps to start the ConductR cluster.
 
 
-1. Add the sbt plugin to the `project/plugins.sbt` of your project:
+1. Add the sbt plugin to the `project/plugins.sbt` of your project (the plugin is automatically enabled):
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.0.6")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.0.7")
     ```
-2. Enable the sbt plugin in the `build.sbt`:    
-
-    ```scala
-    lazy val root = (project in file(".")).enablePlugins(ConductRPlugin, ConductRSandbox)
-    ```
-3. Reload the sbt session:
+2. Reload the sbt session:
 
     ```scala
     reload
     ```     
-4. Start ConductR cluster with visualization feature:
+3. Start ConductR cluster with visualization feature:
     
     ```scala
     [my-app] sandbox run --withFeatures visualization

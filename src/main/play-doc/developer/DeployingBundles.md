@@ -7,18 +7,20 @@ The following description is intended to provide a taste of what `sbt-conductr` 
 To use `sbt-conductr` first add the plugin your build (typically your `project/plugins.sbt` file); be sure to check at [the plugin's website](https://github.com/sbt/sbt-conductr#sbt-conductr) for the latest version to use:
 
 ```scala
-addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.0.0")
+addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.0.1")
 ```
 
 > If you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr`.
 
-The `sbt-conductr` plugin must then be enabled for your project. Supposing that your project has one module that will use the plugin which is the root of the sbt project (the most typical situation for a single `build.sbt`):
+The `sbt-bundle` plugin must then be enabled for your project. Supposing that your project has one module that will use the plugin which is the root of the sbt project (the most typical situation for a single `build.sbt`):
 
 ```scala
 lazy val root = project
   .in(file("."))
-  .enablePlugins(ConductRPlugin, <your other plugins go here>)
+  .enablePlugins(JavaAppPackaging, <your other plugins go here>)
 ```
+
+> `sbt-bundle` is what is known as an "auto plugin" - it is enabled when certain requirements are met in the build. For example enabling `JavaAppPackaging` triggers the enablement of `sbt-bundle`. For Play based applications, enabling `PlayJava` or `PlayScala` similarly enables sbt-bundle. With Play, both `PlayJava` and `PlayScala` enable `JavaAppPackaging`.
 
 With your declarations out of the way, you can produce a bundle by typing:
 
