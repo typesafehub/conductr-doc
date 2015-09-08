@@ -10,16 +10,13 @@ The following description is intended to provide a taste of what `sbt-conductr-s
 
 ## Setting up sbt-conductr-sandbox
 
-1. Add the sbt plugin to the `project/plugins.sbt` of your project:
+Add the sbt plugin to the `project/plugins.sbt` of your project:
 
-    ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.0.6")
-    ```
-2. Enable the sbt plugin in the `build.sbt`:    
+```scala
+addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.0.7")
+```
 
-    ```scala
-    lazy val root = (project in file(".")).enablePlugins(ConductRSandbox)
-    ```
+The plugin is then enabled automatically for your entire project.
 
 ## Using sbt-conductr-sandbox
 
@@ -127,4 +124,4 @@ sandbox stop
 
 ### Using sbt-conductr-sandbox with sbt-conductr
 
-If the `sbt-conductr` plugin is enabled for your project then the `conduct` commands such as `conduct info` will automatically communicate with the Docker cluster managed by the sandbox. There is no need to set ConductR's ip address with `controlServer` manually.
+If the `sbt-conductr` plugin is added to your project then the `conduct` commands such as `conduct info` will automatically communicate with the Docker cluster managed by the sandbox. There is no need to set ConductR's ip address with `controlServer` manually.
