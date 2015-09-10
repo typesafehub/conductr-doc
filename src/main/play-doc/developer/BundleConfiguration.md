@@ -87,7 +87,7 @@ The services define the protocol, port, and/or path under which your service wil
 
 It is sometimes not possible or practical to change source code in order to signal successful startup or have it use the environment variables that ConductR provides.
 
-We provide a [CLI](https://github.com/typesafehub/typesafe-conductr-cli#command-line-interface-cli-for-typesafe-conductr) command named [`shazar`](https://github.com/typesafehub/typesafe-conductr-cli#shazar) for bundling the contents of any folder. You can therefore hand-craft a `bundle.conf` and its component folders and use `shazar` to bundle it. See [our documentation](TODO) for a full description on the layout of a bundle including its `bundle.conf` file.
+We provide a [CLI](https://github.com/typesafehub/typesafe-conductr-cli#command-line-interface-cli-for-typesafe-conductr) command named [`shazar`](https://github.com/typesafehub/typesafe-conductr-cli#shazar) for bundling the contents of any folder. You can therefore hand-craft a `bundle.conf` and its component folders and use `shazar` to bundle it.
 
 As a quick example, suppose that you wish to bundle [ActiveMQ](http://activemq.apache.org/) as a Docker component with a `Dockerfile`. You can do something like this (btw: we appreciate that you cannot change the world in one go and don't always have the luxury of using Akka for messaging!):
 
@@ -141,7 +141,7 @@ For example to set an application secret and override the application's declared
 ```bash
 mkdir test-config
 echo 'export "APPLICATION_SECRET=thisismyapplicationsecret-pleasedonttellanyone"'> test-config/runtime-conf.sh
-echo 'roles      = ["partner-frontend"]' > test-config/bundle.conf
+echo 'roles      = [partner-frontend]' > test-config/bundle.conf
 shazar test-config
 ```
 
