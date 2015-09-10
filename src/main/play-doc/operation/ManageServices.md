@@ -27,7 +27,7 @@ The application.ini file, located in /usr/share/conductr/conf, is the primary co
 Akka module configuration can also be set using this file. For example, to assign a ConductR node the role of `megaIOPS` instead of the default, `all-conductrs`, set `akka.cluster.roles` in application.ini:
 
 ```bash
- -Dakka.cluster.roles.0=“megaIOPS"
+ -Dakka.cluster.roles.0=megaIOPS
  ```
 With this setting only bundles with a `BundleKeys.roles` of `megaIOPS` will be scheduled to execute on this node.
 
