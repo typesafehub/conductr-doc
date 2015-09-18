@@ -24,12 +24,13 @@ sudo service conductr restart
 
 The application.ini file, located in /usr/share/conductr/conf, is the primary configuration file for the ConductR service. This file is used to specify ConductR service settings, such as '-Dconductr.ip' used during installation. See the comments section of the application.ini file for more examples.
 
-Akka module configuration can also be set using this file. For example, to assign a ConductR node the role of `megaIOPS` instead of the default, `all-conductrs`, set `akka.cluster.roles` in application.ini:
+Akka module configuration can also be set using this file. For example, to assign a ConductR node the roles of `megaIOPS` and `muchMem` instead of the default, `web`, set `akka.cluster.roles` in application.ini:
 
 ```bash
  -Dakka.cluster.roles.0=megaIOPS
+ -Dakka.cluster.roles.1=muchMem
  ```
-With this setting only bundles with a `BundleKeys.roles` of `megaIOPS` will be scheduled to execute on this node.
+With this setting the node would offer the roles `megaIOPS` and `muchMem`.Only bundles with a `BundleKeys.roles` of `megaIOPS,` `muchMem` or both `megaIOPS` and `muchMem` will be loaded and run on this node.
 
 The ConductR service must be restarted for changes to this file to take effect.
 
@@ -37,10 +38,9 @@ The ConductR service must be restarted for changes to this file to take effect.
 
 Roles allow machines to be targetted for specific purposes. Some machines may have greater IO capabilities than others, some may have more CPU, memory and other resources. Some may also be required to maintain a volume that holds a database.
 
-When getting started with ConductR it is reasonable to have each ConductR service rely on its default role of "all-conductrs". However when moving into a production scenario you should plan and assign roles for your ConductR cluster.
+When getting started with ConductR it is reasonable to have each ConductR service rely on its default role of `web`. However when moving into a production scenario you should plan and assign roles for your ConductR cluster.
 
-When a bundle is to be scheduled for loading or scaling, a check is made to first see whether a resource offer has the "all-conductrs" role. If it does then it is eligible. However if it does not then it must have a roles that intersect with the roles that a bundle requires. Note that you should not assign the "all-conductrs" role to a member that has other roles declared as "all-conductrs" will supercede the others.
-
+When a bundle is to be scheduled for loading or scaling, a check is made to first see whether a resource offer's roles intersect with the roles that the bundle requires. If it does then it is eligible. If no resource offers provide the roles required by the bundle, the bundle cannot be loaded or scaled. Bundles will only be loaded to member nodes providing the bundle required roles. If no members of the cluster provide those roles, the bundle will fail to load.
 
 ## Service Monitoring
 
