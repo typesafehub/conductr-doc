@@ -1,5 +1,10 @@
 # ConductR release notes
 
+## 1.0.10
+
+* Enabled RPM prefixes to be used with the RPM distribution of ConductR
+* Slightly enhanced ConductR's Resource Provider so that it responds to more system stimuli
+* Improved bundle load error checking
 
 ## 1.0.9
 
