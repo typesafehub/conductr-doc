@@ -6,18 +6,20 @@ Bundles provide ConductR with some basic knowledge about components in a *bundle
 ([Typesafe configuration](https://github.com/typesafehub/config) is used):
 
 ```
-version    = "1.0.0"
-name       = "simple-test"
-system     = "simple-test-0.1.0-SNAPSHOT"
-nrOfCpus   = 1.0
-memory     = 67108864
-diskSpace  = 10485760
-roles      = ["web-server"]
+version               = "1.1.0"
+name                  = "simple-test"
+compatibility-version = "1"
+system                = "simple-test"
+system-version        = "1"
+nrOfCpus              = 1.0
+memory                = 67108864
+diskSpace             = 10485760
+roles                 = ["web"]
 components = {
-  "angular-seed-play-1.0-SNAPSHOT" = {
+  "angular-seed-play" = {
     description      = "angular-seed-play"
     file-system-type = "universal"
-    start-command    = ["angular-seed-play-1.0-SNAPSHOT/bin/angular-seed-play", "-Xms=67108864", "-Xmx=67108864"]
+    start-command    = ["angular-seed-play/bin/angular-seed-play", "-Xms=67108864", "-Xmx=67108864"]
     endpoints        = {
       "angular-seed-play" = {
         protocol  = "http"
@@ -92,8 +94,12 @@ We provide a [CLI](https://github.com/typesafehub/typesafe-conductr-cli#command-
 As a quick example, suppose that you wish to bundle [ActiveMQ](http://activemq.apache.org/) as a Docker component with a `Dockerfile`. You can do something like this (btw: we appreciate that you cannot change the world in one go and don't always have the luxury of using Akka for messaging!):
 
 ```
-version    = "1.0.0"
-name       = "jms-docker"
+version               = "1.1.0"
+name                  = "jms-docker"
+compatibility-version = "1"
+
+system         = "jms-docker"
+system-version = "1"
 
 nrOfCpus   = 1.0
 memory     = 67108864

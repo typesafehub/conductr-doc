@@ -51,7 +51,7 @@ object Global extends GlobalSettings {
 1. Add `sbt-conductr` to the `project/plugins.sbt`:
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.0.1")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.1.0")
     ```
 2. Enable the plugin in the `build.sbt`:  
 

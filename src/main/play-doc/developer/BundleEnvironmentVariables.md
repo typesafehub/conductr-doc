@@ -8,7 +8,7 @@ For reference, the following standard environment variables are available to a b
 Name                      | Description
 --------------------------|------------
 BUNDLE_ID                 | The bundle identifier associated with the bundle and its optional configuration.
-BUNDLE_SYSTEM             | A logical name that can be used to associate multiple bundles with each other. This could be an application or service association and should include a version e.g. myapp-1.0.0.
+BUNDLE_SYSTEM             | A logical name that can be used to associate multiple bundles with each other. This could be an application or service association and should include a version e.g. myapp.
 BUNDLE_HOST_IP            | The IP address of a bundle component's host.
 CONDUCTR_CONTROL          | A URL for the control protocol of ConductR, composed as $CONDUCTR_CONTROL_PROTOCOL://$CONDUCTR_CONTROL_IP:$CONDUCTR_CONTROL_PORT
 CONDUCTR_CONTROL_PROTOCOL | The protocol of the above.

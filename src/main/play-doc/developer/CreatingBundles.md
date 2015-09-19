@@ -16,7 +16,7 @@ Note that the description here is just to provide a feel of how `sbt-bundle` is 
 Firstly add the sbt plugin, typically to your project's `project/plugins.sbt` file (check [here](https://github.com/sbt/sbt-bundle#usage) for the latest release of sbt-bundle):
 
 ```scala
-addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "1.0.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "1.1.0")
 ```
 
 > If you already added `sbt-conductr-sandbox` then you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr-sandbox`.
@@ -44,7 +44,7 @@ sbt bundle:dist
 Take a look in your `target/bundle` folder - you'll see your new bundle with a hash string, something like this:
 
 ```
-visualizer-0.1.0-b07601b2bd015c94de0514ad698760d0396cb6f95881396d37981b271c0e7142.zip
+visualizer-v0-b07601b2bd015c94de0514ad698760d0396cb6f95881396d37981b271c0e7142.zip
 ```
 
 i.e. the name of your project (`visualizer`), its version `0.1.0` and the hash value representing its contents (`b07601b2bd015c94de0514ad698760d0396cb6f95881396d37981b271c0e7142`).
