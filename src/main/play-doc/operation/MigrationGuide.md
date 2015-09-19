@@ -5,7 +5,33 @@ This document describes what is required to move between version 1.0 to 1.1.
 
 ## Bundle versioning
 
-`[sbt-bundle](https://github.com/sbt/sbt-bundle#conductr-bundle-plugin)` has been enhanced to support two new types of version:
+Prior to 1.1 `sbt-bundle` encoded your project's version into a bundle's name and also any system name. These new version properties factor out that concern into their own properties. The major implication of this is that if you have provided a `bundle.conf` in a bundle's optional configuration then you must attend to any component name being overridden. Here's an example of a pre 1.1 bundle overiding a value inside an optional configuration's `bundle.conf`:
+
+```
+system = "doc-renderer-cluster"
+components {
+  "project-doc-1.0-SNAPSHOT" {
+    endpoints.web.services = ["http://milo.typesafe.com"]
+  }
+}
+```
+
+For 1.1 this should now look like:
+
+```
+system = "doc-renderer-cluster"
+components {
+  "project-doc" {
+    endpoints.web.services = ["http://milo.typesafe.com"]
+  }
+}
+```
+
+i.e. note that the encoding of a version has been removed from the component's name.
+
+### Rationale
+
+`[sbt-bundle](https://github.com/sbt/sbt-bundle#conductr-bundle-plugin)` has been enhanced to support two new types of version so that version information can be retained and reasoned with reliably. The versions are:
 
 * `compatibility-version`; and
 * `system-version`
@@ -19,5 +45,3 @@ When migrating we recommend that you update your `sbt-bundle`, `sbt-conductr` an
 ```scala
 ConductRKeys.conductrApiVersion := "1.1"
 ```
-
-Prior to 1.1 `sbt-bundle` encoded your project's version into a bundle's name and also any system name. These new version properties factor out that concern into their own properties.
