@@ -8,16 +8,16 @@ Bundles provide ConductR with some basic knowledge about components in a *bundle
 ```
 version    = "1.0.0"
 name       = "simple-test"
-system     = "simple-test-0.1.0-SNAPSHOT"
+system     = "simple-test"
 nrOfCpus   = 1.0
 memory     = 67108864
 diskSpace  = 10485760
 roles      = ["web-server"]
 components = {
-  "angular-seed-play-1.0-SNAPSHOT" = {
+  "angular-seed-play" = {
     description      = "angular-seed-play"
     file-system-type = "universal"
-    start-command    = ["angular-seed-play-1.0-SNAPSHOT/bin/angular-seed-play", "-Xms=67108864", "-Xmx=67108864"]
+    start-command    = ["angular-seed-play/bin/angular-seed-play", "-Xms=67108864", "-Xmx=67108864"]
     endpoints        = {
       "angular-seed-play" = {
         protocol  = "http"
@@ -94,6 +94,8 @@ As a quick example, suppose that you wish to bundle [ActiveMQ](http://activemq.a
 ```
 version    = "1.0.0"
 name       = "jms-docker"
+
+system     = "jms-docker"
 
 nrOfCpus   = 1.0
 memory     = 67108864
