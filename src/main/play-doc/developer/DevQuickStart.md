@@ -90,7 +90,7 @@ In order to manage a ConductR cluster we provide a sbt plugin [sbt-conductr-sand
 1. Add the sbt plugin to the `project/plugins.sbt` of your project (the plugin is automatically enabled):
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.0.7")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.1.0")
     ```
 2. Reload the sbt session:
 
