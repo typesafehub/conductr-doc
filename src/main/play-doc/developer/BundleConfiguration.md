@@ -136,13 +136,13 @@ Docker becomes relevant when there are specific runtime dependencies that are di
 
 Configuration bundles are bundles containing only configuration values such as API keys and secrets. Configuration bundles are deployed together with application bundles. This keeps the configuration out of the application code and enables application bundles to be deployed to various environments without repackaging the application bundle.
 
-To create a configuration bundle, run [`shazar`](https://github.com/typesafehub/typesafe-conductr-cli#shazar) on a directory containing a `runtime-conf.sh` and/or `bundle.conf` file. The runtime-conf.sh file should export any environment variables to be set. The bundle.conf file should contain any bundle key settings to be overridden. Only the values to be overridden need to be specified. Bundle key values already defined the application bundle do not need to be redefined.
+To create a configuration bundle, run [`shazar`](https://github.com/typesafehub/typesafe-conductr-cli#shazar) on a directory containing a `runtime-config.sh` and/or `bundle.conf` file. The `runtime-config.sh` file should export any environment variables to be set. The `bundle.conf` file should contain any bundle key settings to be overridden. Only the values to be overridden need to be specified. Bundle key values already defined the application bundle do not need to be redefined.
 
 For example to set an application secret and override the application's declared role, simply create the configuration files into a directory and shazar the directory containing the files. The configuration bundle will take its name from the directory name.
 
 ```bash
 mkdir test-config
-echo 'export "APPLICATION_SECRET=thisismyapplicationsecret-pleasedonttellanyone"'> test-config/runtime-conf.sh
+echo 'export "APPLICATION_SECRET=thisismyapplicationsecret-pleasedonttellanyone"'> test-config/runtime-config.sh
 echo 'roles      = [partner-frontend]' > test-config/bundle.conf
 shazar test-config
 ```
@@ -154,3 +154,9 @@ conduct load webserver-015f73613aa48d397b0dbab6d7f96d687c56d72a275a5ea43d7da44a2
 ```
 
 Where `webserver-015f73613aa48d397b0dbab6d7f96d687c56d72a275a5ea43d7da44a21c27482.zip` is the application bundle.
+
+### Configuration Bundle Files
+
+From v.1.0.11, it is also possible to include files in addition to the `runtime-config.sh` and/or `bundle.conf` file(s). To do this, create one or more files or sub folders with files alongside these files. Your `runtime-config.sh` script is then responsible for copying the additional files to the location that your application or service requires.
+
+> `runtime-config.sh` is the name preferred by ConductR when searching for a script to execute within a configuration bundle. However you can name the configuration script anything that you like. In the case of ambiguity though, for example where you have `a.sh` and `b.sh`, ConductR does not know which is the one to select, and it can select either depending on your JDK. In most cases then, you're better to stick with `runtime-config.sh`
