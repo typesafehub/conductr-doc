@@ -14,7 +14,7 @@ conduct load file:/usr/share/conductr/extra/conductr-elasticsearch-{version}-{di
 conduct run conductr-elasticsearch
 ```
 
-`conductr-elasticsearch` is using the the role `elasticsearch`. Make sure that the ConductR nodes which should run Elasticsearch have this role assigned.
+`conductr-elasticsearch` is using the the role `elasticsearch`.
 
 With that, the syslog collector streams the log messages to Elasticsearch. Use the CLI to access log messages by bundle id or name, e.g.:
 
@@ -30,71 +30,6 @@ The provided Elasticsearch bundle configuration is using these settings:
 - Disk Space: 10 GB
 
 To change the settings create a new bundle configuration by modiying the `bundle.conf` file inside of the bundle configuration zip file. The configuration file is named `elasticsearch-prod-{digest}.zip` and is located in the `extra` folder as well. Afterwards reload the bundle with the new configuration.
-
-
-## Setting up Kibana
-
-Kibana is a popular UI to display data stored in Elasticsearch. In the context of ConductR, Kibana can be configured to display, filter and search log messages. It is available as the `conductr-kibana` bundle and can be found in the `extra` folder inside the ConductR installation folder. The version 4.1.2 of Kibana is used. This bundle only works in conjunction with the `conductr-elasticsearch` bundle. To load and run Kibana to ConductR use the control API of ConductR, e.g. by using the CLI: 
-
-```bash
-conduct load file:/usr/share/conductr/extra/conductr-kibana-{version}-{digest}.zip
-conduct run conductr-kibana
-```
-
-This bundle doesn't require any additional bundle configuration file. It is using the role `kibana`. Make sure that the ConductR nodes which should run Kibana have this role assigned.
-
-Now the Kibana UI can be accessed on the port `5601`, e.g.: http://192.168.59.103:5601.
-
-[[images/kibana_index_initial.png]]
-
-### Connecting Kibana with Elasticsearch
-
-In order to display the log messages from Elasticsearch in Kibana an `index pattern` need to be created initially. If no index pattern has been created yet, the Kibana UI is redirecting you to the page to configure it. All log messages in Elasticsearch are stored in the index `conductr`. Therefor, create in Kibana the index pattern `conductr`. As the `Time-field name` select `header.timestamp`.
-
-[[images/kibana_index_configuration.png]]
-
-The newly created index pattern is automatically set to the default one. Now, head over to the `Discover` tab to view the log messages. 
-
-[[images/kibana_discover.png]]
-
-By default, the log messages of the last 15 minutes are displayed. If ConductR or the application bundles haven't produced any log messages during this timeframe, no messages will be displayed. In this case you can adjust the timeframe on the top right.
-
-### Customizing Discover tab
-
-By default, Kibana displays in the `Discover` tab all fields which Elasticsearch has been stored in the index. Some of these fields doesn't contain helpful information to debug log messages. Therefor, we recommend to select only the fields you are intersted in. As a start you can download and import this custom search.
-
-<a href="resources/operation/files/conductr_default_search.json" download="conductr_default_search.json">Download ConductR Default Search</a>
-
-In Kibana, select the `Settings` tab and go to `Objects`. Click on `Import` and select the downloaded `conductr_default_search.json` file. This imports the custom search. Now click on the `view` button to see the selected fields in action.
-
-[[images/kibana_custom_search.png]]
-
-The `Discover` tab has now selected fields in the left field pane. Also these fields are selected as columns in the log message pane.
-
-[[images/kibana_discover_custom.png]]
-
-The `conductr_default_search` custom search selects these fields:
-
-Name                | Description
---------------------|---------------------
-Time                | Timestamp
-header.pri.severity | Log level
-data.mdc.bundleName | Name of the bundle. The log messages of ConductR itself do not contain any bundle name.
-message             | Log message
-data.mdc.class      | Application class which produced the log message
-header.hostname     | ConductR node
-data.mdc.requestId  | Unqiue log message request id
-
-### Filtering log messages
-
-Every field can be used to filter log messages. You can also apply multiple filters. To filter the log messages by a bundle add the filter `data.mdc.bundleName` to the search by clicking on `data.mdc.bundleName` in the left field pane. This displays the available bundles you can filter on. Select a bundle by clicking on the respective magnifier icon.
-
-[[images/kibana_filter_by_bundle.png]]
-
-To select only the log messages from ConductR itself, filter again by bundle name. This time, create a query where the bundle name is `null` by entering `data.mdc.bundleName is null` into the search field:
-
-[[images/kibana_filter_by_conductr.png]]
-
 
 ## Setting up Papertail
 
