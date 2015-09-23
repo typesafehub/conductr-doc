@@ -1,0 +1,27 @@
+[
+  {
+    "_id": "ConductR-Default-Search",
+    "_type": "search",
+    "_source": {
+      "title": "ConductR Default Search",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "header.pri.severity",
+        "data.mdc.bundleName",
+        "message",
+        "data.mdc.class",
+        "header.hostname",
+        "data.mdc.requestId"
+      ],
+      "sort": [
+        "header.timestamp",
+        "desc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {
+        "searchSourceJSON": "{\"index\":\"conductr\",\"query\":{\"query_string\":{\"query\":\"*\",\"analyze_wildcard\":true}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}},\"fragment_size\":2147483647},\"filter\":[]}"
+      }
+    }
+  }
+]
