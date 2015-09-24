@@ -4,7 +4,6 @@ When multiple machines are involved in a cluster it quickly becomes difficult to
 
 The syslog collector can send the log messages to any kind of logging solution. The ConductR distribution includes Elasticsearch and Kibana as an opt-in logging infrastructure. How to configure Elasticsearch and Kibana or other popular logging solutions are described in the next sections.
 
-
 ## Setting up Elasticsearch
 
 Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be found in the `extra` folder inside the ConductR installation folder. Also a default configuration for a typical production environment has been provided. 
@@ -152,6 +151,30 @@ To select only the log messages from ConductR itself, filter again by bundle nam
 
 [[images/kibana_filter_by_conductr.png]]
 
+## Setting up RSYSLOG
+
+ConductR logs via the syslog protocol using TCP destined conventionally on port 514. Debian distributions such as Ubuntu come with the [RSYSLOG](http://www.rsyslog.com/) logging service and so its configuration is shown next. Other distributions may require installing RSYSLOG.
+
+To configure ConductR for RSYSLOG:
+
+``` bash
+echo \
+  -Dcontrail.syslog.server.host=127.0.0.1 \
+  -Dcontrail.syslog.server.port=514 \
+  -Dcontrail.syslog.server.elasticsearch.enabled=off | \
+  sudo tee -a /usr/share/conductr/conf/application.ini
+sudo /etc/init.d/conductr restart
+```
+
+...and to configure RSYSLOG:
+
+``` bash
+[172.17.0.1]$ echo '$ModLoad imtcp' | sudo tee -a /etc/rsyslog.d/conductr.conf
+[172.17.0.1]$ echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
+[172.17.0.1]$ sudo service rsyslog restart
+```
+
+Viewing `/var/log/syslog` (Ubuntu) or `/var/log/messages` (RHEL) will then show ConductR and bundle output.
 
 ## Setting up Papertail
 
@@ -164,7 +187,8 @@ Supposing that the address assigned to your at Papertrail is `logs2.papertrailap
 ``` bash
 echo \
   -Dcontrail.syslog.server.host=logs2.papertrailapp.com \
-  -Dcontrail.syslog.server.port=38564 | \
+  -Dcontrail.syslog.server.port=38564 \
+  -Dcontrail.syslog.server.elasticsearch.enabled=off | \
   sudo tee -a /usr/share/conductr/conf/application.ini
 sudo /etc/init.d/conductr restart
 ```
