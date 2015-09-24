@@ -2,7 +2,7 @@
 
 When multiple machines are involved in a cluster it quickly becomes difficult to view the log files of distributed applications. ConductR allows the logging output of itself and the bundles that it executes to be directed to a "syslog collector". Syslog is a widely used protocol for Unix based machines and is supported by a number of cloud-based log providers, as well as local operating system support.
 
-The syslog collector can send the log messages to any kind of logging solution. The ConductR distribution includes Elasticsearch and Kibana as an opt-in logging infrastructure. How to configure Elasticsearch and Kibana or other popular logging solutions are described in the next sections.
+The syslog collector can send the log messages to any kind of logging solution. The ConductR distribution includes an experimental configuration of Elasticsearch as an opt-in logging infrastructure. The configuration of Elasticsearch and other popular logging solutions is described over the next sections.
 
 
 ## Setting up Elasticsearch
