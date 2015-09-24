@@ -7,6 +7,15 @@ The syslog collector can send the log messages to any kind of logging solution. 
 
 ## Setting up Elasticsearch
 
+> Please note that Elasticsearch is an experimental feature of 1.0. We will move fully toward supporting Elasticsearch for 1.1.
+
+To enable ConductR to log to Elasticsearch you must specify the following within its `application.ini`:
+
+```
+-Dcontrail.syslog.server.port=9200 
+-Dcontrail.syslog.server.elasticsearch.enabled=on
+```
+
 Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be found in the `extra` folder inside the ConductR installation folder. Also a default configuration for a typical production environment has been provided. 
 
 Firstly for each node that will run Elasticsearch you must enable access to `/var/log` and `/var/lib`:
