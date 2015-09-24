@@ -1,7 +1,10 @@
 # ConductR Migration Guide
 
 
-This document describes what is required to move between version 1.0 to 1.1.
+This document describes what is required to move between version 1.0 to 1.1. Here is a list of major areas to be considered when migrating:
+
+* [Bundle versioning](#Bundle-versioning)
+* [Logging](#Logging)
 
 ## Bundle versioning
 
@@ -44,4 +47,14 @@ When migrating we recommend that you update your `sbt-bundle`, `sbt-conductr` an
 
 ```scala
 ConductRKeys.conductrApiVersion := "1.1"
+```
+
+## Logging
+
+The use of Elasticsearch for collecting event and log data is no longer considered experimental and is therefore enabled by default. If you wish to continue using a syslog receiver then please apply to the following settings in your `application.ini` (the following relates to connectivity with a locally installed rsyslog):
+
+```
+-Dcontrail.syslog.server.host=127.0.0.1 
+-Dcontrail.syslog.server.port=514 
+-Dcontrail.syslog.server.elasticsearch.enabled=off
 ```
