@@ -113,23 +113,13 @@ Check for the cluster information once again, but now use the host address of th
 
 The ConductR service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
 
-ConductR logs via the syslog protocol using TCP destined locally on port 514. Debian distributions such as Ubuntu come with the [RSYSLOG](http://www.rsyslog.com/) logging service and so its configuration is shown next. Other distributions may require installing RYSLOG.
-
-``` bash
-[172.17.0.1]$ echo '$ModLoad imtcp' | sudo tee -a /etc/rsyslog.d/conductr.conf
-[172.17.0.1]$ echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
-[172.17.0.1]$ sudo service rsyslog restart
-```
-
-Viewing `/var/log/syslog` (Ubuntu) or `/var/log/messages` (RHEL) will then show ConductR and bundle output.
+Logging will require configuration for each machine where ConductR is installed. Please refer to the section on [logging](Logging.md) and select the appropriate method for you. ConductR is bundled with an Elasticsearch based solution and is configured for that by default.
 
 By default ConductR's logging is quite sparse. Unless an error or warning occurs then there will be no log output. To increase the verbosity of the logging you can use this command:
 
 ``` bash
 [172.17.0.1]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr/conf/application.ini
 ```
-
-Consolidated logging is discussed further down.
 
 ### Optional dependencies
 
