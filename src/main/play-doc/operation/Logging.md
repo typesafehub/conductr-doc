@@ -12,6 +12,7 @@ The syslog collector can send the log messages to any kind of logging solution. 
 To enable ConductR to log to Elasticsearch you must specify the following within its `application.ini`:
 
 ```
+-Dcontrail.syslog.server.host=127.0.0.1 
 -Dcontrail.syslog.server.port=9200 
 -Dcontrail.syslog.server.elasticsearch.enabled=on
 ```
