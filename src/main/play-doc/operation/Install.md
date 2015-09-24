@@ -129,7 +129,7 @@ By default ConductR's logging is quite sparse. Unless an error or warning occurs
 [172.17.0.1]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr/conf/application.ini
 ```
 
-Consolidated logging is discussed further down.
+[[Other logging configurations | Logging]] are possible, including an experimental solution based on Elasticsearch.
 
 ### Optional dependencies
 
