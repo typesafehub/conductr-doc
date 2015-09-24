@@ -22,8 +22,10 @@ curl \
   --form memory=104857600 \
   --form diskSpace=104857600 \
   --form roles=web-server \
+  --form compatibilityVersion=1 \
+  --form systemVersion=1 \
   --form bundle=@visualizer/target/bundle/visualizer-0.1.0-cfe2a36795fd78507c4d2b5817152ae449e4acd9d5ea94d1f604d2c11417e40f.zip \
-  http://localhost:9005/bundles
+  http://localhost:9005/v1.1/bundles
 ```
 
 ### Request
@@ -34,16 +36,18 @@ POST /bundles
 
 The following fields are provided as multipart/form-data fields:
 
-Field            | Description
------------------|------------
-system           | As per its equivalent property in [bundle.conf](BundleConfiguration)
-bundleName       | As per its equivalent property in [bundle.conf](BundleConfiguration)
-nrOfCpus         | As per its equivalent property in [bundle.conf](BundleConfiguration)
-memory           | As per its equivalent property in [bundle.conf](BundleConfiguration)
-diskSpace        | As per its equivalent property in [bundle.conf](BundleConfiguration)
-roles            | As per its equivalent property in [bundle.conf](BundleConfiguration)
-bundle           | The file that is the bundle. The filename is important with its hex digest string and is required to be consistent with the SHA-256 hash of the bundle's contents. Any inconsistency between the hashes will result in the load being rejected.
-configuration    | Optional. Similar in form to the bundle, only that is the file that describes the configuration. Again any inconsistency between the hex digest string in the filename, and the SHA-256 digest of the actual contents will result in the load being rejected.
+Field                | Description
+---------------------|------------
+system               | As per its equivalent property in [bundle.conf](BundleConfiguration)
+bundleName           | As per its equivalent property in [bundle.conf](BundleConfiguration)
+nrOfCpus             | As per its equivalent property in [bundle.conf](BundleConfiguration)
+memory               | As per its equivalent property in [bundle.conf](BundleConfiguration)
+diskSpace            | As per its equivalent property in [bundle.conf](BundleConfiguration)
+roles                | As per its equivalent property in [bundle.conf](BundleConfiguration)
+compatibilityVersion | As per its equivalent property in [bundle.conf](BundleConfiguration)
+systemVersion        | As per its equivalent property in [bundle.conf](BundleConfiguration)
+bundle               | The file that is the bundle. The filename is important with its hex digest string and is required to be consistent with the SHA-256 hash of the bundle's contents. Any inconsistency between the hashes will result in the load being rejected.
+configuration        | Optional. Similar in form to the bundle, only that is the file that describes the configuration. Again any inconsistency between the hex digest string in the filename, and the SHA-256 digest of the actual contents will result in the load being rejected.
 
 ### Responses
 
@@ -81,7 +85,7 @@ Request a scale (run) of a bundle to the value provided. A scale value of 0 is i
 ### Request
 
 ```
-PUT /bundles/{bundleIdOrName}?scale={scale}
+PUT /v1.1/bundles/{bundleIdOrName}?scale={scale}
 ```
 
 Field            | Description
@@ -132,7 +136,7 @@ Request to unload a bundle that has been stopped.
 ### Request
 
 ```
-DELETE /bundles/{bundleIdOrName}
+DELETE /v1.1/bundles/{bundleIdOrName}
 ```
 
 Field            | Description
@@ -181,7 +185,7 @@ Retrieve the current state of bundles within ConductR.
 ### Request
 
 ```
-GET /bundles
+GET /v1.1/bundles
 ```
 
 ### Responses
@@ -298,7 +302,7 @@ Retrieve the current state of ConductR cluster members.
 ### Request
 
 ```
-GET /members
+GET /v1.1/members
 ```
 
 ### Responses
