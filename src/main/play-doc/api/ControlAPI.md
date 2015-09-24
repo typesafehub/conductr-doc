@@ -7,6 +7,8 @@ ConductR's control protocol is RESTful and has the following functional scope:
 * [Unload a bundle](#Unload-a-bundle)
 * [Query bundle state](#Query-bundle-state)
 * [Query member state](#Query-member-state)
+* [Query logs by bundle](#Query-logs-by-bundle)
+* [Query events by bundle](#Query-events-by-bundle)
 
 ## Load a bundle
 
@@ -347,3 +349,122 @@ status              | `Joining`, `Up`, `Leaving`, `Exiting`, `Down` or `Removed`
 #### Failure
 
 Other non 2xx status codes should also be treated as a failure.
+
+
+## Query logs by bundle
+
+Request the log messages of a bundle. Log messages with the latest timestamp are going to be returned in a "tail" like fashion.
+
+### Request
+
+```
+GET /bundles/{bundleIdOrName}/logs?count={count}
+```
+
+Field            | Description
+-----------------|------------
+bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading.
+count            | The number of log messages to return. Allowed values are 1 to 100.
+
+### Responses
+
+#### Success
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+  {
+    "timestamp": "2015-09-24T14:18:32.573Z",
+    "host": "a1b29b193a22",
+    "message": "[info] application - Signalled start to ConductR"
+  }
+]  
+```
+
+Field     | Description
+----------|------------
+timestamp | Timestamp of log messages expressed according to ISO 8601.
+host      | Host name in which the messages has been logged.
+message   | The log message.
+
+#### Failure
+
+``` 
+HTTP/1.1 400 Bad Request
+
+Invalid fetch size of {count} where the max is 100 for bundle '{bundleIdOrName}'
+```
+
+The given `count` parameter is not valid number between 1 and 100.
+
+``` 
+HTTP/1.1 404 Not found
+
+No bundle found by the specified Bundle ID/name: '{bundleIdOrName}'
+```
+
+The supplied bundleIdOrName cannot be resolved to a bundle that has been loaded.
+
+```
+HTTP/1.1 500 Internal Server Error
+```
+
+An internal server error has occured while retrieving the log messages. Check if the logging infrastructure is up and running, e.g. if the bundle `conductr-elasticsearch` has been loaded and scaled to at least one instance.
+
+## Query events by bundle
+
+Request the events of a bundle. Events with the latest timestamp are going to be returned in a "tail" like fashion.
+
+### Request
+
+```
+GET /bundles/{bundleIdOrName}/events?count={count}
+```
+
+Field            | Description
+-----------------|------------
+bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading.
+count            | The number of events to return.
+
+### Responses
+
+#### Success
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+  {
+    "timestamp": "2015-09-24T14:38:21.365Z",
+    "event": "conductr.loadExecutor.bundleWritten",
+    "description": "Bundle written: requestId=f77ac3df-8d40-48d5-bd48-c545dae7a5a2, bundleName=visualizer, bundleId=3e124250d0367abce72e68ee3c7f93b1"
+  }
+]  
+```
+
+Field       | Description
+------------|------------
+timestamp   | Timestamp of log messages expressed according to ISO 8601.
+event       | Event name
+description | Event description
+
+#### Failure
+
+The given `count` parameter is not valid number between 1 and 100.
+
+``` 
+HTTP/1.1 404 Not found
+
+No bundle found by the specified Bundle ID/name: '{bundleIdOrName}'
+```
+
+The supplied bundleIdOrName cannot be resolved to a bundle that has been loaded.
+
+```
+HTTP/1.1 500 Internal Server Error
+```
+
+An internal server error has occured while retrieving the events. Check if the logging infrastructure is up and running, e.g. if the bundle `conductr-elasticsearch` has been loaded and scaled to at least one instance.
