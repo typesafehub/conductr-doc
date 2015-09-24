@@ -7,14 +7,33 @@ The syslog collector can send the log messages to any kind of logging solution. 
 
 ## Setting up Elasticsearch
 
-Elasticsearch is available as the `conductr-elasticsearch` bundle and can be found in the `extra` folder inside the ConductR installation folder. Also a default configuration for a typical production environment has been provided. To load and run Elasticsearch to ConductR use the control API of ConductR, e.g. by using the CLI:
+> Please note that Elasticsearch is an experimental feature of 1.0. We will move fully toward supporting Elasticsearch for 1.1.
+
+To enable ConductR to log to Elasticsearch you must specify the following within its `application.ini`:
+
+```
+-Dcontrail.syslog.server.port=9200 
+-Dcontrail.syslog.server.elasticsearch.enabled=on
+```
+
+Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be found in the `extra` folder inside the ConductR installation folder. Also a default configuration for a typical production environment has been provided. 
+
+Firstly for each node that will run Elasticsearch you must enable access to `/var/log` and `/var/lib`:
 
 ```bash
-conduct load file:/usr/share/conductr/extra/conductr-elasticsearch-{version}-{digest}.zip elasticsearch-prod-digest.zip
-conduct run conductr-elasticsearch
+sudo mkdir -p /var/lib/elasticsearch /var/log/elasticsearch
+sudo chown conductr:conductr /var/lib/elasticsearch
+sudo chown conductr:conductr /var/log/elasticsearch
 ```
 
 `conductr-elasticsearch` is using the the role `elasticsearch`.
+
+To load and run Elasticsearch use the control API of ConductR, e.g. by using the CLI:
+
+```bash
+conduct load file:/usr/share/conductr/extra/conductr-elasticsearch-{version}-{digest}.zip elasticsearch-prod-{digest}.zip
+conduct run conductr-elasticsearch
+```
 
 With that, the syslog collector streams the log messages to Elasticsearch. Use the CLI to access log messages by bundle id or name, e.g.:
 
@@ -30,6 +49,54 @@ The provided Elasticsearch bundle configuration is using these settings:
 - Disk Space: 10 GB
 
 To change the settings create a new bundle configuration by modiying the `bundle.conf` file inside of the bundle configuration zip file. The configuration file is named `elasticsearch-prod-{digest}.zip` and is located in the `extra` folder as well. Afterwards reload the bundle with the new configuration.
+
+### Customized Elasticsearch
+
+You can configure ConductR to use an alternate Elasticsearch cluster for events and logging. Here are some considerations for you if you should choose this path.
+
+Firstly you must tell ConductR where your customized Elasticsearch instance is within its `application.ini`:
+
+```
+-Dcontrail.syslog.server.host=<some-ip>
+-Dcontrail.syslog.server.port=<some-port>
+```
+
+The Elasticsearch bundle that we provide has been configured to support back-pressure when receiving event and logging data from ConductR. By default Elasticsearch will accept bulk index requests regardless of whether it will process them. This means that under certain load conditions, Elasticsearch could lose data being sent to it. To counter this, here is the configuration we use for Elasticsearch (we have chosen a sharding factor of 5, substitute yours accordingly):
+
+```
+threadpool.bulk.type: fixed
+threadpool.bulk.queue_size: 5
+```
+
+The goal of the above settings is for Elasticsearch to reject bulk index requests if it does not have the resources to process them immediately. In the case of ConductR as a provider of bulk index messages, ConductR will buffer its messages until Elasticsearch is ready to process them. ConductR will also roll up messages within its buffer and prioritize them by severity (lowest priority messages are rolled up first).
+
+Here are some cluster settings to consider for Elasticsearch:
+
+```
+discovery.zen.minimum_master_nodes: <size-of-es-cluster / 2 + 1>
+index.number_of_shards: 5
+index.number_of_replicas: <size-of-cluster - 1>
+```
+
+Finally, we recommend that you consider data retention of events and logging data. Here is an Elasticsearch template we have used:
+
+```json
+{
+  "conductr" : {
+    "template" : "conductr",
+    "mappings" : {
+      "_default_" : {
+        "_ttl" : {
+          "enabled" : true,
+          "default": "14d"
+        }
+      }
+    }
+  }
+}
+```
+
+More information on configuring Elasticsearch for production can be found in [the Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/guide/current/deploy.html).
 
 ## Setting up Papertail
 
