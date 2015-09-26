@@ -3,8 +3,8 @@
 [conductr-bundle-lib](https://github.com/typesafehub/conductr-bundle-lib#typesafe-conductr-bundle-library) comes in multiple flavors depending on whether you need it for Akka and/or Play development, and also the specific versions of Akka and Play. The libraries are structured as follows in this regard:
 
 * Akka 2.3 for Java and Scala - [akka23-conductr-bundle-lib](#akka23-conductr-bundle-lib)
-* Play 2.3 for Java and Scala - [play23-conductr-bundle-lib](#play23-conductr-bundle-lib)
-* Play 2.4 for Java and Scala - [play24-conductr-bundle-lib](#play24-conductr-bundle-lib)
+* Play 2.3 for Java and Scala - [play23-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
+* Play 2.4 for Java and Scala - [play24-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
 
 ## akka23-conductr-bundle-lib
 
