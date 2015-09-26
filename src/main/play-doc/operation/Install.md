@@ -243,7 +243,9 @@ Observe ConductR-HAProxy logs. You should see a successfully opened connection t
 
 That's it! You now have a cluster of three ConductR nodes ready to start running applications. ConductR comes with a `visualizer` sample application. Head over to the next section [[CLI|CLI]] to learn how to deploy visualizer application to your fresh ConductR cluster.
 
+## Starting and Stopping ConductR
 
+ConductR has been designed to be "always on". If you wish to use ConductR as a transient test environment that can be stopped and started at will (for example) then you must become familiar with [how to restart the entire cluster](ClusterTroubleshooting#Restarting-the-ConductR-Cluster).
 
 # EC2 Installation
 
