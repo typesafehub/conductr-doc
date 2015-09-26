@@ -1,6 +1,7 @@
 DevQuickStart: Quick start
 SignalingApplicationState:Signaling application state
 ResolvingServices:Resolving other services
+AkkaAndPlay:Akka and Play specifics
 CreatingBundles: Creating bundles
 DeployingBundles:Deploying bundles
 BundleConfiguration:Bundle configuration
