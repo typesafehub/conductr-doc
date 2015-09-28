@@ -1,5 +1,12 @@
 # ConductR release notes
 
+## 1.0.11
+
+* The check command was not indicating a failure exit status when failures occurred
+* Included the conductr-kibana bundle as part of ConductR project
+* The Elasticsearch host required setting when used with the sandbox
+* A file named runtime-config.sh is now favored when a configuration bundle is supplied thereby permitting other files to be a part of the configuration bundle
+
 ## 1.0.10
 
 * Enabled RPM prefixes to be used with the RPM distribution of ConductR
