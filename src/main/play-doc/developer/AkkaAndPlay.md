@@ -3,8 +3,8 @@
 [conductr-bundle-lib](https://github.com/typesafehub/conductr-bundle-lib#typesafe-conductr-bundle-library) comes in multiple flavors depending on whether you need it for Akka and/or Play development, and also the specific versions of Akka and Play. The libraries are structured as follows in this regard:
 
 * Akka 2.3 for Java and Scala - [akka23-conductr-bundle-lib](#akka23-conductr-bundle-lib)
-* Play 2.3 for Java and Scala - [play23-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
-* Play 2.4 for Java and Scala - [play24-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
+* Play 2.3 for Java and Scala (including Akka 2.3) - [play23-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
+* Play 2.4 for Java and Scala (including Akka 2.3) - [play24-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
 
 ## akka23-conductr-bundle-lib
 
@@ -110,7 +110,7 @@ In the above, no declaration of `services` is required as akka remoting is an in
 
 ## play[23|24]-conductr-bundle-lib
 
-Please select the Play 2.3 or 2.4 variant depending on whether you are using Play 2.3 or Play 2.4 respectively.
+Please select the Play 2.3 or 2.4 variant depending on whether you are using Play 2.3 or Play 2.4 respectively. Bringing in this library automatically brings in Akka 2.3.
 
 This library provides a reactive API using [Play WS](https://www.playframework.com/documentation/2.4.x/ScalaWS) and should be used when you are using Play. The library can be used for both Java and Scala.
 
