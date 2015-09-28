@@ -176,7 +176,7 @@ sudo /etc/init.d/conductr restart
 
 Viewing `/var/log/syslog` (Ubuntu) or `/var/log/messages` (RHEL) will then show ConductR and bundle output.
 
-## Setting up Papertail
+## Setting up Papertrail
 
 A popular cloud service is [Papertrail](https://papertrailapp.com/). Papertrail is a very simple "tail like" service for viewing distributed logs. Once you configure an account with Papertrail, you will be provided with a host and a port. With this information you can configure a static endpoint. 
 
