@@ -8,6 +8,8 @@ The syslog collector can send the log messages to any kind of logging solution. 
 
 Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be found in the `extra` folder inside the ConductR installation folder. Also a default configuration for a typical production environment has been provided. 
 
+`conductr-elasticsearch` is using the the role `elasticsearch`. Make sure that the ConductR nodes which should run Elasticsearch have this role assigned in `application.ini`. This role will determine which nodes will be eligable to run `conductr-elasticsearch` and are to be configured accordingly.
+
 Firstly for each node that will run Elasticsearch you must enable access to `/var/log` and `/var/lib`:
 
 ```bash
@@ -15,8 +17,6 @@ sudo mkdir -p /var/lib/elasticsearch /var/log/elasticsearch
 sudo chown conductr:conductr /var/lib/elasticsearch
 sudo chown conductr:conductr /var/log/elasticsearch
 ```
-
-`conductr-elasticsearch` is using the the role `elasticsearch`. Make sure that the ConductR nodes which should run Elasticsearch have this role assigned.
 
 To load and run Elasticsearch use the control API of ConductR, e.g. by using the CLI:
 
