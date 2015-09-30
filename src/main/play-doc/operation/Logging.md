@@ -6,7 +6,7 @@ The syslog collector can send the log messages to any kind of logging solution. 
 
 ## Setting up Elasticsearch
 
-Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be found in the `extra` folder inside the ConductR installation folder. Also a default configuration for a typical production environment has been provided. 
+Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be found in the `extra` folder inside the ConductR installation folder. Also a default configuration for a typical production environment has been provided.
 
 Firstly for each node that will run Elasticsearch you must enable access to `/var/log` and `/var/lib`:
 
@@ -90,7 +90,7 @@ More information on configuring Elasticsearch for production can be found in [th
 
 ## Setting up Kibana
 
-Kibana is a popular UI to display data stored in Elasticsearch. In the context of ConductR, Kibana can be configured to display, filter and search log messages. It is available as the `conductr-kibana` bundle and can be found in the `extra` folder inside the ConductR installation folder. The version 4.1.2 of Kibana is used. This bundle only works in conjunction with the `conductr-elasticsearch` bundle. To load and run Kibana to ConductR use the control API of ConductR, e.g. by using the CLI: 
+Kibana is a popular UI to display data stored in Elasticsearch. In the context of ConductR, Kibana can be configured to display, filter and search log messages. It is available as the `conductr-kibana` bundle and can be found in the `extra` folder inside the ConductR installation folder. The version 4.1.2 of Kibana is used. This bundle only works in conjunction with the `conductr-elasticsearch` bundle. To load and run Kibana to ConductR use the control API of ConductR, e.g. by using the CLI:
 
 ```bash
 conduct load file:/usr/share/conductr/extra/conductr-kibana-{version}-{digest}.zip
@@ -109,7 +109,7 @@ In order to display the log messages from Elasticsearch in Kibana an `index patt
 
 [[images/kibana_index_configuration.png]]
 
-The newly created index pattern is automatically set to the default one. Now, head over to the `Discover` tab to view the log messages. 
+The newly created index pattern is automatically set to the default one. Now, head over to the `Discover` tab to view the log messages.
 
 [[images/kibana_discover.png]]
 
@@ -178,7 +178,7 @@ Viewing `/var/log/syslog` (Ubuntu) or `/var/log/messages` (RHEL) will then show 
 
 ## Setting up Papertrail
 
-A popular cloud service is [Papertrail](https://papertrailapp.com/). Papertrail is a very simple "tail like" service for viewing distributed logs. Once you configure an account with Papertrail, you will be provided with a host and a port. With this information you can configure a static endpoint. 
+A popular cloud service is [Papertrail](https://papertrailapp.com/). Papertrail is a very simple "tail like" service for viewing distributed logs. Once you configure an account with Papertrail, you will be provided with a host and a port. With this information you can configure a static endpoint.
 
 **Important**: ConductR logs over TCP so make sure that you configure papertrail so that it accepts plain text connections: _Accounts/Log Destinations/Edit Settings/Accept connections via_
 
@@ -200,3 +200,32 @@ You can also apply a similar configuration to `conductr-haproxy` by substituting
 ConductR is compatible with any log aggregator speaking the syslog protocol. The log messages of a bundle are written to `stdout` and `stderr`. When using another logging infrastructure we recommend to deploy this infrastructure inside the ConductR cluster. You do not want to send lots of log traffic across the internet. Another approach is to use a syslog collector such as [rsyslog](http://www.rsyslog.com/) to filter the log messages before sending them to the logging cloud service.
 
 **Important**: ConductR logs over TCP so make sure that configure your logging infrastructure accordingly.
+
+## Controlling ConductR log level
+
+By default ConductR will log at `info` level.
+
+To view ConductR logs at `debug` level, configure ConductR as:
+
+``` bash
+echo \
+  -Dakka.loglevel=debug | \
+  sudo tee -a /usr/share/conductr/conf/application.ini
+sudo /etc/init.d/conductr restart
+```
+
+With this setting only ConductR `debug` level logs will be visible. In other words, `debug` level messages from frameworks and libraries utilized by ConductR will not be visible.
+
+To view all `debug` level log messages, configure ConductR as:
+
+``` bash
+echo \
+  -Dakka.logging-filter=akka.event.DefaultLoggingFilter \
+  -Dakka.loglevel=debug | \
+  sudo tee -a /usr/share/conductr/conf/application.ini
+sudo /etc/init.d/conductr restart
+```
+
+With this setting debug messages from various frameworks and libraries utilized by ConductR will be visible, e.g. debug messages from Akka.
+
+**Important**: with this setting enabled, the number of log messages generated will be increase drammatically.
