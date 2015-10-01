@@ -101,13 +101,17 @@ val systemName = sys.env.getOrElse("BUNDLE_SYSTEM", "MyApp1")
 val app1 = ActorSystem(systemName, config.withFallback(ConfigFactory.load()))
 ```
 
-Clusters will then be formed correctly. The above call looks for an endpoint named `akka-remote` by default. Therefore you must declare the Akka remoting port as a bundle endpoint. The following endpoint declaration within a `build.sbt` shows how:
+Clusters will then be formed correctly. The above call of `Env.asConfig` looks for an endpoint named `akka-remote` by default. Therefore you must declare the Akka remoting port as a bundle endpoint. The following endpoint declaration within a `build.sbt` shows how:
 
 ```scala
 BundleKeys.endpoints := Map("akka-remote" -> Endpoint("tcp"))
 ```
 
 In the above, no declaration of `services` is required as akka remoting is an internal, cluster-wide TCP service.
+
+> Note that conductr-bundle-lib will search for an endpoint named `akka-remote` by default. This should not ever need to be overridden and it is convenient that it is consistent across bundles sharing the same Akka cluster.
+
+> The Akka cluster of your application or service is distinct to your applications and services given the bundle's `system` and `systemVersion` properties. `sbt-bundle` will set these properties to the name of your bundle and its `compatibilityVersion` by default. The `compatibilityVersion` is the major component of your project's version by default. All of these properties are able to be overridden using bundle keys. You can therefore associate multiple bundles into a single Akka cluster by using the same system and systemVersion. Akka remote ports are always dynamically allocated given the above endpoint declaration, and so you can even have multiple bundles with multiple systems all running alongside each other, some even sharing the same system but different versions.
 
 ## play[23|24]-conductr-bundle-lib
 
@@ -160,16 +164,18 @@ ConnectionContext cc =
 LocationService.getInstance().lookupWithContext("/whatever", new URI("tcp://localhost:1234"), cache, cc)
 ```
 
-In order for an application or service to take advantage of setting important Play related properties, the following is required in order to associate ConductR configuration with that of Play and Akka:
+In order for an application or service to take advantage of setting important Akka and Play related properties, the following is required in order to associate ConductR configuration with that of Play and Akka:
 
 #### Play 2.3
 
 ```scala
 import play.api._
-import com.typesafe.conductr.bundlelib.play.Env
+import com.typesafe.conductr.bundlelib.akka.{ Env => AkkaEnv }
+import com.typesafe.conductr.bundlelib.play.{ Env => PlayEnv }
 
 object Global extends GlobalSettings {
-  val totalConfiguration = super.configuration ++ Configuration(Env.asConfig)
+  val totalConfiguration = 
+    super.configuration ++ Configuration(AkkaEnv.asConfig) ++ Configuration(PlayEnv.asConfig)
 
   override def configuration: Configuration =
     totalConfiguration
@@ -189,6 +195,11 @@ play.modules.enabled += "com.typesafe.conductr.bundlelib.play.ConductRLifecycleM
 Note that if you are using your own application loader then you should ensure that the Akka and Play ConductR-related properties are loaded. Here's a complete implementation:
 
 ```scala
+import com.typesafe.conductr.bundlelib.akka.{ Env => AkkaEnv }
+import com.typesafe.conductr.bundlelib.play.{ Env => PlayEnv }
+import play.api.inject.guice.GuiceApplicationLoader
+import play.api.{ Configuration, Application, ApplicationLoader }
+
 class MyCustomApplicationLoader extends ApplicationLoader {
   def load(context: ApplicationLoader.Context): Application = {
     val conductRConfig = Configuration(AkkaEnv.asConfig) ++ Configuration(PlayEnv.asConfig)
