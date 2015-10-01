@@ -20,6 +20,14 @@ The focus of this section is to get started quickly. The full documentation of t
 
 A quick word on [vendor lock-in](https://en.wikipedia.org/wiki/Vendor_lock-in) as a philosophical point. We think it is important for you to avoid vendor lock-in as much as is reasonable. Furthermore all of the interfaces that we provide we do so in an open and transparent manner so that you can understand what is going on at all times.
 
+We additionally open source the application/client-side libraries that use various ConductR APIs. You may find it useful to reference the following projects for further comprehension:
+
+* https://github.com/typesafehub/conductr-bundle-lib
+* https://github.com/typesafehub/conductr-doc
+* https://github.com/sbt/sbt-bundle
+* https://github.com/sbt/sbt-conductr
+* https://github.com/typesafehub/sbt-conductr-sandbox
+
 ## Signal application readiness
 
 Your application should tell ConductR when it has completed its initialization and is ready for work. For a Play 2.4 application add these dependency to your `build.sbt`:
@@ -81,6 +89,8 @@ object Global extends GlobalSettings {
     ```
 
 The new bundle should be created in your `target/bundle` directory. The `sbt-bundle` effectively describe what resources are used by your application and are used to determine which machine they will run on in the ConductR cluster.
+
+As you move through our documentation you will  come across references to ConductR's environment variables e.g. `MY_APP_BIND_PORT`. Please refer to [our documentation](BundleEnvironmentVariables) for information on the meaning of these environment variables should you need to.
 
 ## Start ConductR cluster
 
