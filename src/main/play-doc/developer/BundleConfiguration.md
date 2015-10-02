@@ -8,9 +8,9 @@ Bundles provide ConductR with some basic knowledge about components in a *bundle
 ```
 version               = "1.1.0"
 name                  = "simple-test"
-compatibility-version = "1"
+compatibilityVersion  = "1"
 system                = "simple-test"
-system-version        = "1"
+systemVersion         = "1"
 nrOfCpus              = 1.0
 memory                = 67108864
 diskSpace             = 10485760
@@ -96,10 +96,10 @@ As a quick example, suppose that you wish to bundle [ActiveMQ](http://activemq.a
 ```
 version               = "1.1.0"
 name                  = "jms-docker"
-compatibility-version = "1"
+compatibilityVersion  = "1"
 
 system         = "jms-docker"
-system-version = "1"
+systemVersion  = "1"
 
 nrOfCpus   = 1.0
 memory     = 67108864
