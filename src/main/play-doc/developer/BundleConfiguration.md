@@ -136,6 +136,82 @@ The declaration of interest is the `jms-status` component. ConductR provides a `
 
 Docker becomes relevant when there are specific runtime dependencies that are different to ConductR's host OS environment. In particular if a binary program that does not use the JVM is required to be launched from a bundle then it becomes more likely to benefit from using a Docker container.
 
+#### When you cannot Dockerize existing services - a Redis example
+
+If you cannot run a Linux service in Docker but would still like the services to be managed by ConductR, it may be possible to run services without a container. To do this, create an application bundle of the full service installation folder and a configuration bundle containing any scripting needed to control the service. 
+
+For example, to a run a single instance of [Redis](http://redis.io/) under ConductR without a container, start with a built version of redis. For this example `redis/redis-stable` will be the top level folder of the Redis installation containing the Redis README, MANIFESTO and COPYING. Redis will be executing natively on the member node and must be built for the target node's distribution. We will use roles to ensure that this bundle only runs on specific nodes.
+
+In the `redis` folder, add the following as a file named `bundle.conf`.
+
+```bash
+version               = "1.1.0"
+name                  = "redis-broker"
+compatibilityVersion  = "3"
+system                = "redis"
+systemVersion         = "3"
+nrOfCpus              = 2.0
+memory                = "1342701568"
+diskSpace             = "10737418240"
+roles                 = [db, redis]
+
+components = {
+  "logbroker" = {
+    description       = "redis-broker"
+    file-system-type  = "universal"
+    start-command     = ["./redis.sh"]
+    endpoints         = {
+      "logbroker" = {
+        bind-protocol  = "tcp"
+        bind-port     = 6379
+        services      = ["http://:6379/redis"]
+      }
+    }
+  }
+  "logbroker-status" = {
+   description      = "Status check for the redis logbroker component"
+   file-system-type = "universal"
+   start-command    = ["check", "$LOGBROKER_HOST"]
+   endpoints        = {}
+  }
+}
+```
+
+Also in the `redis` folder, create the executable file `redis.sh` specified in the `start-command` as follows. In addition to starting Redis, the script uses `redis-cli` to shutdown Redis upon a shutdown signal.
+
+```bash
+#!/usr/bin/env bash
+
+shutdown() {
+   redis-stable/src/redis-cli shutdown
+}
+
+trap ‘shutdown’ SIGTERM SIGINT SIGHUP
+
+redis-stable/src/redis-server redis-stable/redis.conf
+```
+
+In `redis-stable/redis.conf` remove the `port 6379` directive. We want HAProxy to bind 6379, not Redis. We will not be daemonizing Redis, specifying a bind address or a logfile in `redis-conf`. 
+
+Create the application bundle
+```bash
+shazar redis
+```
+
+In a new folder namned `redis-config`, create an executable file named `runtime-config.sh` containing the following:
+
+```bash
+echo bind $LOGBROKER_BIND_IP | tee -a redis-stable/redis.conf
+echo port $LOGBROKER_BIND_PORT | tee -a redis-stable/redis.conf
+```
+
+This obtains the ConductR assigned IP address and bind port and appends them to the redis.conf. Create the configuration bundle.
+
+```bash
+shazar redis-config
+```
+Load the application and configuration bundle together and run the bundle. To constrain which nodes Redis will run on, our `bundle.conf` contains the roles `db` and `redis`. Only member nodes providing at least these two roles will be eligable to run Redis.
+
 ## Configuration Bundles
 
 Configuration bundles are bundles containing only configuration values such as API keys and secrets. Configuration bundles are deployed together with application bundles. This keeps the configuration out of the application code and enables application bundles to be deployed to various environments without repackaging the application bundle.
