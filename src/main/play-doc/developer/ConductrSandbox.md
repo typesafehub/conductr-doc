@@ -13,7 +13,7 @@ The following description is intended to provide a taste of what `sbt-conductr-s
 Add the sbt plugin to the `project/plugins.sbt` of your project:
 
 ```scala
-addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.1.1")
+addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.0.7")
 ```
 
 The plugin is then enabled automatically for your entire project.
