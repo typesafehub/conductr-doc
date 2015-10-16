@@ -13,7 +13,7 @@ The following description is intended to provide a taste of what `sbt-conductr-s
 Add the sbt plugin to the `project/plugins.sbt` of your project:
 
 ```scala
-addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.0.7")
+addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.1.1")
 ```
 
 The plugin is then enabled automatically for your entire project.
@@ -37,11 +37,10 @@ Given the above you will then have a ConductR process running in the background 
 #### ConductR features
 
 > In order to use the following features then you should ensure that the machine that runs Docker has enough memory, typically at least 2GB. VM configurations such as those provided via `boot2docker` and Oracle's VirtualBox can be configured like so:
-> ```
-> boot2docker down
-> VBoxManage modifyvm boot2docker-vm --memory 2048
-> boot2docker up
-> ```
+>
+>     boot2docker down
+>     VBoxManage modifyvm boot2docker-vm --memory 2048
+>     boot2docker up
 
 ConductR gets shipped with features which can be optionally enabled during startup by specifying the `--withFeatures` option, e.g.:
     
