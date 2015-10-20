@@ -2,12 +2,12 @@
 
 ConductR simplifies the deployment of applications with resilience and elasticity without disrupting the application development lifecycle. Developers continue to develop and test their applications as they normally would prior to deployment.
 
-This guide describes how to use a Play 2.4 Scala application to:
+This guide describes how to setup and deploy a Play 2.4 Scala application on ConductR. In particular it describes how to:
 
-* Signal that application is started
-* Create application bundle
-* Start ConductR cluster
-* Deploy application bundle to ConductR
+* Signaling that application is started
+* Creating application bundle
+* Starting ConductR cluster
+* Deploying application bundle to ConductR
 
 The focus of this section is to get started quickly. The full documentation of these parts are described in these sections:
 
@@ -16,21 +16,12 @@ The focus of this section is to get started quickly. The full documentation of t
 * [[Deploying bundles|DeployingBundles]]
 * [[ConductR sandbox cluster|ConductrSandbox]]
 
-## Vendor lock-in
+## Prerequisites
+* [Docker](https://www.docker.com/)
 
-A quick word on [vendor lock-in](https://en.wikipedia.org/wiki/Vendor_lock-in) as a philosophical point. We think it is important for you to avoid vendor lock-in as much as is reasonable. Furthermore all of the interfaces that we provide we do so in an open and transparent manner so that you can understand what is going on at all times.
+## Signaling application state
 
-We additionally open source the application/client-side libraries that use various ConductR APIs. You may find it useful to reference the following projects for further comprehension:
-
-* https://github.com/typesafehub/conductr-bundle-lib
-* https://github.com/typesafehub/conductr-doc
-* https://github.com/sbt/sbt-bundle
-* https://github.com/sbt/sbt-conductr
-* https://github.com/typesafehub/sbt-conductr-sandbox
-
-## Signal application readiness
-
-Your application should tell ConductR when it has completed its initialization and is ready for work. For a Play 2.4 application add these dependency to your `build.sbt`:
+First let us setup the Play 2.4 application for ConductR. Your application should tell ConductR when it has completed its initialization and is ready for work. For a Play 2.4 application add these dependency to your `build.sbt`:
 
 ```scala
 resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
@@ -38,21 +29,14 @@ resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-rel
 libraryDependencies += "com.typesafe.conductr" %% "play24-conductr-bundle-lib" % "1.0.1"
 ```
 
-Now you can override the `onStart` method to tell ConductR that your application has been started and is ready to start processing requests:
+Now you can add a guice module in the `application.conf`. This module tells ConductR when your application has been started and therefore ready to start processing requests:
 
 ```scala
-import com.typesafe.conductr.bundlelib.play.StatusService
-import play.api.{ Application, GlobalSettings }
-import com.typesafe.conductr.bundlelib.play.ConnectionContext.Implicits.defaultContext
-
-object Global extends GlobalSettings {
-  override def onStart(app: Application): Unit = {
-    StatusService.signalStartedOrExit()
-  }
-}
+play.application.loader = "com.typesafe.conductr.bundlelib.play.ConductRApplicationLoader"
+play.modules.enabled += "com.typesafe.conductr.bundlelib.play.ConductRLifecycleModule"
 ```
 
-## Create application bundle
+## Creating application bundle
 
 [sbt-conductr](https://github.com/sbt/sbt-conductr) is an sbt plugin to easily manage your application bundle inside ConductR. This plugin includes [sbt-bundle](https://github.com/sbt/sbt-bundle#typesafe-conductr-bundle-plugin) which we will use to create the application bundle for our Play application. 
 
@@ -61,12 +45,7 @@ object Global extends GlobalSettings {
     ```scala
     addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.1.1")
     ```
-2. Enable the plugin in the `build.sbt`:  
-
-    ```scala
-    lazy val root = project.in(file(".")).enablePlugins(PlayScala)
-    ```
-3. Specify `sbt-bundle` keys in the `build.sbt`:   
+2. Specify `sbt-bundle` keys in the `build.sbt`:   
 
     ```scala
     import ByteConversions._
@@ -75,14 +54,14 @@ object Global extends GlobalSettings {
     BundleKeys.diskSpace := 10.MB
     BundleKeys.roles := Set("web")
     BundleKeys.endpoints := Map("my-app" -> Endpoint("http", services = Set(URI("http://:9000"))))
-    BundleKeys.startCommand += "-Dhttp.address=$MY_APP_BIND_IP -Dhttp.port=$MY_APP_BIND_PORT"
+    BundleKeys.startCommand += "-Dhttp.address=$MY_APP_BIND_IP -Dhttp.port=$MY_APP_BIND_PORT"    
     ```
-4. Reload the sbt session:
+3. Reload the sbt session:
 
     ```scala
     reload
     ```     
-5. Create the bundle inside you sbt session with:
+4. Create the bundle inside you sbt session with:
 
     ```scala
     bundle:dist
@@ -92,7 +71,7 @@ The new bundle should be created in your `target/bundle` directory. The `sbt-bun
 
 As you move through our documentation you will  come across references to ConductR's environment variables e.g. `MY_APP_BIND_PORT`. Please refer to [our documentation](BundleEnvironmentVariables) for information on the meaning of these environment variables should you need to.
 
-## Start ConductR cluster
+## Starting ConductR cluster
 
 In order to manage a ConductR cluster we provide a sbt plugin [sbt-conductr-sandbox](https://github.com/typesafehub/sbt-conductr-sandbox). Follow these steps to start the ConductR cluster.
 
@@ -102,6 +81,11 @@ In order to manage a ConductR cluster we provide a sbt plugin [sbt-conductr-sand
     ```scala
     addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.1.2")
     ```
+2. Add the ConductR image version to the `build.sbt`:
+
+    ```scala
+    SandboxKeys.imageVersion in Global := "1.0.11"
+    ```    
 2. Reload the sbt session:
 
     ```scala
@@ -118,7 +102,7 @@ In order to manage a ConductR cluster we provide a sbt plugin [sbt-conductr-sand
 
 [[images/visualizer_simple.png]]
 
-## Deploy application bundle to ConductR
+## Deploying application bundle to ConductR
 
 1. Load your application bundle to ConductR:
     
@@ -137,4 +121,4 @@ In the visualizer web interface you should see now two bundles running, the visu
 
 [[images/visualizer_with_app.png]]
 
-That's it! You now have ConductR running with the visualizer and your own application.
+That's it! You now have ConductR running with the visualizer and your own application. Head over to the next chapters to learn in greater detail how to setup, configure and run your applications on ConductR.
