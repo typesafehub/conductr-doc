@@ -41,6 +41,11 @@ When getting started with ConductR it is reasonable to have each ConductR servic
 
 When a bundle is to be scheduled for loading or scaling, a check is made to first see whether a resource offer has the "all-conductrs" role. If it does then it is eligible. However if it does not then it must have a roles that intersect with the roles that a bundle requires. Note that you should not assign the "all-conductrs" role to a member that has other roles declared as "all-conductrs" will supercede the others.
 
+#### Using Roles
+
+Roles can be leveraged in varying levels of specificity as needed to achieve the desired results. Small clusters running multiple apps will generally need few roles. Bundles need to be able to relocated to other nodes in the event of failure. Overly dividing a small cluster into small sub-sets reduces relience.  Smaller clusters therefore will generally use few roles to create a few sub-sets of nodes.
+
+Larger clusters on the other hand will generally want more specialization and therefore benefit from further use of roles. Bundles with specific needs, such as resource intensive and data storage applications, will generally want exclusive use of a subset of nodes by using highly specific roles.
 
 ## Service Monitoring
 
