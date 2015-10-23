@@ -157,7 +157,7 @@ components = {
     endpoints         = {
       "logbroker" = {
         bind-protocol  = "tcp"
-        bind-port     = 6379
+        bind-port     = 0
         services      = ["http://:6379/redis"]
       }
     }
@@ -177,7 +177,7 @@ Also in the `redis` folder, create the executable file `redis.sh` specified in t
 #!/usr/bin/env bash
 
 shutdown() {
-   redis-stable/src/redis-cli shutdown
+   redis-stable/src/redis-cli shutdown -h $LOGBROKER_BIND_IP -p $LOGBROKER_BIND_PORT
 }
 
 trap ‘shutdown’ SIGTERM SIGINT SIGHUP
