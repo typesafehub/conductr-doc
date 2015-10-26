@@ -38,12 +38,12 @@ play.modules.enabled += "com.typesafe.conductr.bundlelib.play.ConductRLifecycleM
 
 ## Creating application bundle
 
-[sbt-conductr](https://github.com/sbt/sbt-conductr) is an sbt plugin to easily manage your application bundle inside ConductR. This plugin includes [sbt-bundle](https://github.com/sbt/sbt-bundle#typesafe-conductr-bundle-plugin) which we will use to create the application bundle for our Play application. 
+[sbt-conductr-sandbox](https://github.com/typesafehub/sbt-conductr-sandbox) is an sbt plugin to easily manage your application inside ConductR. This plugin includes [sbt-bundle](https://github.com/sbt/sbt-bundle#typesafe-conductr-bundle-plugin) and [sbt-conductr](https://github.com/sbt/sbt-conductr).
 
-1. Add `sbt-conductr` to the `project/plugins.sbt`:
+1. Add `sbt-conductr-sandbox` to the `project/plugins.sbt`:
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.1.1")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.1.2")
     ```
 2. Specify `sbt-bundle` keys in the `build.sbt`:   
 
@@ -73,15 +73,9 @@ As you move through our documentation you will  come across references to Conduc
 
 ## Starting ConductR cluster
 
-In order to manage a ConductR cluster we provide a sbt plugin [sbt-conductr-sandbox](https://github.com/typesafehub/sbt-conductr-sandbox). Follow these steps to start the ConductR cluster.
+Now we can go ahead an start the ConductR cluster locally.
 
-
-1. Add the sbt plugin to the `project/plugins.sbt` of your project (the plugin is automatically enabled):
-
-    ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.1.2")
-    ```
-2. Add the ConductR image version to the `build.sbt`:
+1. Add the ConductR image version to the `build.sbt`:
 
     ```scala
     SandboxKeys.imageVersion in Global := "1.0.11"
