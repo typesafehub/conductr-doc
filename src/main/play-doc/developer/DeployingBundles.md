@@ -7,10 +7,10 @@ The following description is intended to provide a taste of what `sbt-conductr` 
 To use `sbt-conductr` first add the plugin your build (typically your `project/plugins.sbt` file); be sure to check at [the plugin's website](https://github.com/sbt/sbt-conductr#sbt-conductr) for the latest version to use:
 
 ```scala
-addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.0.1")
+addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.1.1")
 ```
 
-> If you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr`.
+> If you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr`. If you have already added `sbt-conductr-sandbox` as an sbt plugin before then `sbt-conductr` doesn't need to be added as well. `sbt-conductr` will be automatically added as a dependency of `sbt-conductr-sandbox`.
 
 The `sbt-bundle` plugin must then be enabled for your project. Supposing that your project has one module that will use the plugin which is the root of the sbt project (the most typical situation for a single `build.sbt`):
 
@@ -53,6 +53,6 @@ You can also run, stop and unload bundles by using this plugin. This may be usef
 
 > The host running sbt in this example must have access to the ConductR daemon ports. Please see  [[Cluster security considerations|ClusterSetupConsiderations#Cluster-security-considerations]] for further information on controlling cluster access.
 
-That is all that is required in essence, but as stated, you should read [`sbt-conductr`'s documentation](https://github.com/sbt/sbt-conductr/blob/master/README.md) as there are a few additional requirements, particularly if you are managing a Play 2.3 application.
+That is all that is required in essence, but as stated, you should read the [documentation](https://github.com/sbt/sbt-conductr/blob/master/README.md) of `sbt-conductr` as there are a few additional requirements, particularly if you are managing a Play 2.3 application.
 
 Now go and develop reactive applications or services for ConductR!
