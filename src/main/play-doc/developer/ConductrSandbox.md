@@ -4,19 +4,30 @@ A Developer Sandbox Docker image is available so that developers can validate an
 
 The ConductR Developer Sandbox is available to freely all developers. To request access to the sandbox, login to Typesafe.com to visit the [ConductR Developer page](https://www.typesafe.com/product/conductr/developer).
 
-> The Docker image `sbt-conductr-sandbox` is using contains a single node version of ConductR. It is not recommended to use this version in production.
+> The Docker image of `sbt-conductr-sandbox` contains the single node version of ConductR. It is not recommended to use this version in production.
 
 The following description is intended to provide a taste of what `sbt-conductr-sandbox` can do for you. Please refer to [its documentation](https://github.com/typesafehub/sbt-conductr-sandbox) for more details.
 
 ## Setting up sbt-conductr-sandbox
 
-Add the sbt plugin to the `project/plugins.sbt` of your project:
+1. Add the sbt plugin to the `project/plugins.sbt` of your project:
 
-```scala
-addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.0.7")
-```
+    ```scala
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.1.2")
+    ```
+2. Add the ConductR image version to the `build.sbt`:    
 
-The plugin is then enabled automatically for your entire project.
+    ```scala
+    SandboxKeys.imageVersion in Global := "1.0.11"
+    ```
+
+3. Reload the sbt session:
+
+    ```scala
+    reload
+    ```    
+
+The plugin is then enabled automatically for your entire project. Additionally it includes `sbt-conductr` and `sbt-bundle` so these plugins doesn't need to be added separately. The `conduct` commands such as `conduct info` will automatically communicate with the Docker cluster managed by the sandbox. There is no need to set ConductR's ip address with `controlServer` manually.
 
 ## Using sbt-conductr-sandbox
 
@@ -54,7 +65,7 @@ The `visualization` feature provides a web interface to visualize the ConductR c
 
 [[images/visualizer_simple.png]]
 
-The `logging` feature consolidates the logging output of ConductR itself and the bundles that it executes. To view the consolidated log messsages enable [sbt-conductr](https://github.com/sbt/sbt-conductr) and then run:
+The `logging` feature consolidates the logging output of ConductR itself and the bundles that it executes. To view the consolidated log messsages run:
 
 ```scala
 conduct logs conductr-elasticsearch
@@ -120,7 +131,3 @@ To stop the ConductR sandbox use:
 ```scala
 sandbox stop
 ```
-
-### Using sbt-conductr-sandbox with sbt-conductr
-
-If the `sbt-conductr` plugin is added to your project then the `conduct` commands such as `conduct info` will automatically communicate with the Docker cluster managed by the sandbox. There is no need to set ConductR's ip address with `controlServer` manually.
