@@ -1,3 +1,11 @@
+# Setting up for non-production
+
+Sometimes it is useful to setup a Linux environment that is close to production, but is not production, for example a QA environment. While production environments are configured to stay up indefinitely, non-production environments may come and go when not in use. This is often the case in order to save money, say, with EC2.
+
+When setting up a non-production environment be sure to disable a ConductR node's ability to automatically re-form the cluster it had prior to being shutdown. While this feature is useful for individual production nodes (it provides self-healing after a split-brain style scenario where a minority of nodes are restarted automatically), for non-production environments it can prevent an entire cluster from re-forming given a completely fresh restart. Again, fresh restarts are typical for non-production style environments.
+
+In order to prevent ConductR from attempting to recover its former cluster, uncomment the `--seed-node-file-disabled` option within the `application.ini` of each ConductR installation.
+
 # Cluster resiliency considerations
 
 In order to achieve cluster resilience, it’s recommended for the cluster to be separated into at least 3 distinct parts, e.g.
