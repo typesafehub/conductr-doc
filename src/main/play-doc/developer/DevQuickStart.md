@@ -21,7 +21,7 @@ The focus of this section is to get started quickly. The full documentation of t
 * [Docker](https://www.docker.com/)
 * [sbt](http://www.scala-sbt.org/download.html)
 
-Docker is required so that you can run the ConductR cluster as if it were running on a number of machines in your network. You won't need to understand much about Docker for ConductR other than installing it as described in its "getting started" section. If you are on Windows or Mac then you will become familiar with `docker machine` which is a utility that controls a virtual machine for the purposes of running Docker.
+Docker is required so that you can run the ConductR cluster as if it were running on a number of machines in your network. You won't need to understand much about Docker for ConductR other than installing it as described in its "Get Started" section. If you are on Windows or Mac then you will become familiar with `docker-machine` which is a utility that controls a virtual machine for the purposes of running Docker.
 
 sbt is our interactive build tool. Reading the getting started guide for sbt is recommended.
 
