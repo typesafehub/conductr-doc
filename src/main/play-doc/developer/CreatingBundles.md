@@ -58,7 +58,7 @@ ConductR provides a specific ip address for the application to bind. Binding the
 Here is a Play example of declaring the interface and port to bind to:
 
 ```scala
-BundleKeys.startCommand += "-Dhttp.address=$WEB_BIND_IP -Dhttp.port=$WEB_BIND_PORT"
+javaOptions in Bundle ++= Seq("-Dhttp.address=$WEB_BIND_IP", "-Dhttp.port=$WEB_BIND_PORT")
 ```
 
 `WEB_BIND_IP` and `WEB_BIND_PORT` are environment variables provided by ConductR. ConductR will generate a few useful environment variables for your bundle component. Check out [sbt-bundle's documentation](https://github.com/sbt/sbt-bundle#typesafe-conductr-bundle-plugin) for a comprehensive statement of its capabilities and settings, particularly around configuring your service's endpoints.

@@ -60,7 +60,7 @@ play.modules.enabled += "com.typesafe.conductr.bundlelib.play.ConductRLifecycleM
     BundleKeys.diskSpace := 10.MB
     BundleKeys.roles := Set("web")
     BundleKeys.endpoints := Map("my-app" -> Endpoint("http", services = Set(URI("http://:9000"))))
-    BundleKeys.startCommand += "-Dhttp.address=$MY_APP_BIND_IP -Dhttp.port=$MY_APP_BIND_PORT"    
+    javaOptions in Bundle ++= Seq("-Dhttp.address=$MY_APP_BIND_IP", "-Dhttp.port=$MY_APP_BIND_PORT")
     ```
 3. Reload the sbt session:
 
