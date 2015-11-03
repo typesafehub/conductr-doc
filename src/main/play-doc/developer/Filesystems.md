@@ -2,7 +2,7 @@
 
 File systems in distributed systems should be regarded as emphemeral. Your application or service can come and go for many reasons e.g. as the result of scaling up and down, a network partition occuring and then a ConductR node being ejected from the cluster and so forth.
 
-When the sbt-native-packager is used i.e. when using sbt-bundle, and the default script for starting your application or service is invoked, it will see that the current working directory as that of your bundle component. For example, a bundle may have the following layout:
+When the sbt-native-packager is used i.e. when using sbt-bundle, and the default script for starting your application or service is invoked, it will see that the current working directory as that of your bundle. For example, a bundle may have the following layout:
 
 ```
 bundle.conf
@@ -12,7 +12,11 @@ myapp-0.1.0
   lib
 ```
 
-In the above case, `myapp-0.1.0` will be the current working directory for `myapp-0.1.0` component.
+In the above case, `bundle.conf` and the `myapp-0.1.0` directory will be within the current working directory for any component that runs. The JDK `user.dir` property correctly yields this location. Therefore if you need to access files within your bundle you can do so relative to `user.dir` e.g.:
+
+```scala
+new File(sys.props("user.dir"))
+```
 
 When ConductR starts your bundle's components it will unzip into a temporary location on the disk of ConductR's host. When your bundle's components are entirely stopped, then that location will be removed from disk. Do not rely on data written being available from there again.
 
