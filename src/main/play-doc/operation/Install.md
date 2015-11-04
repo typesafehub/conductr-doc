@@ -20,7 +20,7 @@ Now head over to the [[Developers guide|DevQuickStart]] to get started.
 
 # Linux Installation
 
-> This is a tutorial for installing ConductR on linux in production mode. It shows how this is done for a small cluster of 3 machines.
+> This is a tutorial for installing ConductR on linux in production mode. It shows how this is done for a small cluster of 3 machines. If you are looking for a non-production Linux installation (for example, a QA environment that is close to production), be sure to read about [how to setup for non-production](ClusterSetupConsiderations#Setting-up-for-non-production) after reading the remainder of this page.
 
 ## Prerequisites
 
@@ -245,7 +245,7 @@ That's it! You now have a cluster of three ConductR nodes ready to start running
 
 ## Starting and Stopping ConductR
 
-ConductR has been designed to be "always on". If you wish to use ConductR as a transient test environment that can be stopped and started at will (for example) then you must become familiar with [how to restart the entire cluster](ClusterTroubleshooting#Restarting-the-ConductR-Cluster).
+ConductR has been designed to be "always on". If you wish to use ConductR as a transient test environment that can be stopped and started at will (for example) then you must become familiar with [how to setup for non-production](ClusterSetupConsiderations#Setting-up-for-non-production). Otherwise individual ConductR services may be stopped and started at will. Existing executions will be re-scheduled for execution elsewhere and once the new service is started, it can also receive new executions.
 
 # EC2 Installation
 

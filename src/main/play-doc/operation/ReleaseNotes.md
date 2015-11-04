@@ -1,5 +1,16 @@
 # ConductR release notes
 
+## 1.0.12
+
+* Improved the reliability of connectivity with the experimental Elasticsearch logging feature.
+* Released a Docker based image of the full ConductR which may be used by the sandbox for development purposes only. The image name is "typesafe-docker-registry-for-subscribers-only.bintray.io/conductr/conductr" and is now the default for sbt-conductr-sandbox.
+* Improved the Visualizer sample with a means to filter bundles.
+* Corrected the index name used by ConductR for the experimental Elasticsearch functionality.
+* Now permits the disablement of reading the conf/seed-nodes file on startup
+  for non-production style environments. For more information please refer to the `--seed-node-file-disabled` option of your distribution's `conf/application.ini`.
+* Seed nodes are now provided in an order of their distance from the current node. This provides ConductR with the best chance of seeding with networks that may exist on other availability zones or data centers.
+* Fixed a bug where requests to load or scale a bundle could accumulate despite expiring and result in a situation where no further loads or scales would be accepted.
+
 ## 1.0.11
 
 * The check command was not indicating a failure exit status when failures occurred
