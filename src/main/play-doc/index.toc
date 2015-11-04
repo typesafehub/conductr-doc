@@ -1,5 +1,5 @@
 Home:Home
-introduction:Introduction
+general:General
 operation:Operations guide
 developer:Developers guide
 api:API
