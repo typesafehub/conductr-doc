@@ -4,6 +4,6 @@ ConductR is a solution for managing Typesafe Reactive Platform applications acro
 
 As an operator you can directly head over to the [[Operations guide|Install]]. To get started as a developer go to the [[Developers quick start guide|DevQuickStart]].
 
-If you want to first get an overview of ConductR head over to the [[Introduction|Overview]] section.
+If you want to first get an overview of ConductR head over to the [[General|Overview]] section.
 
 @toc@
