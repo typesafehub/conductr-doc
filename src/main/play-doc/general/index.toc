@@ -1,3 +1,4 @@
 Overview:Overview
 ConductrTerms:ConductR terms
 ReleaseNotes:Release notes
+MigrationGuide:Migration Guide

@@ -4,4 +4,3 @@ Logging:Logging
 ManageServices:Managing ConductR services
 ClusterSetupConsiderations:Cluster setup considerations
 ClusterTroubleshooting:Cluster troubleshooting
-MigrationGuide:Migration Guide
