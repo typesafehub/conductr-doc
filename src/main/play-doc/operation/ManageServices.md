@@ -52,3 +52,11 @@ Larger clusters on the other hand will generally want more specialization and th
 ## Service Monitoring
 
 For best resilience, the ConductR service daemons should be monitored and restarted in the event of failure. [sbt-native-packager](https://github.com/sbt/sbt-native-packager) has experimental [systemd support](http://www.scala-sbt.org/sbt-native-packager/archetypes/java_server/customize.html#systemd-support). As systemd support matures, ConductR will made available as a package manged by systemd with restart on failure enabled. Until that time, third party daemon monitors can be utilized to provide restart on failure.
+
+# Upgrading ConductR
+
+A running cluster can be upgraded without downtime either at the node or cluster level. On a per node basis, new updated nodes are introduced to the cluster while the old nodes are removed from the cluster. On a per cluster basis, incoming requests are directed from the old cluster to the new cluster using load balancer membership or DNS changes. Per node upgrades are generally easier, however they cannot be performed across ConductR releases that are marked as not compatible with previous releases.
+
+To perform a per node upgrade, introduce new cluster members to the cluster. The new nodes could be created with updated versions of Conductr, Java, the Linux operating system or any other component installed during provisioning. As old members are removed from the cluster, bundles will be relocated to the new resources. Be careful to ensure that sufficient resources for all roles are provisioned. Allow time for bundle relocation and replication before removing old members. Stopping the sole member providing a role leaves no members for bundles requiring that role to relocate to. With no nodes to replicate to and run on, affected bundles would require re-loading of the bundle after the role was re-provisioned in order to run again.
+
+To perform a per cluster upgrade, build a new cluster in isolation from the current running cluster. Once the new cluster is fully prepared, cut-over traffic using DNS, load balancers, routers, etc. Per cluster upgrades may require more complicated strategies for data storage managed by the cluster.
