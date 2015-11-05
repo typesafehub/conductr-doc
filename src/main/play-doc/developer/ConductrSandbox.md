@@ -13,13 +13,9 @@ The following description is intended to provide a taste of what `sbt-conductr-s
 1. Add the sbt plugin to the `project/plugins.sbt` of your project:
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.1.2")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.2.1")
     ```
-2. Add the ConductR image version to the `build.sbt`:    
-
-    ```scala
-    SandboxKeys.imageVersion in Global := "1.0.11"
-    ```
+2. Configure the `build.sbt` as described by the [ConductR download page](https://www.typesafe.com/product/conductr/developer).
 
 3. Reload the sbt session:
 
