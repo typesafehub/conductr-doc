@@ -49,7 +49,7 @@ play.modules.enabled += "com.typesafe.conductr.bundlelib.play.ConductRLifecycleM
 1. Add `sbt-conductr-sandbox` to the `project/plugins.sbt`:
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.1.2")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.2.1")
     ```
 2. Specify `sbt-bundle` keys in the `build.sbt`:   
 
@@ -81,16 +81,14 @@ As you move through our documentation you will  come across references to Conduc
 
 Now we can go ahead an start the ConductR cluster locally.
 
-1. Add the ConductR image version to the `build.sbt`:
+1. Configure the `build.sbt` as described by the [ConductR download page](https://www.typesafe.com/product/conductr/developer).
 
-    ```scala
-    SandboxKeys.imageVersion in Global := "1.0.11"
-    ```    
 2. Reload the sbt session:
 
     ```scala
     reload
-    ```     
+    ``` 
+        
 3. Start ConductR cluster with visualization feature:
     
     ```scala
