@@ -4,7 +4,7 @@ A Developer Sandbox Docker image is available so that developers can validate an
 
 The ConductR Developer Sandbox is available to freely all developers. To request access to the sandbox, login to Typesafe.com to visit the [ConductR Developer page](https://www.typesafe.com/product/conductr/developer).
 
-> The Docker image of `sbt-conductr-sandbox` contains the single node version of ConductR. It is not recommended to use this version in production.
+> The Docker image of `sbt-conductr-sandbox` contains the full version of ConductR. However, it is not recommended to use this version in production because it is pre-configured for non production scenarios and because this ConductR version is started inside a Docker container.
 
 The following description is intended to provide a taste of what `sbt-conductr-sandbox` can do for you. Please refer to [its documentation](https://github.com/typesafehub/sbt-conductr-sandbox) for more details.
 
