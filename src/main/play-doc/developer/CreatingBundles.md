@@ -16,7 +16,7 @@ Note that the description here is just to provide a feel of how `sbt-bundle` is 
 Firstly add the sbt plugin, typically to your project's `project/plugins.sbt` file (check [here](https://github.com/sbt/sbt-bundle#usage) for the latest release of sbt-bundle):
 
 ```scala
-addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "1.0.0")
+addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "1.2.1")
 ```
 
 > If you already added `sbt-conductr-sandbox` then you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr-sandbox`.
