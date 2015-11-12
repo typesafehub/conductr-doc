@@ -44,10 +44,10 @@ sbt bundle:dist
 Take a look in your `target/bundle` folder - you'll see your new bundle with a hash string, something like this:
 
 ```
-visualizer-v0-b07601b2bd015c94de0514ad698760d0396cb6f95881396d37981b271c0e7142.zip
+visualizer-v1.1-b07601b2bd015c94de0514ad698760d0396cb6f95881396d37981b271c0e7142.zip
 ```
 
-i.e. the name of your project (`visualizer`), its version `0.1.0` and the hash value representing its contents (`b07601b2bd015c94de0514ad698760d0396cb6f95881396d37981b271c0e7142`).
+i.e. the name of your project (`visualizer`), its version `1.1` and the hash value representing its contents (`b07601b2bd015c94de0514ad698760d0396cb6f95881396d37981b271c0e7142`).
 
 Your bundle is now ready for loading into ConductR. What happened there is a few sensible defaults were chosen for you, a `bundle.conf` was generated, and a zip was built containing the output of a Universal build. The plugin then generated a [secure hash](http://en.wikipedia.org/wiki/Secure_Hash_Algorithm) of the zip contents and encoded it in the filename. The secure hash provides a version of your bundle that ConductR is able to verify and thus assure you of its integrity. You can derive a reasonable level of confidence that version xyz of your application or service is always going to be xyz; something that makes you happy if you ever need to reliably rollback to an older version of your software!
 

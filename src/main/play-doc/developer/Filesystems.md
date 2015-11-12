@@ -6,13 +6,13 @@ When the sbt-native-packager is used i.e. when using sbt-bundle, and the default
 
 ```
 bundle.conf
-myapp-0.1.0
+myapp
   bin
   conf
   lib
 ```
 
-In the above case, `bundle.conf` and the `myapp-0.1.0` directory will be within the current working directory for any component that runs. The JDK `user.dir` property correctly yields this location. Therefore if you need to access files within your bundle you can do so relative to `user.dir` e.g.:
+In the above case, `bundle.conf` and the `myapp` directory will be within the current working directory for any component that runs. The JDK `user.dir` property correctly yields this location. Therefore if you need to access files within your bundle you can do so relative to `user.dir` e.g.:
 
 ```scala
 new File(sys.props("user.dir"))
