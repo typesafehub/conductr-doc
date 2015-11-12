@@ -12,7 +12,7 @@ ConductR's control protocol is RESTful and has the following functional scope:
 
 ## Load a bundle
 
-Request an upload a bundle and optionally, its configuration to ConductR. 
+Request an upload a bundle and optionally, its configuration to ConductR.
 
 Here is an example of uploading a Visualizer bundle without any configuration. [Curl](http://curl.haxx.se/) is being used.
 
@@ -27,7 +27,7 @@ curl \
   --form compatibilityVersion=1 \
   --form systemVersion=1 \
   --form bundle=@visualizer/target/bundle/visualizer-0.1.0-cfe2a36795fd78507c4d2b5817152ae449e4acd9d5ea94d1f604d2c11417e40f.zip \
-  http://localhost:9005/v1.1/bundles
+  http://localhost:9005/v2/bundles
 ```
 
 ### Request
@@ -87,7 +87,7 @@ Request a scale (run) of a bundle to the value provided. A scale value of 0 is i
 ### Request
 
 ```
-PUT /v1.1/bundles/{bundleIdOrName}?scale={scale}
+PUT /v2/bundles/{bundleIdOrName}?scale={scale}
 ```
 
 Field            | Description
@@ -138,7 +138,7 @@ Request to unload a bundle that has been stopped.
 ### Request
 
 ```
-DELETE /v1.1/bundles/{bundleIdOrName}
+DELETE /v2/bundles/{bundleIdOrName}
 ```
 
 Field            | Description
@@ -187,7 +187,7 @@ Retrieve the current state of bundles within ConductR.
 ### Request
 
 ```
-GET /v1.1/bundles
+GET /v2/bundles
 ```
 
 ### Responses
@@ -304,7 +304,7 @@ Retrieve the current state of ConductR cluster members.
 ### Request
 
 ```
-GET /v1.1/members
+GET /v2/members
 ```
 
 ### Responses
@@ -362,7 +362,7 @@ Request the log messages of a bundle. Log messages with the latest timestamp are
 ### Request
 
 ```
-GET /v1.1/bundles/{bundleIdOrName}/logs?count={count}
+GET /v2/bundles/{bundleIdOrName}/logs?count={count}
 ```
 
 Field            | Description
@@ -395,7 +395,7 @@ message   | The log message.
 
 #### Failure
 
-``` 
+```
 HTTP/1.1 400 Bad Request
 
 Invalid fetch size of {count} where the max is 100 for bundle '{bundleIdOrName}'
@@ -403,7 +403,7 @@ Invalid fetch size of {count} where the max is 100 for bundle '{bundleIdOrName}'
 
 The given `count` parameter is not valid number between 1 and 100.
 
-``` 
+```
 HTTP/1.1 404 Not found
 
 No bundle found by the specified Bundle ID/name: '{bundleIdOrName}'
@@ -424,7 +424,7 @@ Request the events of a bundle. Events with the latest timestamp are going to be
 ### Request
 
 ```
-GET /v1.1/bundles/{bundleIdOrName}/events?count={count}
+GET /v2/bundles/{bundleIdOrName}/events?count={count}
 ```
 
 Field            | Description
@@ -459,7 +459,7 @@ description | Event description
 
 The given `count` parameter is not valid number between 1 and 100.
 
-``` 
+```
 HTTP/1.1 404 Not found
 
 No bundle found by the specified Bundle ID/name: '{bundleIdOrName}'
