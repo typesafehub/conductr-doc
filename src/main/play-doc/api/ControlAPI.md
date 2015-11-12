@@ -18,15 +18,8 @@ Here is an example of uploading a Visualizer bundle without any configuration. [
 
 ```bash
 curl \
-  --form system=sys \
-  --form bundleName=http-server \
-  --form nrOfCpus=2 \
-  --form memory=104857600 \
-  --form diskSpace=104857600 \
-  --form roles=web-server \
-  --form compatibilityVersion=1 \
-  --form systemVersion=1 \
-  --form bundle=@visualizer/target/bundle/visualizer-0.1.0-cfe2a36795fd78507c4d2b5817152ae449e4acd9d5ea94d1f604d2c11417e40f.zip \
+  --form bundleConf=@visualizer/target/bundle/bundle/tmp/bundle.conf \
+  --form bundle=@visualizer/target/bundle/visualizer-v1.1-cfe2a36795fd78507c4d2b5817152ae449e4acd9d5ea94d1f604d2c11417e40f.zip \
   http://localhost:9005/v2/bundles
 ```
 
@@ -40,14 +33,8 @@ The following fields are provided as multipart/form-data fields:
 
 Field                | Description
 ---------------------|------------
-system               | As per its equivalent property in [bundle.conf](BundleConfiguration)
-bundleName           | As per its equivalent property in [bundle.conf](BundleConfiguration)
-nrOfCpus             | As per its equivalent property in [bundle.conf](BundleConfiguration)
-memory               | As per its equivalent property in [bundle.conf](BundleConfiguration)
-diskSpace            | As per its equivalent property in [bundle.conf](BundleConfiguration)
-roles                | As per its equivalent property in [bundle.conf](BundleConfiguration)
-compatibilityVersion | As per its equivalent property in [bundle.conf](BundleConfiguration)
-systemVersion        | As per its equivalent property in [bundle.conf](BundleConfiguration)
+bundleConf           | The file that is the [bundle.conf](BundleConfiguration) of the bundle being uploaded. Typically this will be the [bundle.conf](BundleConfiguration) contained within the bundle file.
+bundleConfOverlay    | Optional. The file that is the [bundle.conf](BundleConfiguration) containing the overridden configuration values. Typically specified to provide deployment target specific configuration. Alternatively, this will be [bundle.conf](BundleConfiguration) that is optionally contained within the [configuration bundle](#Configuration-Bundles).
 bundle               | The file that is the bundle. The filename is important with its hex digest string and is required to be consistent with the SHA-256 hash of the bundle's contents. Any inconsistency between the hashes will result in the load being rejected.
 configuration        | Optional. Similar in form to the bundle, only that is the file that describes the configuration. Again any inconsistency between the hex digest string in the filename, and the SHA-256 digest of the actual contents will result in the load being rejected.
 
