@@ -1,5 +1,17 @@
 # ConductR release notes
 
+## 1.0.13
+
+
+* The Docker based image now supports ConductR node role assignment via sbt-conductr-sandbox and the forthcoming CLI.
+* Improved the Visualizer for iOS and general mobile operation.
+* Fixed a problem where bundles that report no replications were not able to be unloaded.
+* Fixed a problem introduced by 1.0.12 where the seed-nodes file was being written to during the shutdown of a ConductR member, and could thus write incorrect host data and prevent the service from restarting properly.
+* Upgraded our usage of sbt-native-packager so that relocatable RPMs and symlinks now work properly.
+* Fixed an issue where a stacktrace appeared given a condition where a single ConductR is yet to receive cluster member information. Although the effect was benign, the log file is a bit tidier.
+* Leader membership changes weren't handled insofar as need to update bundle state. This has now been corrected.
+* ConductR cluster changes and the effects on replication and scaling have been improved further.
+
 ## 1.0.12
 
 * Improved the reliability of connectivity with the experimental Elasticsearch logging feature.
