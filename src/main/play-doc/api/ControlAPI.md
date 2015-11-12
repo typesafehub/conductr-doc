@@ -74,13 +74,14 @@ Request a scale (run) of a bundle to the value provided. A scale value of 0 is i
 ### Request
 
 ```
-PUT /v2/bundles/{bundleIdOrName}?scale={scale}
+PUT /v2/bundles/{bundleIdOrName}?scale={scale}&affinity={bundleIdOrName}
 ```
 
 Field            | Description
 -----------------|------------
 bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading.
 scale            | The number of instances of the bundle to start. A scale value of 0 indicates that all instances should be stopped.
+affinity         | Optional. Identifier to other bundle. If specified, the current bundle will be run on the same host where the specified bundle is currently running.
 
 ### Responses
 
@@ -198,7 +199,7 @@ Content-Type: application/json
   {
     "bundleId": "{bundleId}",
     "bundleDigest": "{bundleDigest}",
-    "configurationDigest", "{configurationDigest}",
+    "configurationDigest": "{configurationDigest}",
     "attributes": {
       "system": "{system}",
       "nrOfCpus": {nrOfCpus},
@@ -214,6 +215,10 @@ Content-Type: application/json
           "services": {services}
         }
       }
+    },
+    "bundleScale": {
+      "scale": {scale},
+      "affinity": "{otherBundleId}"
     },
     "bundleExecutions": [
       {
@@ -248,6 +253,7 @@ Section             | Description
 --------------------|------------
 attributes          | Attributes provide meta information about the bundle that ConductR requires in order to make various decisions such as scheduling the replication of a bundle. The meta information is provided so that a bundle's configuration need not need to be extracted from the bundle or configuration archive. Indeed, the archive(s) may not have been fully streamed at the point where this meta data is required hence it being provided in addition to them.
 bundleConfig        | Bundle configuration provides information that has been extracted from a bundle configuration and so will not exist if a bundle is not yet running within the ConductR cluster.
+bundleScale         | Provides the information of scale requested and so will not exist if a bundle has not been requested to run within ConductR cluster.
 bundleExecutions    | Bundle executions describes what is running and where in the context of a bundle and so will not be present when there are none running.
 bundleInstallations | Bundle installations describe where the bundle has been replicated i.e. written to a file system. The array may be empty in the case where the first replication has not yet completed.
 endpoints           | The endpoint declaration of a bundle component expressed as an object.
@@ -257,6 +263,7 @@ endpoints           | The endpoint declaration of a bundle component expressed a
 Field               | Description
 --------------------|------------
 address             | The location of a ConductR member.
+affinity            | The bundle identifier that references a different bundle. If specified, the current bundle will be run on the same host where the specified bundle is currently running.
 bindPort            | The network port that is used by a bundle component to bind to an interface. This may be the same value as the `hostPort` when running outside of a container.
 bindProtocol        | The network protocol that is used by a bundle component to bind to an interface.
 bundleDigest        | The hex form of a digest representing the contents of the bundle.
@@ -274,6 +281,7 @@ isStarted           | `true` if the bundle has signalled that it has started suc
 memory              | The amount of memory required when a bundle is running. Values are expressed in bytes.
 nrOfCpus            | The number of cpus required when a bundle is running. This value can be expressed as a fraction.
 roles               | An array of strings representing the roles that a bundle plays in a ConductR cluster. These roles are matched for eligibility with cluster members when searching for one to load and scale on. Only cluster members with matching roles will be selected.
+scale               | The requested number of instance(s) of the bundle to be started and run.
 services            | An array of string URIs providing the addresses for a given endpoint's proxying.
 system              | The name of a system that the bundle belongs to. Systems are strings that may be used by a number of bundles in order to associate them. ConductR provides a guarantee that bundles belonging to the same system are started with the first one in isolation to the starting of the rest. This behavior can be leverage to form clusters where the first node must form the cluster and other nodes may then join it.
 uid                 | The unique identifier of a ConductR member within an `address`
