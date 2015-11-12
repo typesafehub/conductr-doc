@@ -12,7 +12,7 @@ The API can be used by any HTTP client, but ConductR comes with CLI tool impleme
 Firstly `pip3` is required:
 
 ```bash
-sudo apt-get install python3-setuptools 
+sudo apt-get install python3-setuptools
 sudo easy_install3 -U pip
 ```
 
@@ -120,7 +120,7 @@ conduct info --ip 172.17.0.1
 
 ```bash
 ID               NAME              #REP  #STR  #RUN
-23391d4-3cc322b  visualizer-0.1.0  3     0     0
+23391d4-3cc322b  visualizer        3     0     0
 ```
 
 Run Visualizer by executing:
@@ -133,7 +133,7 @@ Whenever you need to refer to a bundle you can use a prefix of or a full bundle 
 
 ``` bash
 ID               NAME              #REP  #STR  #RUN
-23391d4-3cc322b  visualizer-0.1.0  3     0     1
+23391d4-3cc322b  visualizer        3     0     1
 ```
 
 ## Accessing services provided by bundles
@@ -148,7 +148,7 @@ You should see that there is one service called `9000/visualizer` provided by th
 
 ```bash
 SERVICE       BUNDLE ID       BUNDLE NAME       STATUS
-http://:9999  23391d4-3cc322b visualizer-0.1.0  Running
+http://:9999  23391d4-3cc322b visualizer        Running
 ```
 
 To access Visualizer point your browser to any ConductR node and add the name of the service to the URL, e.g. `http://172.17.0.1:9999`. Alternatively, if you can only access ConductR nodes using SSH, create a SSH tunnel that tunnels local port from your machine to the Visualizer service `ssh -L 8080:172.17.0.1:9999 172.17.0.1` (don't forget to substitute the `172.17.0.1`) and then access Visualizer by pointing your browser to `http://localhost:9999`.
@@ -162,4 +162,3 @@ conduct run --ip 172.17.0.1 --scale 2 visualizer
 You should see another green circle start spinning, which means that another instance of Visualizer was started. Play around with more `conduct` commands and see how it affects ConductR cluster visualization.
 
 Our aim is to make using Typesafe ConductR by operators akin to using Play by developers; a joyful and productive experience! ConductR starts to shine when used in the context of managing more than 2 nodes; a common scenario for reactive applications. Go and spin those nodes up!
-

@@ -12,22 +12,15 @@ ConductR's control protocol is RESTful and has the following functional scope:
 
 ## Load a bundle
 
-Request an upload a bundle and optionally, its configuration to ConductR. 
+Request an upload a bundle and optionally, its configuration to ConductR.
 
 Here is an example of uploading a Visualizer bundle without any configuration. [Curl](http://curl.haxx.se/) is being used.
 
 ```bash
 curl \
-  --form system=sys \
-  --form bundleName=http-server \
-  --form nrOfCpus=2 \
-  --form memory=104857600 \
-  --form diskSpace=104857600 \
-  --form roles=web-server \
-  --form compatibilityVersion=1 \
-  --form systemVersion=1 \
-  --form bundle=@visualizer/target/bundle/visualizer-0.1.0-cfe2a36795fd78507c4d2b5817152ae449e4acd9d5ea94d1f604d2c11417e40f.zip \
-  http://localhost:9005/v1.1/bundles
+  --form bundleConf=@visualizer/target/bundle/bundle/tmp/bundle.conf \
+  --form bundle=@visualizer/target/bundle/visualizer-v1.1-cfe2a36795fd78507c4d2b5817152ae449e4acd9d5ea94d1f604d2c11417e40f.zip \
+  http://localhost:9005/v2/bundles
 ```
 
 ### Request
@@ -40,14 +33,8 @@ The following fields are provided as multipart/form-data fields:
 
 Field                | Description
 ---------------------|------------
-system               | As per its equivalent property in [bundle.conf](BundleConfiguration)
-bundleName           | As per its equivalent property in [bundle.conf](BundleConfiguration)
-nrOfCpus             | As per its equivalent property in [bundle.conf](BundleConfiguration)
-memory               | As per its equivalent property in [bundle.conf](BundleConfiguration)
-diskSpace            | As per its equivalent property in [bundle.conf](BundleConfiguration)
-roles                | As per its equivalent property in [bundle.conf](BundleConfiguration)
-compatibilityVersion | As per its equivalent property in [bundle.conf](BundleConfiguration)
-systemVersion        | As per its equivalent property in [bundle.conf](BundleConfiguration)
+bundleConf           | The file that is the [bundle.conf](BundleConfiguration) of the bundle being uploaded. Typically this will be the [bundle.conf](BundleConfiguration) contained within the bundle file.
+bundleConfOverlay    | Optional. The file that is the [bundle.conf](BundleConfiguration) containing the overridden configuration values. Typically specified to provide deployment target specific configuration. Alternatively, this will be [bundle.conf](BundleConfiguration) that is optionally contained within the [configuration bundle](#Configuration-Bundles).
 bundle               | The file that is the bundle. The filename is important with its hex digest string and is required to be consistent with the SHA-256 hash of the bundle's contents. Any inconsistency between the hashes will result in the load being rejected.
 configuration        | Optional. Similar in form to the bundle, only that is the file that describes the configuration. Again any inconsistency between the hex digest string in the filename, and the SHA-256 digest of the actual contents will result in the load being rejected.
 
@@ -87,13 +74,14 @@ Request a scale (run) of a bundle to the value provided. A scale value of 0 is i
 ### Request
 
 ```
-PUT /v1.1/bundles/{bundleIdOrName}?scale={scale}
+PUT /v2/bundles/{bundleIdOrName}?scale={scale}&affinity={bundleIdOrName}
 ```
 
 Field            | Description
 -----------------|------------
 bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading.
 scale            | The number of instances of the bundle to start. A scale value of 0 indicates that all instances should be stopped.
+affinity         | Optional. Identifier to other bundle. If specified, the current bundle will be run on the same host where the specified bundle is currently running.
 
 ### Responses
 
@@ -138,7 +126,7 @@ Request to unload a bundle that has been stopped.
 ### Request
 
 ```
-DELETE /v1.1/bundles/{bundleIdOrName}
+DELETE /v2/bundles/{bundleIdOrName}
 ```
 
 Field            | Description
@@ -187,7 +175,7 @@ Retrieve the current state of bundles within ConductR.
 ### Request
 
 ```
-GET /v1.1/bundles
+GET /v2/bundles
 ```
 
 ### Responses
@@ -211,7 +199,7 @@ Content-Type: application/json
   {
     "bundleId": "{bundleId}",
     "bundleDigest": "{bundleDigest}",
-    "configurationDigest", "{configurationDigest}",
+    "configurationDigest": "{configurationDigest}",
     "attributes": {
       "system": "{system}",
       "nrOfCpus": {nrOfCpus},
@@ -227,6 +215,10 @@ Content-Type: application/json
           "services": {services}
         }
       }
+    },
+    "bundleScale": {
+      "scale": {scale},
+      "affinity": "{otherBundleId}"
     },
     "bundleExecutions": [
       {
@@ -261,6 +253,7 @@ Section             | Description
 --------------------|------------
 attributes          | Attributes provide meta information about the bundle that ConductR requires in order to make various decisions such as scheduling the replication of a bundle. The meta information is provided so that a bundle's configuration need not need to be extracted from the bundle or configuration archive. Indeed, the archive(s) may not have been fully streamed at the point where this meta data is required hence it being provided in addition to them.
 bundleConfig        | Bundle configuration provides information that has been extracted from a bundle configuration and so will not exist if a bundle is not yet running within the ConductR cluster.
+bundleScale         | Provides the information of scale requested and so will not exist if a bundle has not been requested to run within ConductR cluster.
 bundleExecutions    | Bundle executions describes what is running and where in the context of a bundle and so will not be present when there are none running.
 bundleInstallations | Bundle installations describe where the bundle has been replicated i.e. written to a file system. The array may be empty in the case where the first replication has not yet completed.
 endpoints           | The endpoint declaration of a bundle component expressed as an object.
@@ -270,6 +263,7 @@ endpoints           | The endpoint declaration of a bundle component expressed a
 Field               | Description
 --------------------|------------
 address             | The location of a ConductR member.
+affinity            | The bundle identifier that references a different bundle. If specified, the current bundle will be run on the same host where the specified bundle is currently running.
 bindPort            | The network port that is used by a bundle component to bind to an interface. This may be the same value as the `hostPort` when running outside of a container.
 bindProtocol        | The network protocol that is used by a bundle component to bind to an interface.
 bundleDigest        | The hex form of a digest representing the contents of the bundle.
@@ -287,6 +281,7 @@ isStarted           | `true` if the bundle has signalled that it has started suc
 memory              | The amount of memory required when a bundle is running. Values are expressed in bytes.
 nrOfCpus            | The number of cpus required when a bundle is running. This value can be expressed as a fraction.
 roles               | An array of strings representing the roles that a bundle plays in a ConductR cluster. These roles are matched for eligibility with cluster members when searching for one to load and scale on. Only cluster members with matching roles will be selected.
+scale               | The requested number of instance(s) of the bundle to be started and run.
 services            | An array of string URIs providing the addresses for a given endpoint's proxying.
 system              | The name of a system that the bundle belongs to. Systems are strings that may be used by a number of bundles in order to associate them. ConductR provides a guarantee that bundles belonging to the same system are started with the first one in isolation to the starting of the rest. This behavior can be leverage to form clusters where the first node must form the cluster and other nodes may then join it.
 uid                 | The unique identifier of a ConductR member within an `address`
@@ -304,7 +299,7 @@ Retrieve the current state of ConductR cluster members.
 ### Request
 
 ```
-GET /v1.1/members
+GET /v2/members
 ```
 
 ### Responses
@@ -362,7 +357,7 @@ Request the log messages of a bundle. Log messages with the latest timestamp are
 ### Request
 
 ```
-GET /v1.1/bundles/{bundleIdOrName}/logs?count={count}
+GET /v2/bundles/{bundleIdOrName}/logs?count={count}
 ```
 
 Field            | Description
@@ -395,7 +390,7 @@ message   | The log message.
 
 #### Failure
 
-``` 
+```
 HTTP/1.1 400 Bad Request
 
 Invalid fetch size of {count} where the max is 100 for bundle '{bundleIdOrName}'
@@ -403,7 +398,7 @@ Invalid fetch size of {count} where the max is 100 for bundle '{bundleIdOrName}'
 
 The given `count` parameter is not valid number between 1 and 100.
 
-``` 
+```
 HTTP/1.1 404 Not found
 
 No bundle found by the specified Bundle ID/name: '{bundleIdOrName}'
@@ -424,7 +419,7 @@ Request the events of a bundle. Events with the latest timestamp are going to be
 ### Request
 
 ```
-GET /v1.1/bundles/{bundleIdOrName}/events?count={count}
+GET /v2/bundles/{bundleIdOrName}/events?count={count}
 ```
 
 Field            | Description
@@ -459,7 +454,7 @@ description | Event description
 
 The given `count` parameter is not valid number between 1 and 100.
 
-``` 
+```
 HTTP/1.1 404 Not found
 
 No bundle found by the specified Bundle ID/name: '{bundleIdOrName}'
