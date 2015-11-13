@@ -28,7 +28,7 @@ Akka module configuration can also be set using this file. For example, to assig
 
 ```bash
  -Dakka.cluster.roles.0=megaIOPS
- ```
+```
 With this setting only bundles with a `BundleKeys.roles` of `megaIOPS` will be scheduled to execute on this node.
 
 The ConductR service must be restarted for changes to this file to take effect.
