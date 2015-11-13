@@ -29,7 +29,7 @@ Akka module configuration can also be set using this file. For example, to assig
 ```bash
  -Dakka.cluster.roles.0=megaIOPS
  -Dakka.cluster.roles.1=muchMem
- ```
+```
  
 With this setting the node would offer the roles `megaIOPS` and `muchMem`.Only bundles with a `BundleKeys.roles` of `megaIOPS,` `muchMem` or both `megaIOPS` and `muchMem` will be loaded and run on this node.
 
