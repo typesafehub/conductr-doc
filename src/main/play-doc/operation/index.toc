@@ -1,6 +1,7 @@
 Install:Installation
 CLI:CLI
 Logging:Logging
+Monitoring:Typesafe Monitoring
 ManageServices:Managing ConductR services
 ClusterSetupConsiderations:Cluster setup considerations
 ClusterTroubleshooting:Cluster troubleshooting
