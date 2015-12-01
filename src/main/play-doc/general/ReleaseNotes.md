@@ -1,5 +1,12 @@
 # ConductR release notes
 
+## 1.0.14
+
+* Bundles prior to this release could signal their exit to ConductR prematurely i.e. before they really have exited. Redis is an example where it performs a graceful shutdown on SIGTERM and therefore should not exit immediately. In this case though, ConductR was signalled completion during the bundle's shutdown. ConductR is now signalled later, when a bundle truly completes. This change should lead to increased reliability for bundle process management.
+* Audited log levels and messages and tuned them for operational consumption. Also handled some exceptions were benign so that they do not pollute the logs.
+* Improved the local log file format to output a UTC based time along with host information.
+* The `-J-XX:+HeapDumpOnOutOfMemoryError` and `-server` flags are now declared on by default for ConductR's `application.ini`.
+
 ## 1.0.13
 
 
