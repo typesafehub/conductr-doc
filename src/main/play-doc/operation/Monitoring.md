@@ -14,7 +14,7 @@ To enable monitoring for ConductR with [Takipi](https://www.takipi.com/) you'll 
 
 ``` bash
 echo \
-  -Dcinnamon.disabled=off \
+  -Dcinnamon.instrumentation=on \
   -J-agentlib:TakipiAgent \
   -Dtakipi.name="conductr" | \
   sudo tee -a /usr/share/conductr/conf/application.ini
@@ -25,7 +25,7 @@ conductr-haproxy can also be monitored:
 
 ``` bash
 echo \
-  -Dcinnamon.disabled=off \
+  -Dcinnamon.instrumentation=on \
   -J-agentlib:TakipiAgent \
   -Dtakipi.name="conductr-haproxy" | \
   sudo tee -a /usr/share/conductr-haproxy/conf/application.ini
