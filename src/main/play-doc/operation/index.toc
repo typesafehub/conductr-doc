@@ -1,5 +1,6 @@
 Install:Installation
 CLI:CLI
+DeployingBundlesOps:Deploying bundles
 Logging:Logging
 ManageServices:Managing ConductR services
 ClusterSetupConsiderations:Cluster setup considerations
