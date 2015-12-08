@@ -46,7 +46,7 @@ ID               NAME              #REP  #STR  #RUN
 
 ## Using CLI to orchestrate bundle deployments
 
-The CLI commands `conduct load`, `conduct run`, `conduct stop`, and `conduct unload` by waits for an expected event to occur. For example `conduct load` will wait for bundle to be installed, and `conduct run` will wait for the number of scale requested to be achieved.
+The CLI commands `conduct load`, `conduct run`, `conduct stop`, and `conduct unload` waits for an expected event to occur. For example `conduct load` will wait for bundle to be installed, and `conduct run` will wait for the number of scale requested to be achieved.
 
 This behaviour makes it possible to use the CLI for orchestration of bundle deployment, e.g.
 
@@ -65,6 +65,7 @@ conduct run ${frontend_bundle_id}
 ```
 
 The script above performs the following:
+
 * Loads all bundles required by [Reactive Maps](http://www.typesafe.com/activator/template/reactive-maps) in the following order: Backend Region, Backend Summary, and Frontend.
 * Start the bundles with the following order: Backend Region, Backend Summary, and Frontend.
 * The Backend Summary will be run in the same host as Backend Region due to `--affinity` switch.
@@ -149,4 +150,4 @@ resolvers = [
 
 The resolution will follow the sequence of resolvers declared in `~/.conductr/settings.conf`. Based on the example above, if `my_resolver` returns a bundle (either from cache or a new download), then the remaining resolvers will not be invoked.
 
-**Do not use `print`** - use built-in Python logging library instead. This will allow correct output when `-q` is supplied to `conduct load` command. Not following this will break [orchestration](#Using-CLI-to-orchestrate-bundle-deployments) of bundle deployments.
+**Do not use `print`** - use built-in Python logging library instead. This will allow correct output when `-q` is supplied to `conduct load` command. Using `print` instead of Python logging library will break [orchestration](#Using-CLI-to-orchestrate-bundle-deployments) of bundle deployments.
