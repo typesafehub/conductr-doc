@@ -1,5 +1,10 @@
 # ConductR release notes
 
+## 1.0.15
+
+* RHEL 7 systemd support is now available as a new RPM.
+* A small improvement was applied to the control protocol unload response where the bundle id is returned. This permits some new CLI functionality where the unload command can wait for completion before returning to the users (aids scripting).
+
 ## 1.0.14
 
 * Bundles prior to this release could signal their exit to ConductR prematurely i.e. before they really have exited. Redis is an example where it performs a graceful shutdown on SIGTERM and therefore should not exit immediately. In this case though, ConductR was signalled completion during the bundle's shutdown. ConductR is now signalled later, when a bundle truly completes. This change should lead to increased reliability for bundle process management.
