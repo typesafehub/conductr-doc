@@ -12,7 +12,7 @@ The API can be used by any HTTP client, but ConductR comes with CLI tool impleme
 Firstly `pip3` is required:
 
 ```bash
-sudo apt-get install python3-setuptools 
+sudo apt-get install python3-setuptools
 sudo easy_install3 -U pip
 ```
 
@@ -90,52 +90,6 @@ shazar ./visualizer-poll-interval.sh
 
 The configuration is now ready to be loaded along with a bundle. Configuration is always provided as the second param to the `conduct load` command.
 
-## Deploying bundles
-
-The standard bundle lifecycle in the ConductR is:
-
-1. Load. Bundle is loaded into a ConductR cluster and replicated among cluster nodes.
-2. Run. Bundle is started by running one or more instances of all defined bundle components.
-3. Stop. Bundle is stopped by stopping all instances of all defined bundle components.
-4. Unload. Bundle is unloaded from a ConductR cluster and all bundle replicas are removed from cluster nodes.
-
-We use `conduct` command provided by the CLI to load a Visualizer bundle together with configuration to the ConductR and then run it. Every `conduct` command that is communicating with a ConductR needs to be given `--ip` and `--port` parameters (these can be omitted if ConductR is running on the same machine and on the default port). Alternatively CLI can use `CONDUCTR_IP` and `CONDUCTR_PORT` environment variables for corresponding parameters.
-
-This data is used by the ConductR when making bundle scheduling decisions. Load the Visualizer bundle by executing:
-
-```bash
-conduct load --ip 172.17.0.1 \
-             /usr/share/conductr/samples/visualizer-...zip \
-             ./visualizer-poll-interval.sh-...zip
-```
-
-Note that by default, bundles have a maximum size of 100MB. This can be altered via the `akka.http.server.parsing.max-content-length` setting.
-
-Use `conduct info` command to list all loaded bundles. You should see Visualizer replicated but not running (note that the example below shows 3 replications - you'll only get that if you have 3 or more nodes as the bundle cannot replicate beyond the cluster size).
-
-```bash
-conduct info --ip 172.17.0.1
-```
-...will yield something like:
-
-```bash
-ID               NAME              #REP  #STR  #RUN
-23391d4-3cc322b  visualizer-0.1.0  3     0     0
-```
-
-Run Visualizer by executing:
-
-```bash
-conduct run --ip 172.17.0.1 visualizer
-```
-
-Whenever you need to refer to a bundle you can use a prefix of or a full bundle id/name. Run `conduct info` once again, to see that the bundle has been successfully started.
-
-``` bash
-ID               NAME              #REP  #STR  #RUN
-23391d4-3cc322b  visualizer-0.1.0  3     0     1
-```
-
 ## Accessing services provided by bundles
 
 Access to services in ConductR is proxied for high availability and load balancing. To list all the currently running services in the ConductR execute the `conduct services` command.
@@ -162,4 +116,3 @@ conduct run --ip 172.17.0.1 --scale 2 visualizer
 You should see another green circle start spinning, which means that another instance of Visualizer was started. Play around with more `conduct` commands and see how it affects ConductR cluster visualization.
 
 Our aim is to make using Typesafe ConductR by operators akin to using Play by developers; a joyful and productive experience! ConductR starts to shine when used in the context of managing more than 2 nodes; a common scenario for reactive applications. Go and spin those nodes up!
-
