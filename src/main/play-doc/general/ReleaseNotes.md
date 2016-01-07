@@ -1,5 +1,12 @@
 # ConductR release notes
 
+## 1.0.16
+
+* Update to Reactive Platform 15v09
+* Increase Visualizer request timeout to prevent reconnects and log noise
+* Configure for Akka diagnostics reporting, [akka.diagnostics.recorder.enabled](http://doc.akka.io/docs/akka/rp-15v09p03/common/diagnostics-recorder.html)
+* Add mappings for directories in installation location to be owned by daemon user
+
 ## 1.0.15
 
 * RHEL 7 systemd support is now available as a new RPM.
