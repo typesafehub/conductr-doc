@@ -11,28 +11,13 @@ The `keep-majority` strategy ensures when cluster split occurs:
 * The partition which has the majority of the nodes are kept running
 * Other partition(s) which has less than majority of the nodes will have their ConductR process terminated.
 
-Upon cluster split, Akka SBR will terminate the ConductR processes within the partition that does not have majority number of nodes.
-
-### Recovery Steps
-
-* Obtain the list of the nodes where ConductR process have been terminated.
-* Restart the ConductR process on one of the nodes in the list (`sudo service conductr restart`).
-* Upon restart, the ConductR processes in these nodes will attempt to reconnect to last known members of the cluster based on the information stored in the `seed-nodes` file. This will effectively allow the restarted node to rejoin the cluster.
-* If the service has been restarted successfully continue with the next node and repeat that until all services has been restarted.
+Upon cluster split, Akka SBR will terminate the ConductR processes within the partition that does not have majority number of nodes. ConductR will then restart itself and continually attempt to rejoin with the cluster that it had. ConductR is designed to be self-healing.
 
 ### Notes on `seed-nodes` file
 
 * The address of last known members in the cluster are kept in what we call seed nodes file.
 * The file is located at `/usr/share/conductr/conf/seed-nodes`.
 * By default ConductR keeps the latest 3 reachable members in the cluster in the seed nodes file.
-
-## Whole Cluster Termination Recovery
-
-Should the cluster split occur in such way that each partition does not have majority of the node, all ConductR process within the cluster will be terminated. Deploying a cluster across at least 3 network partitions improves the chances of maintaining a majority and preventing cluster shutdown. See [Cluster Setup Considerations](ClusterSetupConsiderations) for more information.
-
-An example of this would be a cluster with 3 nodes, and the split occurs in such a way that none of the nodes are able to see each other. In this situation, each partition will have 1 node each, causing all ConductR process to be terminated.
-
-The recovery in this situation can be achieved by restarting the whole ConductR cluster.
 
 ## Restarting the ConductR Cluster
 
