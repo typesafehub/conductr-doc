@@ -6,9 +6,12 @@
 
 The [ConductR bundle library](https://github.com/typesafehub/conductr-bundle-lib#typesafe-conductr-bundle-library) provides a convenient Scala, Akka and Play API over an underlying REST API. This document details the underlying REST API.
 
-Two services are covered by the bundle API:
+The following services are covered by the bundle API:
 
 * [Location lookup service](#The-Location-Lookup-Service)
+* [List hosts service](#The-List-Hosts-Service)
+* [Find host service](#The-Find-Host-Service)
+* [Service Server Sent Events](#The-Service-Server-Sent-Event)
 * [Status service](#The-Status-Service)
 
 ## The Location Lookup Service
@@ -40,6 +43,128 @@ Field        | Description
 -------------|------------
 location-url | The location of the requested service including any trailing parts to the path requested e.g. `/customers/123` would result in `http://10.0.1.22:8080/customers/123` supposing that ConductR's proxy service's address is `10.0.1.22`, and the endpoint service port is `8080`. If the protocol for the service was TCP then that will be reflected in the returned location's protocol field. For example looking up `/jms` may yield `tcp://10.0.1.22:61616` supposing that the Active/MQ JMS broker's service is offered on port 61616.
 max-age      | The Time-To-Live (TTL) seconds before it is recommended to retain any previous value returned by this service. You should also evict any cached value if any subsequent request on the `location-url` fails.
+
+#### Failure
+
+```
+HTTP/1.1 404 Not Found
+```
+
+The service requested cannot be found as it is unknown to ConductR.
+
+Other status codes should also be treated as a failure.
+
+## The List Hosts Service
+
+Returns a list of host and port of the running service given a service name.
+
+### Request
+
+```
+GET {SERVICE_LOCATOR}/service-hosts{service-name}
+```
+
+Field            | Description
+-----------------|------------
+SERVICE\_LOCATOR | The environment variable value of the same name. This environment variable translates to an http address e.g. `http://10.0.1.22:9008` given that ConductR is running on `10.0.1.22` with a service locator port bound to 9008.
+service-name     | The name of the service required and expressed as a path e.g. `/customers`.
+
+#### Success
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+  "10.11.23.22:7001",
+  "10.11.23.22:7002"
+]
+```
+
+Where `10.11.23.22:7001` and `10.11.23.22:7002` are the host and port of the service which is currently running.
+
+#### Success - Empty Result
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[]
+```
+
+Either the service has not been started, or the service requested cannot be found as it is unknown to ConductR.
+
+#### Failure
+
+Other status codes should also be treated as a failure.
+
+## The Find Host Service
+
+Returns the host and port of the running service given a service name and host ip.
+
+### Request
+
+```
+GET {SERVICE_LOCATOR}/service-hosts{service-name}/{host-ip}
+```
+
+Field            | Description
+-----------------|------------
+SERVICE\_LOCATOR | The environment variable value of the same name. This environment variable translates to an http address e.g. `http://10.0.1.22:9008` given that ConductR is running on `10.0.1.22` with a service locator port bound to 9008.
+service-name     | The name of the service required and expressed as a path e.g. `/customers`.
+host-ip          | The ip address of the service to be queried.
+
+#### Success
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+"10.11.23.22:7001"
+```
+
+Where `10.11.23.22:7001` is the host and port of the service which is currently running.
+
+#### Failure
+
+```
+HTTP/1.1 404 Not Found
+```
+
+Either the service is not started, or the service requested cannot be found as it is unknown to ConductR.
+
+Other status codes should also be treated as a failure.
+
+## The Service Server Sent Event
+
+Returns stream of Server Sent Event given a service name. The Server Sent Event will be invoked when a particular service is running or stopped.
+
+### Request
+
+```
+GET {SERVICE_LOCATOR}/service-hosts{service-name}/events?event={event-name}
+```
+
+Field            | Description
+-----------------|------------
+SERVICE\_LOCATOR | The environment variable value of the same name. This environment variable translates to an http address e.g. `http://10.0.1.22:9008` given that ConductR is running on `10.0.1.22` with a service locator port bound to 9008.
+service-name     | The name of the service required and expressed as a path e.g. `/customers`.
+event-name       | Optional. The name of the event to be filtered. Valid values are either `running` or `stopped`.
+
+#### Success
+
+```
+HTTP/1.1 200 OK
+Content-Type: text/event-stream
+
+event:running
+data:10.11.23.22:7001
+
+event:stopped
+data:10.11.23.22:7001
+```
+
+Where the two events above indicates the service being running and stopped on `10.11.23.22:7001`.
 
 #### Failure
 
