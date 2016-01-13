@@ -22,7 +22,7 @@ SERVICE_LOCATOR           | A URL composed as $SERVICE_LOCATOR_PROTOCOL://$SERVI
 SERVICE_LOCATOR_PROTOCOL  | The protocol of the above.
 SERVICE_LOCATOR_IP        | The interface of an http service for resolving addresses.
 SERVICE_LOCATOR_PORT      | The port of the above.
-SERVICE_PROXY_IP          | The interface of this bundle's proxy.
+SERVICE_PROXY_IP          | The interface of this bundle's proxy. (DEPRECATED - use the service locator to locate your actual service).
 CONTAINER_ENV             | A colon separated list of environment variables that will be passed through to a container. When overriding this be sure to include its original value e.g. CONTAINER_ENV=$CONTAINER_ENV:SOME_OTHER_ENV..
 
 In addition the following environment variables are declared for each component endpoint:
