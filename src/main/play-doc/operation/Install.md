@@ -24,12 +24,10 @@ Now head over to the [[Developers guide|DevQuickStart]] to get started.
 
 ## Prerequisites
 
-* Debian or Rpm based system (recommended: Ubuntu 14.04 LTS or RHEL/CentOS 6.6)
+* Debian or Rpm based system (recommended: Ubuntu 14.04 LTS or RHEL/CentOS 7)
 * Oracle Java Runtime Environment 8 (JRE 8)
 * Python 3.4
 * Debian or Rpm package of ConductR
-
-RHEL/CentOS 7 support is waiting for stable [sbt-native-packer systemd support](https://github.com/sbt/sbt-native-packager#experimental-systemd-bootsystem-support).
 
 ### Installing JRE 8
 
