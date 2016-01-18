@@ -48,7 +48,7 @@ curl http://${NODE_IP_ADDRESS_OR_HOST}:9005/members
             "node": "akka.tcp://conductr@172.17.3.158:9004",
             "nodeUid": "-1306973826",
             "roles": [
-                "all-conductrs"
+                "web"
             ],
             "status": "Up"
         }

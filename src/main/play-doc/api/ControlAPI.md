@@ -339,7 +339,7 @@ Field               | Description
 --------------------|------------
 node                | The host of the member.
 nodeUid             | The unique identifier of the member within the `node`.
-roles               | An array of strings representing the roles that the ConductR cluster member is able to handle. Role names are user-supplied with exception to `all-conductrs`. The latter means that the member will accept any role for the purposes of scheduling a bundle's loading or execution.
+roles               | An array of strings representing the roles that the ConductR cluster member is able to handle. Role names are user-supplied with exception to `web`.
 selfNode            | The host of the member serving this response.
 selfNodeUid         | The unique identifier of the member within the `selfNode`.
 status              | `Joining`, `Up`, `Leaving`, `Exiting`, `Down` or `Removed` as per Akka Cluster's `MemberStatus`.

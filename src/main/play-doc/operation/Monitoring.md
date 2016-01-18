@@ -21,17 +21,6 @@ echo \
 sudo /etc/init.d/conductr restart
 ```
 
-conductr-haproxy can also be monitored:
-
-``` bash
-echo \
-  -Dcinnamon.instrumentation=on \
-  -J-agentlib:TakipiAgent \
-  -Dtakipi.name="conductr-haproxy" | \
-  sudo tee -a /usr/share/conductr-haproxy/conf/application.ini
-sudo /etc/init.d/conductr-haproxy restart
-```
-
 Note also that the Takipi agent will require installation at each ConductR node.
 
 ## Monitoring Bundles

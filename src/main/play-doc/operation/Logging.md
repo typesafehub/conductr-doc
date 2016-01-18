@@ -193,8 +193,6 @@ echo \
 sudo /etc/init.d/conductr restart
 ```
 
-You can also apply a similar configuration to `conductr-haproxy` by substituting `conductr`.
-
 ## Other solutions
 
 ConductR is compatible with any log aggregator speaking the syslog protocol. The log messages of a bundle are written to `stdout` and `stderr`. When using another logging infrastructure we recommend to deploy this infrastructure inside the ConductR cluster. You do not want to send lots of log traffic across the internet. Another approach is to use a syslog collector such as [rsyslog](http://www.rsyslog.com/) to filter the log messages before sending them to the logging cloud service.

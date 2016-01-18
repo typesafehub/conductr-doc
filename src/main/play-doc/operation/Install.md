@@ -14,7 +14,7 @@ Choose on of the following installation guides to get started:
 * [Docker](https://www.docker.com)
 * [SBT](http://www.scala-sbt.org) or [Activator](https://www.typesafe.com/get-started)
 
-For development purposes we provide a Docker image which has all of the neccessary software pre-installed to use ConductR. 
+For development purposes we provide a Docker image which has all of the necessary software pre-installed to use ConductR. 
 
 Now head over to the [[Developers guide|DevQuickStart]] to get started.
 
@@ -83,7 +83,7 @@ A typical response contains the current members of the cluster (shown here as ju
       "node": "akka.tcp://conductr@127.0.0.1:9004",
       "nodeUid": "-1595142725",
       "roles": [
-        "all-conductrs"
+        "web"
       ],
       "status": "Up"
     }
@@ -191,43 +191,56 @@ On some Debian distributions you may need to add a dedicated Personal Package Ar
 [172.17.0.1]$ sudo apt-get -y install haproxy
 ```
 
-ConductR provides an application that listens for bundle events from ConductR and updates HAProxy configuration accordingly. The ConductR-HAProxy installation package can be found in the ConductR installation in the `extra` folder. Install ConductR-HAProxy debian or RPM package:
+ConductR provides ConductR-HAProxy bundle that listens for bundle events from ConductR and updates HAProxy configuration accordingly. 
+
+Grant HAProxy configuration file read and write access to ConductR-HAProxy bundle:
 
 ``` bash
-[172.17.0.1]$ sudo dpkg -i /usr/share/conductr/extra/conductr-haproxy_%PLAY_VERSION%_all.deb
-```
-or
-
-``` bash
-[172.17.0.1]$ sudo yum install  /usr/share/conductr/extra/conductr-haproxy-%PLAY_VERSION%-1.noarch.rpm
-```
-
-Grant HAProxy configuration file read and write access to ConductR-HAProxy application:
-
-``` bash
-[172.17.0.1]$ sudo chown conductr-haproxy:conductr-haproxy /etc/haproxy/haproxy.cfg
+[172.17.0.1]$ sudo chown conductr:conductr /etc/haproxy/haproxy.cfg
 ```
 
 After updating the configuration file ConductR-HAProxy is going to signal HAProxy to reload its configuration. Grant permissions for the particular command that ConductR-HAProxy is going to use by modifying the `sudoers` file:
 
 ``` bash
-[172.17.0.1]$ echo "conductr-haproxy ALL=(root) NOPASSWD: /etc/init.d/haproxy reload" | sudo tee -a /etc/sudoers
+[172.17.0.1]$ echo "conductr ALL=(root) NOPASSWD: /etc/init.d/haproxy reload" | sudo tee -a /etc/sudoers
 ```
 
-On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the conductr-haproxy user.
+On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the conductr user.
 
 ``` bash
-[172.17.0.1]$ echo 'Defaults: conductr-haproxy  !requiretty' | sudo tee -a /etc/sudoers
+[172.17.0.1]$ echo 'Defaults: conductr  !requiretty' | sudo tee -a /etc/sudoers
 ```
 
-Set the ConductR IP address which is going to be used by ConductR-HAProxy to listen to bundle events in the cluster:
+## Loading and Running ConductR-HAProxy Bundle
 
-``` bash
-[172.17.0.1]$ echo -Dconductr-haproxy.ip=$(hostname)| sudo tee -a /usr/share/conductr-haproxy/conf/application.ini
-[172.17.0.1]$ sudo service conductr-haproxy restart
+ConductR-HAProxy bundle listens for bundle changes within ConductR and updates the HAProxy config to expose the bundle endpoints accordingly.
+
+### Prepare ConductR-HAProxy nodes
+
+_Repeat each step in this section also on the `172.17.0.2` and `172.17.0.3` machine._
+
+ConductR-HAProxy bundle must be installed on all nodes where HAProxy is installed, and these nodes can be distinguished by the `haproxy` role. Assign the `haproxy` role to the nodes where the proxy will be hosted.
+
+Append the `haproxy` role to the default `web` role as follows:
+
+```bash
+[172.17.0.1]$ echo -Dakka.cluster.roles.0=web | sudo tee -a /usr/share/conductr/conf/application.ini
+[172.17.0.1]$ echo -Dakka.cluster.roles.1=haproxy | sudo tee -a /usr/share/conductr/conf/application.ini
+[172.17.0.1]$ sudo service conductr restart
 ```
 
-Observe ConductR-HAProxy logs. You should see a successfully opened connection to ConductR.
+### Use CLI to load and run ConductR-HAProxy bundle
+
+_Execute the step in this section only on the `172.17.0.1` machine._
+
+Loading and running the ConductR-HAProxy bundle requires [[CLI|CLI]] to be installed. Continue with the next step once [[CLI|CLI]] is installed.
+
+Load and run the ConductR-HAProxy bundle as follows. Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
+
+```bash
+conduct load file:/usr/share/conductr/extra/conductr-haproxy-{version}-{digest}.zip
+conduct run conductr-haproxy --scale 3
+```
 
 That's it! You now have a cluster of three ConductR nodes ready to start running applications. ConductR comes with a `visualizer` sample application. Head over to the next section [[CLI|CLI]] to learn how to deploy visualizer application to your fresh ConductR cluster.
 
@@ -423,22 +436,18 @@ sudo apt-get update
 sudo apt-get -y install haproxy
 ```
 
-ConductR provides an application that listens for bundle events from ConductR and updates HAProxy configuration accordingly. Install ConductR-HAProxy debian package which comes with the ConductR:
+ConductR provides ConductR-HAProxy bundle that listens for bundle events from ConductR and updates HAProxy configuration accordingly. 
+
+Grant HAProxy configuration file read and write access to ConductR-HAProxy bundle:
 
 ``` bash
-sudo dpkg -i /usr/share/conductr/extra/conductr-haproxy_%PLAY_VERSION%_all.deb
-```
-
-Grant HAProxy configuration file read and write access to ConductR-HAProxy application:
-
-``` bash
-sudo chown conductr-haproxy:conductr-haproxy /etc/haproxy/haproxy.cfg
+sudo chown conductr:conductr /etc/haproxy/haproxy.cfg
 ```
 
 After updating the configuration file ConductR-HAProxy is going to signal HAProxy to reload its configuration. Grant permissions for the particular command that ConductR-HAProxy is going to use by modifying the `sudoers` file:
 
 ``` bash
-echo "conductr-haproxy ALL=(root) NOPASSWD: /etc/init.d/haproxy reload" | sudo tee -a /etc/sudoers
+echo "conductr ALL=(root) NOPASSWD: /etc/init.d/haproxy reload" | sudo tee -a /etc/sudoers
 ```
 
 #### Optional dependencies
@@ -470,13 +479,6 @@ echo -DCONDUCTR_IP=$(hostname -i) | sudo tee -a /usr/share/conductr/conf/applica
 sudo service conductr restart
 ```
 
-Set the ConductR IP address which is going to be used by ConductR-HAProxy to listen to bundle events in the cluster:
-
-``` bash
-echo -Dconductr-haproxy.ip=$(hostname -i)| sudo tee -a /usr/share/conductr-haproxy/conf/application.ini
-sudo service conductr-haproxy restart
-```
-
 #### Specifying the seed node
 
 Pick one node as the seed node and instruct the other two instances to use the other as the seed node. Here we have chosen `10.0.2.20` as the seed node and will perform this additional step on all other nodes *except* the seed node `10.0.2.20`.
@@ -502,7 +504,7 @@ A typical response contains the current members of the cluster (shown here is a 
             "node": "akka.tcp://conductr@10.0.1.10:9004",
             "nodeUid": "-810451778",
             "roles": [
-                "all-conductrs"
+                "web"
             ],
             "status": "Up"
         },
@@ -510,7 +512,7 @@ A typical response contains the current members of the cluster (shown here is a 
             "node": "akka.tcp://conductr@10.0.2.20:9004",
             "nodeUid": "280222358",
             "roles": [
-                "all-conductrs"
+                "web"
             ],
             "status": "Up"
         },
@@ -518,7 +520,7 @@ A typical response contains the current members of the cluster (shown here is a 
             "node": "akka.tcp://conductr@10.0.3.30:9004",
             "nodeUid": "1503330106",
             "roles": [
-                "all-conductrs"
+                "web"
             ],
             "status": "Up"
         }
@@ -530,6 +532,40 @@ A typical response contains the current members of the cluster (shown here is a 
 }
 
 ```
+
+### Loading and Running ConductR-HAProxy Bundle
+
+ConductR-HAProxy bundle listens for bundle changes within ConductR and updates the HAProxy config to expose the bundle endpoints accordingly.
+
+#### Prepare ConductR-HAProxy nodes
+
+_Repeat each step in this section on each node._
+
+ConductR-HAProxy bundle must be installed on all nodes where HAProxy is installed, and these nodes can be distinguished by the `haproxy` role. Assign the `haproxy` role to the nodes where the proxy will be hosted.
+
+Append the `haproxy` role to the default `web` role as follows:
+
+```bash
+echo -Dakka.cluster.roles.0=web | sudo tee -a /usr/share/conductr/conf/application.ini
+echo -Dakka.cluster.roles.1=haproxy | sudo tee -a /usr/share/conductr/conf/application.ini
+sudo service conductr restart
+```
+
+### Use CLI to load and run ConductR-HAProxy bundle
+
+_Execute the step in only on the ConductR seed node._
+
+Loading and running the ConductR-HAProxy bundle requires [[CLI|CLI]] to be installed. Continue with the next step once [[CLI|CLI]] is installed.
+
+Load and run the ConductR-HAProxy bundle as follows. Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
+
+```bash
+conduct load file:/usr/share/conductr/extra/conductr-haproxy-{version}-{digest}.zip
+conduct run conductr-haproxy --scale 3
+```
+
+That's it! You now have a cluster of three ConductR nodes ready to start running applications. ConductR comes with a `visualizer` sample application. Head over to the next section [[CLI|CLI]] to learn how to deploy visualizer application to your fresh ConductR cluster.
+
 
 That's it! You now have a cluster of three ConductR nodes ready to start running applications. Add all cluster instances to the load balancer. Your cluster will be reachable by the DNS name specified in the load balancer description. You can add this as a CNAME to your DNS zone file to make the cluster reachable using a hostname from your domain.
 
