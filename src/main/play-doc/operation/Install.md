@@ -83,7 +83,7 @@ A typical response contains the current members of the cluster (shown here as ju
       "node": "akka.tcp://conductr@127.0.0.1:9004",
       "nodeUid": "-1595142725",
       "roles": [
-        "all-conductrs"
+        "web"
       ],
       "status": "Up"
     }
@@ -502,7 +502,7 @@ A typical response contains the current members of the cluster (shown here is a 
             "node": "akka.tcp://conductr@10.0.1.10:9004",
             "nodeUid": "-810451778",
             "roles": [
-                "all-conductrs"
+                "web"
             ],
             "status": "Up"
         },
@@ -510,7 +510,7 @@ A typical response contains the current members of the cluster (shown here is a 
             "node": "akka.tcp://conductr@10.0.2.20:9004",
             "nodeUid": "280222358",
             "roles": [
-                "all-conductrs"
+                "web"
             ],
             "status": "Up"
         },
@@ -518,7 +518,7 @@ A typical response contains the current members of the cluster (shown here is a 
             "node": "akka.tcp://conductr@10.0.3.30:9004",
             "nodeUid": "1503330106",
             "roles": [
-                "all-conductrs"
+                "web"
             ],
             "status": "Up"
         }
