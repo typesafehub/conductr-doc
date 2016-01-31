@@ -211,7 +211,7 @@ Grant HAProxy configuration file read and write access to ConductR-HAProxy appli
 After updating the configuration file ConductR-HAProxy is going to signal HAProxy to reload its configuration. Grant permissions for the particular command that ConductR-HAProxy is going to use by modifying the `sudoers` file:
 
 ``` bash
-[172.17.0.1]$ echo "conductr-haproxy ALL=(root) NOPASSWD: /etc/init.d/haproxy reload" | sudo tee -a /etc/sudoers
+[172.17.0.1]$ echo "conductr-haproxy ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh reload" | sudo tee -a /etc/sudoers
 ```
 
 On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the conductr-haproxy user.
@@ -438,7 +438,7 @@ sudo chown conductr-haproxy:conductr-haproxy /etc/haproxy/haproxy.cfg
 After updating the configuration file ConductR-HAProxy is going to signal HAProxy to reload its configuration. Grant permissions for the particular command that ConductR-HAProxy is going to use by modifying the `sudoers` file:
 
 ``` bash
-echo "conductr-haproxy ALL=(root) NOPASSWD: /etc/init.d/haproxy reload" | sudo tee -a /etc/sudoers
+echo "conductr-haproxy ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
 ```
 
 #### Optional dependencies
