@@ -1,5 +1,9 @@
 # ConductR release notes
 
+## 1.0.17
+
+* ConductR-HAProxy now uses the reloadHAProxy.sh script to reload HAProxy. This provides a consistent sudoers configuration across systemd and SystemV while also introducing the ability to customize how HAProxy is reloaded.
+
 ## 1.0.16
 
 * Update to Reactive Platform 15v09
