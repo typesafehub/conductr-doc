@@ -5,19 +5,6 @@ Choose on of the following installation guides to get started:
 * [Linux Installation](#Linux-Installation)
 * [EC2 Installation](#EC2-Installation)
 
-# Development Installation
-
-> Follow this guide to install and run ConductR inside Docker on your development environment in the context of an sbt application.
-
-## Prerequisites
-
-* [Docker](https://www.docker.com)
-* [SBT](http://www.scala-sbt.org) or [Activator](https://www.typesafe.com/get-started)
-
-For development purposes we provide a Docker image which has all of the neccessary software pre-installed to use ConductR. 
-
-Now head over to the [[Developers guide|DevQuickStart]] to get started.
-
 # Linux Installation
 
 > This is a tutorial for installing ConductR on linux in production mode. It shows how this is done for a small cluster of 3 machines. If you are looking for a non-production Linux installation (for example, a QA environment that is close to production), be sure to read about [how to setup for non-production](ClusterSetupConsiderations#Setting-up-for-non-production) after reading the remainder of this page.
