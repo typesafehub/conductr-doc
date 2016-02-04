@@ -300,7 +300,7 @@ export AWS_SECRET_ACCESS_KEY='abc123'
 export ANSIBLE_HOST_KEY_CHECKING=False
 ```
 
-Upload the ConductR installation package and your EC2 key pair file to the controller host. The ConductR installation package should be put in `conductr-asnsible/conductr/files`. The file name must match the value of `CONDUCTR_PKG` in the vars file used.
+Upload the ConductR installation package and your EC2 key pair file to the controller host. The ConductR installation package should be put in `conductr-ansible/conductr/files`. The file name must match the value of `CONDUCTR_PKG` in the vars file used.
 
 Your controller host is now ready to run plays.
 
