@@ -5,20 +5,12 @@ Choose on of the following installation guides to get started:
 * [Linux Installation](#Linux-Installation)
 * [EC2 Installation](#EC2-Installation)
 
-# Development Installation
-
-> Follow this guide to install and run ConductR inside Docker on your development environment in the context of an sbt application.
-
-## Prerequisites
-
-* [Docker](https://www.docker.com)
-* [SBT](http://www.scala-sbt.org) or [Activator](https://www.typesafe.com/get-started)
-
-For development purposes we provide a Docker image which has all of the necessary software pre-installed to use ConductR. 
-
-Now head over to the [[Developers guide|DevQuickStart]] to get started.
 
 # Linux Installation
+
+> In order to obtain the Debian or RPM installations of ConductR then please [contact our sales department](https://www.typesafe.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.typesafe.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
+
+-
 
 > This is a tutorial for installing ConductR on linux in production mode. It shows how this is done for a small cluster of 3 machines. If you are looking for a non-production Linux installation (for example, a QA environment that is close to production), be sure to read about [how to setup for non-production](ClusterSetupConsiderations#Setting-up-for-non-production) after reading the remainder of this page.
 
@@ -303,7 +295,7 @@ export AWS_SECRET_ACCESS_KEY='abc123'
 export ANSIBLE_HOST_KEY_CHECKING=False
 ```
 
-Upload the ConductR installation package and your EC2 key pair file to the controller host. The ConductR installation package should be put in `conductr-asnsible/conductr/files`. The file name must match the value of `CONDUCTR_PKG` in the vars file used.
+Upload the ConductR installation package and your EC2 key pair file to the controller host. The ConductR installation package should be put in `conductr-ansible/conductr/files`. The file name must match the value of `CONDUCTR_PKG` in the vars file used.
 
 Your controller host is now ready to run plays.
 
