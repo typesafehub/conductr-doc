@@ -6,6 +6,6 @@ CreatingBundles: Creating bundles
 DeployingBundles:Deploying bundles
 BundleConfiguration:Bundle configuration
 BundleEnvironmentVariables:Environment variables
-ConductrSandbox:ConductR sandbox
+ConductrSandbox:Advanced sandbox
 TCPLookups:TCP & UDP service lookups
 Filesystems:Filesystems
