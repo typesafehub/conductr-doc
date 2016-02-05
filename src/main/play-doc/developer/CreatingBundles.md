@@ -91,3 +91,46 @@ With the above Typesafe config you can then access the host and ip to use from w
   val port = config.getInt("customer-service.port")
   Http(system).bind(ip, port) // ... and so forth
 ```
+
+### Docker bundles
+
+When wanting to create Docker bundles you leverage the sbt-native-packager's ability to generate a Dockerfile and then let sbt-bundle know about this being the desired target. An example [build.sbt configuration for postgres-bdr](https://github.com/huntc/postgres-bdr/blob/master/build.sbt) is shown below:
+
+```scala
+// Docker specifics for the native packager
+
+dockerCommands := Seq(
+  Cmd("FROM", "agios/postgres-bdr"),
+  Cmd("ADD", "/opt/docker/bin/init-database.sh /docker-entrypoint-initdb.d/")
+)
+
+// The following setting instructs sbt-bundle to use Docker packaging
+// i.e. Dockerfile based installations
+
+BundleKeys.bundleType := Docker
+
+// Regular sbt-bundle configuration
+
+BundleKeys.nrOfCpus := 4.0
+BundleKeys.memory := 2.GB
+BundleKeys.diskSpace := 10.GB
+BundleKeys.roles := Set("postgres94")
+BundleKeys.endpoints := Map(
+  "postgres" -> Endpoint("tcp", 5432, services = Set(uri("tcp://:5432")))
+)
+
+// Additional args for the docker run can be supplied here (see the sbt-bundle
+// README) - otherwise the startCommand is empty
+
+BundleKeys.startCommand := Seq.empty
+
+// The following check creates a bundle component that waits for the
+// Docker build to complete and then test the postgres-bdr port. If
+// the port is open then ConductR is signalled that the bundle is ready.
+
+BundleKeys.checks := Seq(uri("docker+$POSTGRES_HOST"))
+```
+
+> When deploying Docker bundles to the sandbox they won't work. The sandbox is using Docker itself and you cannot run Docker within Docker. For development purposes setup a single VM and configure it as per the regular Linux installation along with Docker. You'll then be able to test your Docker bundles locally.
+
+
