@@ -220,7 +220,7 @@ To view all `debug` level log messages, configure ConductR as:
 
 ``` bash
 echo \
-  -Dakka.logging-filter=akka.event.DefaultLoggingFilter \
+  -Droot.loglevel=debug \
   -Dakka.loglevel=debug | \
   sudo tee -a /usr/share/conductr/conf/application.ini
 sudo /etc/init.d/conductr restart
