@@ -183,25 +183,30 @@ On some Debian distributions you may need to add a dedicated Personal Package Ar
 [172.17.0.1]$ sudo apt-get -y install haproxy
 ```
 
-ConductR provides ConductR-HAProxy bundle that listens for bundle events from ConductR and updates HAProxy configuration accordingly. 
+ConductR provides a ConductR-HAProxy bundle that listens for bundle events from ConductR and updates the local HAProxy configuration file accordingly. We must specifically allow the bundle to use `sudo` to reload HAProxy.
 
-Grant HAProxy configuration file read and write access to ConductR-HAProxy bundle:
+First, we have the user `conductr` own the HAProxy config file.
 
 ``` bash
 [172.17.0.1]$ sudo chown conductr:conductr /etc/haproxy/haproxy.cfg
 ```
 
-After updating the configuration file ConductR-HAProxy is going to signal HAProxy to reload its configuration. Grant permissions for the particular command that ConductR-HAProxy is going to use by modifying the `sudoers` file:
+After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration. We will limit the bundle's sudo privileges to running a single script in `/usr/bin` for that purpose. Grant permissions to the `conductr` user to write and run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
 
 ``` bash
-[172.17.0.1]$ echo "conductr ALL=(root) NOPASSWD: /etc/init.d/haproxy reload" | sudo tee -a /etc/sudoers
+[172.17.0.1]$ sudo touch /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ sudo chmod 0770 /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ sudo chown conductr:conductr /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ echo "conductr ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
 ```
 
-On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the conductr user.
+On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the conductr user in `sudoers`.
 
 ``` bash
 [172.17.0.1]$ echo 'Defaults: conductr  !requiretty' | sudo tee -a /etc/sudoers
 ```
+
+We are now ready to run the bundle.
 
 ## Loading and Running ConductR-HAProxy Bundle
 
@@ -209,7 +214,7 @@ ConductR-HAProxy bundle listens for bundle changes within ConductR and updates t
 
 ### Prepare ConductR-HAProxy nodes
 
-_Repeat each step in this section also on the `172.17.0.2` and `172.17.0.3` machine._
+_Perform each step in this section on all nodes: `172.17.0.1`, `172.17.0.2` and `172.17.0.3`.
 
 ConductR-HAProxy bundle must be installed on all nodes where HAProxy is installed, and these nodes can be distinguished by the `haproxy` role. Assign the `haproxy` role to the nodes where the proxy will be hosted.
 
@@ -223,9 +228,9 @@ Append the `haproxy` role to the default `web` role as follows:
 
 ### Use CLI to load and run ConductR-HAProxy bundle
 
-_Execute the step in this section only on the `172.17.0.1` machine._
+_Execute the step in this section only on the `172.17.0.1` machine. We could also use a host that is not a cluster member as our control node._
 
-Loading and running the ConductR-HAProxy bundle requires [[CLI|CLI]] to be installed. Continue with the next step once [[CLI|CLI]] is installed.
+These instructions for loading and running the ConductR-HAProxy bundle require the [[CLI|CLI]] to be installed. Continue with the next step only from a host where the ConductR [[CLI|CLI]] is installed.
 
 Load and run the ConductR-HAProxy bundle as follows. Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
 
@@ -427,19 +432,27 @@ sudo add-apt-repository -y ppa:vbernat/haproxy-1.5
 sudo apt-get update
 sudo apt-get -y install haproxy
 ```
+ConductR provides a ConductR-HAProxy bundle that listens for bundle events from ConductR and updates the local HAProxy configuration file accordingly. We must specifically allow the bundle to use `sudo` to reload HAProxy.
 
-ConductR provides ConductR-HAProxy bundle that listens for bundle events from ConductR and updates HAProxy configuration accordingly. 
-
-Grant HAProxy configuration file read and write access to ConductR-HAProxy bundle:
+First, we have the user `conductr` own the HAProxy config file.
 
 ``` bash
-sudo chown conductr:conductr /etc/haproxy/haproxy.cfg
+[172.17.0.1]$ sudo chown conductr:conductr /etc/haproxy/haproxy.cfg
 ```
 
-After updating the configuration file ConductR-HAProxy is going to signal HAProxy to reload its configuration. Grant permissions for the particular command that ConductR-HAProxy is going to use by modifying the `sudoers` file:
+After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration. We will limit the bundle's sudo privileges to running a single script in `/usr/bin` for that purpose. Grant permissions to the `conductr` user to write and run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
 
 ``` bash
-echo "conductr ALL=(root) NOPASSWD: /etc/init.d/haproxy reload" | sudo tee -a /etc/sudoers
+[172.17.0.1]$ sudo touch /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ sudo chmod 0770 /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ sudo chown conductr:conductr /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ echo "conductr ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
+```
+
+On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the conductr user in `sudoers`.
+
+``` bash
+[172.17.0.1]$ echo 'Defaults: conductr  !requiretty' | sudo tee -a /etc/sudoers
 ```
 
 #### Optional dependencies
@@ -545,9 +558,9 @@ sudo service conductr restart
 
 ### Use CLI to load and run ConductR-HAProxy bundle
 
-_Execute the step in only on the ConductR seed node._
+_Execute this step once for the entire cluster. This step would need to be repeated if the entire cluster is stopped and restarted, such as a development test lab._
 
-Loading and running the ConductR-HAProxy bundle requires [[CLI|CLI]] to be installed. Continue with the next step once [[CLI|CLI]] is installed.
+These instructions for loading and running the ConductR-HAProxy bundle require the [[CLI|CLI]] to be installed. Continue with the next step once [[CLI|CLI]] is installed.
 
 Load and run the ConductR-HAProxy bundle as follows. Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
 
@@ -556,9 +569,8 @@ conduct load file:/usr/share/conductr/extra/conductr-haproxy-{version}-{digest}.
 conduct run conductr-haproxy --scale 3
 ```
 
-That's it! You now have a cluster of three ConductR nodes ready to start running applications. ConductR comes with a `visualizer` sample application. Head over to the next section [[CLI|CLI]] to learn how to deploy visualizer application to your fresh ConductR cluster.
+That's it! You now have a cluster of three ConductR nodes ready to start running applications.
 
-
-That's it! You now have a cluster of three ConductR nodes ready to start running applications. Add all cluster instances to the load balancer. Your cluster will be reachable by the DNS name specified in the load balancer description. You can add this as a CNAME to your DNS zone file to make the cluster reachable using a hostname from your domain.
+Add all cluster instances to the load balancer. Your cluster will be reachable by the DNS name specified in the load balancer description. You can add this as a CNAME to your DNS zone file to make the cluster reachable using a hostname in your domain.
 
 ConductR comes with a `visualizer` sample application. Head over to the next section [[CLI|CLI]] to learn how to deploy visualizer application to your fresh ConductR cluster.
