@@ -239,4 +239,13 @@ Where `webserver-015f73613aa48d397b0dbab6d7f96d687c56d72a275a5ea43d7da44a21c2748
 
 It is also possible to include files in addition to the `runtime-config.sh` and/or `bundle.conf` file(s). To do this, create one or more files or sub folders with files alongside these files. Your `runtime-config.sh` script is then responsible for copying the additional files to the location that your application or service requires.
 
+The use of the special parameter `$0` is recommended in configuration scripts. The script below demonstrates the use of `$0` to copy a config file to a target location.
+
+```bash
+SCRIPT_DIR="`dirname \"$0\"`"
+TARGET="/opt/ourApp/initConfig.cfg"
+
+cp "${SCRIPT_DIR}"/someFile.cfg ${TARGET}
+```
+
 > `runtime-config.sh` is the name preferred by ConductR when searching for a script to execute within a configuration bundle. However you can name the configuration script anything that you like. In the case of ambiguity though, for example where you have `a.sh` and `b.sh`, ConductR does not know which is the one to select, and it can select either depending on your JDK. In most cases then, you're better to stick with `runtime-config.sh`
