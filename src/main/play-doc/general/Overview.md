@@ -2,7 +2,7 @@
 
 ## Go Reactive
 
-Before we start, one change that we encourage is the move toward your application or service being a reactive one. If you've not read the [Reactive Manifesto](http://www.reactivemanifesto.org/) then please do so. The manifesto is the DNA of ConductR and so if you want to understand ConductR then it will enlighten you. Your application should be designed with resilience in mind in particular. Because ConductR encourages an application or service to exist across many nodes, and that they can access services of other resources that may come and go, resilience is particularly important.
+Before we start, one change that we encourage is the move toward your application or service being a reactive one. If you've not read the [Reactive Manifesto](http://www.reactivemanifesto.org/) then please do so. The manifesto is the DNA of ConductR and so if you want to understand ConductR then reading it will help. Your application should be designed with resilience in mind in particular. Because ConductR encourages an application or service to exist across many nodes, and that they can access services of other resources that may come and go, resilience is particularly important.
 
 The remainder of this section will familiarize you with ConductR's architecture.
 
@@ -12,7 +12,7 @@ The following use-case diagram illustrates the scope of Typesafe ConductR:
 
 [[images/scope.png]]
 
-During the latter part of development of a project developers will typically package their artifacts and start running them for near-production style scenarios. An example of this is with a Play application development. During the early stages developers will typically run their project from within Activator, making changes to their code having gathered rapid feedback from the browser window. Once most of the project's functionality is written developers will then issue a "stage" command to produce a distribution on the file system that they can run their project from. The project will run differently given things such as CDN resolution, asset fingerprinting, minification; activities that would otherwise degrade the speed required for development mode. As a part of the staging activity build tools permit the staging of a bundle that can be used by Typesafe ConductR ( _Create Bundle_ and _Run Bundle Locally_). This bundle is able to be deployed and run on the developer's machine.
+During the latter part of development of a project, developers will typically package their artifacts and start running them for near-production style scenarios. An example of this is with a Play application development. During the early stages developers will typically run their project from within Activator, making changes to their code having gathered rapid feedback from the browser window. Once most of the project's functionality is written developers will then issue a "stage" command to produce a distribution on the file system that they can run their project from. The project will run differently given things such as CDN resolution, asset fingerprinting, minification; activities that would otherwise degrade the speed required for development mode. As a part of the staging activity build tools permit the staging of a bundle that can be used by Typesafe ConductR ( _Create Bundle_ and _Run Bundle Locally_). This bundle is able to be deployed and run on the developer's machine.
 
 During the course of development the developer will create a configuration that is also used for running a bundle locally ( _Develop Config_). This configuration names a project's component declaring its environmental requirements. These configurations are versioned and provide an audit trail of the changes to a component overall.
 
@@ -30,9 +30,9 @@ Typesafe ConductR fundamentally consists of the _ConductR_ process; an applicati
 
 ### Clients
 
-Many types of client are possible given HTTP/REST/JSON. For developers, an sbt plugin named `sbt-typesafe-conductr` provides control protocol commands (load, unload, start etc.) for managing the lifecycle of bundles. Similarly for operators, a set of command line tools are provided and can be run on Windows and Unix style environments.
+Many types of client are possible given HTTP/REST/JSON. For developers, an sbt plugin named `sbt-conductr` provides control protocol commands (load, unload, start etc.) for managing the lifecycle of bundles. Similarly for operators, a set of command line tools are provided and can be run on Windows and Unix style environments.
 
-Again for developers, [Typesafe Activator](http://typesafe.com/activator) can also communicate with Typesafe ConductR. Activator communicates with sbt via the sbt-server protocol and so all tasks and settings available to the sbt-typesafe-conductr plugin will be available to Activator. Therefore Activator can be used to prepare bundles and publish them to the cluster, or on a local machine for testing.
+Again for developers, [Typesafe Activator](http://typesafe.com/activator) can also communicate with Typesafe ConductR. Activator communicates with sbt via the sbt-server protocol and so all tasks and settings available to the sbt-conductr plugin will be available to Activator. Therefore Activator can be used to prepare bundles and publish them to the cluster, or on a local machine for testing.
 
 ### Bundles
 
@@ -64,7 +64,7 @@ Note also that a bundle's components do not have to run within a container. They
 
 #### Proxying Network Endpoints
 
-A strong requirement of Typesafe ConductR is to strive for the 100% availability of services. For example, there should be no disruption to the availability of a component's service due to upgrades.
+A strong requirement of Typesafe ConductR is to strive for the high availability of services. For example, there should be little to no disruption to the availability of a component's service due to upgrades.
 
 In order to meet this requirement the proxying of network traffic where a static port is mapped to a number of dynamically allocated ports is required. For example, suppose there is a component with a configuration of _x_. The component provides an https service on port 443 and manages all requests given a path of "/someservice". Supposing also that there is a virtual IP address of 192.168.1.123 allocated to a number of nodes in the cluster then the following external request for `/someservice` will be routed to our component running on any one of a number of hosts:
 
@@ -143,7 +143,7 @@ ConductR also provides a fall-back mechanism of polling endpoints to determine w
 
 ##### Service Discovery
 
-A bundle component could hard-code the view that a service is always available for a given url including the protocol, port and path to use, and just use the proxy's IP. However the small library mentioned in the previous section also provides a means to locate the url of an http, tcp or udp endpoint given just the service name. For example performing a lookup on just "http://:9000/someservice" will yield a URL that can be used to connect to another bundle component's service going via the proxy. Bundle components then become removed from the operational concern of what ports to allocate what services.
+A bundle component could hard-code the view that a service is always available for a given url including the protocol, port and path to use, and just use the proxy's IP. However the small library mentioned in the previous section also provides a means to locate the url of an http, tcp or udp endpoint given just the service name. For example performing a lookup on just "http://:9000/someservice" will yield a URL that can be used to connect to another bundle component's service. Bundle components then become removed from the operational concern of what ports to allocate what services.
 
 ##### Scaling/Stopping a Bundle
 

@@ -1,6 +1,6 @@
 # TCP and UDP service lookup
 
-ConductR offers an [`/etc/services`](http://www.lehman.cuny.edu/cgi-bin/man-cgi?services+4) style of experience for situations where you need to resolve a TCP or UDP port (note that if you're using [HAProxy](http://www.haproxy.org/) for proxying then UDP is not supported at this time). Resolving ports at runtime is a good practice given that your application or service becomes de-coupled from the actual port in use.
+ConductR offers an [`/etc/services`](http://www.lehman.cuny.edu/cgi-bin/man-cgi?services+4) style of experience for situations where you need to resolve a TCP or UDP port. Resolving ports at runtime is a good practice given that your application or service becomes de-coupled from the actual port in use.
 
 The general idea is that you call a lookup function each time that you need to make a call to a service. Unfortunately many libraries that you use will not provide you with the opportunity to make that call, and so you may have to resort to an initial static lookup. The following example attempts to locate a fictitious JMS broker service:
 
@@ -27,7 +27,7 @@ val locationCache = LocationCache()
 val jmsBroker = LocationService.lookup("/jms", URI("tcp://localhost:61616"), locationCache)
 ```
 
-`jmsBroker` is typed `Future[Option[URI]]` meaning that an optional response with the resolved URI will be returned at some time in the future. Supposing that this lookup is made during the initialisation of your program, the service you're looking for may not exist. However calling the same function later may yield the service. This is because services can come and go.
+`jmsBroker` is typed `Future[Option[URI]]` meaning that an optional response with the resolved URI will be returned at some time in the future. Supposing that this lookup is made during the initialization of your program, the service you're looking for may not exist. However calling the same function later may yield the service. This is because services can come and go.
 
 Ideally, we would push the resolution of a service back on ConductR in a similar manner to how HTTP paths are resolved and use DNS for looking up services. Unfortunately [DNS A-records](http://support.simpledns.com/kb/a35/can-i-specify-a-tcp-ip-port-number-for-my-web-server-in-dns-other-than-the-standard-port-80.aspx) do not yield a port number, and there is little library usage of [DNS SRV-record](http://en.wikipedia.org/wiki/SRV_record) types and, by extension, [zeroconf](http://en.wikipedia.org/wiki/Zero-configuration_networking#Link-local_IPv4_addresses).
 
@@ -77,4 +77,4 @@ class MyService(cache: CacheLike) extends Actor with ImplicitConnectionContext {
 }
 ```
 
-This type of actor is used to handle service processing and should only receive service oriented messages once its dependent service URI is known. This is an improvement on the blocking example provided before, as it will not block. However it still has the requirement that `someservice` must be running at the point of initialisation, and that it continues to run. Neither of these requirements may always be satisfied with a distributed system.
+This type of actor is used to handle service processing and should only receive service oriented messages once its dependent service URI is known. This is an improvement on the blocking example provided before, as it will not block. However it still has the requirement that `someservice` must be running at the point of initialization, and that it continues to run. Neither of these requirements may always be satisfied with a distributed system.

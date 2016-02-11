@@ -1,4 +1,6 @@
-# Advanced sandbox
+# Advanced sbt sandbox
+
+> Note that the ConductR sandbox is available as both an sbt plugin, and also as a command line tool. This document describes the sbt plugin variant and its position in terms of your development activities.
 
 A Developer Sandbox Docker image is available so that developers can validate and debug ConductR applications without needing to run a full multi-node cluster. The sbt plugin [sbt-conductr-sandbox](https://github.com/typesafehub/sbt-conductr-sandbox) is using this Docker image and can be utilized locally by developers as well as by Continous Integration (CI) and other automation to validate bundles within a cluster context.
 

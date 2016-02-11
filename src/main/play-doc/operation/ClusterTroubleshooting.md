@@ -4,20 +4,12 @@
 
 Cluster partition is a failure that may occur when running a cluster based application. To recover from this situation ConductR utilizes Akka SBR (Split Brain Recovery). Akka SBR is a part of Akka in the [Typesafe Reactive Platform](http://www.typesafe.com/products/typesafe-reactive-platform) version `15v01p05`.
 
-The Akka SBR strategy adopted by ConductR is `keep-majority`.
-
-The `keep-majority` strategy ensures when cluster split occurs:
+The Akka SBR strategy adopted by ConductR is `keep-majority`. This strategy ensures when cluster split occurs:
 
 * The partition which has the majority of the nodes are kept running
 * Other partition(s) which has less than majority of the nodes will have their ConductR process terminated.
 
-Upon cluster split, Akka SBR will terminate the ConductR processes within the partition that does not have majority number of nodes. ConductR will then restart itself and continually attempt to rejoin with the cluster that it had. ConductR is designed to be self-healing.
-
-### Notes on `seed-nodes` file
-
-* The address of last known members in the cluster are kept in what we call seed nodes file.
-* The file is located at `/usr/share/conductr/conf/seed-nodes`.
-* By default ConductR keeps the latest 3 reachable members in the cluster in the seed nodes file.
+Upon cluster split, Akka SBR will terminate the ConductR processes within the partition that does not have majority number of nodes. ConductR will then restart itself and continually attempt to rejoin with the cluster that it had. ConductR is therefore designed to be self-healing.
 
 ## Restarting the ConductR Cluster
 
@@ -71,6 +63,11 @@ sudo service conductr restart
 
 * If the service has been restarted successfully continue with the next node and repeat that until all services has been restarted.
 
+### Notes on the seed-nodes file
+
+* The address of last known members in the cluster are kept in what we call seed nodes file.
+* The file is located at `/usr/share/conductr/conf/seed-nodes`.
+* By default ConductR keeps the latest 3 reachable members in the cluster in the seed nodes file.
 
 ## Restarting Bundles
 
@@ -90,4 +87,4 @@ The application state is not automatically restored by ConductR. When deploying 
      
 ### Bundle termination 
     
-If a bundle dies of its own accord then ConductR does not attempt to restart it. The reason is that it doesn't really know why it has stopped, it could be for a legitimate reason e.g. a short lived task.
+If a bundle dies of its own accord then ConductR will re-schedule it for execution elsewhere. ConductR strives to attain the scale that has been declared for a bundle (the desired scale is declared when running a bundle).
