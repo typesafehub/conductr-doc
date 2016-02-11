@@ -4,10 +4,10 @@ ConductR simplifies the deployment of applications with resilience and elasticit
 
 This guide describes how to setup and deploy a Play 2.4 Scala application on ConductR. In particular it describes how to:
 
-* Signaling that application is started
-* Creating application bundle
-* Starting ConductR cluster
-* Deploying application bundle to ConductR
+* Signal that application is started
+* Create an application bundle
+* Start a ConductR cluster
+* Deploy an application bundle to ConductR
 
 The focus of this section is to get started quickly. The full documentation of these parts are described in these sections:
 
