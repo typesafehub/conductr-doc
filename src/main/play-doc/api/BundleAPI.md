@@ -16,7 +16,7 @@ The following services are covered by the bundle API:
 
 ## The Location Lookup Service
 
-Resolve a service name expressed as path to a URL. The URL returned is to a service's proxy thereby insulating the caller from the actual address of a service. A proxy URL can resolve to any of a number of actual service addresses e.g. a customer service can be backed by two instances witin the cluster.
+Resolve a service name expressed as path to a URL. The URL returned is to the nearest service of the cluster in relation to the caller's IP. Service lookup insulates the caller from the actual address of a service, and therefore allows these other services to move around.
 
 ### Request
 
@@ -41,7 +41,7 @@ Cache-Control: max-age={max-age}
 
 Field        | Description
 -------------|------------
-location-url | The location of the requested service including any trailing parts to the path requested e.g. `/customers/123` would result in `http://10.0.1.22:8080/customers/123` supposing that ConductR's proxy service's address is `10.0.1.22`, and the endpoint service port is `8080`. If the protocol for the service was TCP then that will be reflected in the returned location's protocol field. For example looking up `/jms` may yield `tcp://10.0.1.22:61616` supposing that the Active/MQ JMS broker's service is offered on port 61616.
+location-url | The location of the requested service including any trailing parts to the path requested e.g. `/customers/123` would result in `http://10.0.1.22:10121/customers/123` supposing that service's host address is `10.0.1.22`, and the endpoint service host port is `10121`. If the protocol for the service was TCP then that will be reflected in the returned location's protocol field. For example looking up `/jms` may yield `tcp://10.0.1.22:10121`.
 max-age      | The Time-To-Live (TTL) seconds before it is recommended to retain any previous value returned by this service. You should also evict any cached value if any subsequent request on the `location-url` fails.
 
 #### Failure
@@ -81,7 +81,7 @@ Content-Type: application/json
 ]
 ```
 
-Where `10.11.23.22:7001` and `10.11.23.22:7002` are the host and port of the service which is currently running.
+Where `10.11.23.22:7001` and `10.11.23.22:7002` are the host and host port of the service which is currently running.
 
 #### Success - Empty Result
 
@@ -123,7 +123,7 @@ Content-Type: application/json
 "10.11.23.22:7001"
 ```
 
-Where `10.11.23.22:7001` is the host and port of the service which is currently running.
+Where `10.11.23.22:7001` is the host and host port of the service which is currently running.
 
 #### Failure
 

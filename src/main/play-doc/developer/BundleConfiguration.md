@@ -46,13 +46,14 @@ The following port definitions are used:
 Name         | Description
 -------------|------------
 service-port | The port number to be used as the public-facing port. It is proxied to the host-port.
-service-name | A name to be used to address the service. In the case of http protocols, this is interpreted as a path to be used for proxying. Other protocols will have different interpretations.
 host-port    | This is not declared but is dynamically allocated if bundle is running in a container. Otherwise it has the same value as bind-port.
 bind-port    | The port the bundle component's application or service actually binds to. When this is 0 it will be dynamically allocated (which is the default).
 
 Endpoints are declared using an `endpoint` setting using a Map of endpoint-name/`Endpoint(bindProtocol, bindPort, services)` pairs.
 
 The bind-port allocated to your bundle will be available as an environment variable to your component. For example, given the default settings where an endpoint named "web" is declared that has a dynamically allocated port, an environment variable named `WEB_BIND_PORT` will become available. `WEB_BIND_IP` is also available and should be used as the interface to bind to.  
+
+Service names are declared through a "services" URI for each endpoint. A service name is used address the service when performing a service lookup. The first path component of the services URI is deemed to be the service name, and it is possible to not have one (as in the case above). A URI with the service name of "/customers" would be "http://:9000/customers" following on from the example above.
 
 ### Docker Containers and ports
 
