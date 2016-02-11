@@ -39,11 +39,11 @@ The ConductR service must be restarted for changes to this file to take effect.
 
 Roles allow machines to be targetted for specific purposes. Some machines may have greater IO capabilities than others, some may have more CPU, memory and other resources. Some may also be required to maintain a volume that holds a database.
 
-When getting started with ConductR it is reasonable to have each ConductR service rely on its default role of `web`. However when moving into a production scenario you should plan and assign roles for your ConductR cluster.
+When getting started with ConductR it is reasonable to have each ConductR service rely on its default role of `web`. You can also use the `-Dconductr.resource-provider.match-offer-roles=off` declaration of `application.ini` to tell ConductR not to consider roles during scheduling. However when moving into a production scenario you should plan and assign roles for your ConductR cluster.
 
 When a bundle is to be scheduled for loading or scaling, a check is made to first see whether a resource offer's roles intersect with the roles that the bundle requires. If it does then it is eligible. If no resource offers provide the roles required by the bundle, the bundle cannot be loaded or scaled. Bundles will only be loaded to member nodes providing the bundle required roles. If no members of the cluster provide those roles, the bundle will fail to load.
 
-#### Using Roles
+### Using Roles
 
 Roles can be leveraged in varying levels of specificity as needed to achieve the desired results. Small clusters running multiple apps will generally need few roles. Bundles need to be able to relocated to other nodes in the event of failure. Overly dividing a small cluster into small sub-sets reduces relience.  Smaller clusters therefore will generally use few roles to create a few sub-sets of nodes.
 

@@ -404,9 +404,7 @@ echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
 
 ### Installing a Proxy
 
-Proxying application endpoints is required when running more than one instance of ConductR; which should be always for production style scenarios. Proxying endpoints permits connectivity from both external callers and for bundle components to communicate with other bundle components. This also allows an external caller to contact an application that is running on any ConductR node by contacting any proxy instance.
-
-We will be using `HAProxy`. Add a dedicated Personal Package Archive (PPA) and install HAProxy.
+Proxying application endpoints is required when external communication to a service is required. We will be using `HAProxy`. Add a dedicated Personal Package Archive (PPA) and install HAProxy.
 
 ``` bash
 sudo add-apt-repository -y ppa:vbernat/haproxy-1.5

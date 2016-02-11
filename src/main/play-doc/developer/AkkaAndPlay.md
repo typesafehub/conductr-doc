@@ -2,11 +2,13 @@
 
 [conductr-bundle-lib](https://github.com/typesafehub/conductr-bundle-lib#typesafe-conductr-bundle-library) comes in multiple flavors depending on whether you need it for Akka and/or Play development, and also the specific versions of Akka and Play. The libraries are structured as follows in this regard:
 
-* Akka 2.3 for Java and Scala - [akka23-conductr-bundle-lib](#akka23-conductr-bundle-lib)
+* Akka 2.3/Akka 2.4 for Java and Scala - [akka23-conductr-bundle-lib](#akka23-conductr-bundle-lib)
 * Play 2.3 for Java and Scala (including Akka 2.3) - [play23-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
 * Play 2.4 for Java and Scala (including Akka 2.3) - [play24-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
 
 ## akka23-conductr-bundle-lib
+
+> Note that Akka 2.3 and 2.4 are binary compatible and so the akka23-conductr-bundle-lib can be used for both.
 
 This library provides a reactive API using [Akka Http](http://akka.io/docs/) and should be used when you are using Akka. The library can be used for both Java and Scala.
 
@@ -88,7 +90,7 @@ LocationService.getInstance().lookupWithContext("/whatever", URI("tcp://localhos
 
 ### Akka Clustering
 
-[Akka cluster](http://doc.akka.io/docs/akka/2.3.9/scala/cluster-usage.html) based applications or services have a requirement where the first node in a cluster must form the cluster, and the subsequent nodes join with any of the ones that come before them (seed nodes). Where bundles share the same `system` property in their `bundle.conf`, and have an intersection of endpoint names, then ConductR will ensure that only one bundle is started at a time. Thus the first bundle can determine whether it is the first bundle, and subsequent bundles can determine the IP and port numbers of the bundles that have started before them.
+[Akka cluster](http://doc.akka.io/docs/akka/2.4.1/scala/cluster-usage.html) based applications or services have a requirement where the first node in a cluster must form the cluster, and the subsequent nodes join with any of the ones that come before them (seed nodes). Where bundles share the same `system` property in their `bundle.conf`, and have an intersection of endpoint names, then ConductR will ensure that only one bundle is started at a time. Thus the first bundle can determine whether it is the first bundle, and subsequent bundles can determine the IP and port numbers of the bundles that have started before them.
 
 In order for an application or service to take advantage of this guarantee provided by ConductR, the following call is required to obtain configuration that will be used when establishing your actor system:
 
@@ -166,22 +168,6 @@ LocationService.getInstance().lookupWithContext("/whatever", new URI("tcp://loca
 
 In order for an application or service to take advantage of setting important Akka and Play related properties, the following is required in order to associate ConductR configuration with that of Play and Akka:
 
-#### Play 2.3
-
-```scala
-import play.api._
-import com.typesafe.conductr.bundlelib.akka.{ Env => AkkaEnv }
-import com.typesafe.conductr.bundlelib.play.{ Env => PlayEnv }
-
-object Global extends GlobalSettings {
-  val totalConfiguration = 
-    super.configuration ++ Configuration(AkkaEnv.asConfig) ++ Configuration(PlayEnv.asConfig)
-
-  override def configuration: Configuration =
-    totalConfiguration
-}
-```
-
 #### Play 2.4
 
 Your `application.conf` should contain the following:
@@ -209,3 +195,20 @@ class MyCustomApplicationLoader extends ApplicationLoader {
   }
 }
 ```
+
+#### Play 2.3
+
+```scala
+import play.api._
+import com.typesafe.conductr.bundlelib.akka.{ Env => AkkaEnv }
+import com.typesafe.conductr.bundlelib.play.{ Env => PlayEnv }
+
+object Global extends GlobalSettings {
+  val totalConfiguration = 
+    super.configuration ++ Configuration(AkkaEnv.asConfig) ++ Configuration(PlayEnv.asConfig)
+
+  override def configuration: Configuration =
+    totalConfiguration
+}
+```
+
