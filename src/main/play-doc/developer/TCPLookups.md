@@ -13,7 +13,7 @@ The general idea is that you call a lookup function each time that you need to m
 // is needed as "service" is returned as a Future.
 // For convenience, we provide a global ConnectionContext
 // that may be imported.
-import com.typesafe.conductr.bundlelib.scala.ConnectionContext.Implicits.global
+import com.typesafe.conductr.lib.scala.ConnectionContext.Implicits.*
 
 // Some URI help
 import com.typesafe.conductr.bundlelib.scala.URI

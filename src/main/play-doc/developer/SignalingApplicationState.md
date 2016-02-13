@@ -31,7 +31,7 @@ When you are reasonably sure that your code is ready to start processing (it doe
 Library: `scala-conductr-bundle-lib`
 
 ```scala
-import com.typesafe.conductr.bundlelib.scala.ConnectionContext.Implicits.global
+import com.typesafe.conductr.lib.scala.ConnectionContext.Implicits.*
 
 ...
 
