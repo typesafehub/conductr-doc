@@ -1,60 +1,23 @@
 # ConductR Migration Guide
 
 
-This document describes what is required to move between version 1.0 to 1.1. Here is a list of major areas to be considered when migrating:
+This document describes what is required to move between version 1.1 to 1.2. Here is a list of major areas to be considered when migrating:
 
-* [Bundle versioning](#Bundle-versioning)
-* [Logging](#Logging)
+* [Proxying](#Roles_and_toplogy)
+* [Proxying](#Proxying)
 
-## Bundle versioning
+## Roles and topology
 
-Prior to 1.1 `sbt-bundle` encoded your project's version into a bundle's name and also any system name. These new version properties factor out that concern into their own properties. The major implication of this is that if you have provided a `bundle.conf` in a bundle's optional configuration then you must attend to any component name being overridden. Here's an example of a pre 1.1 bundle overiding a value inside an optional configuration's `bundle.conf`:
-
-```
-system = "doc-renderer-cluster"
-components {
-  "project-doc-1.0-SNAPSHOT" {
-    endpoints.web.services = ["http://milo.typesafe.com"]
-  }
-}
-```
-
-For 1.1 this should now look like:
+ConductR now requires roles to be specified for each node where ConductR bundles run. Prior to installing ConductR consider a topology that has roles representing a DMZ, gateway services, persistance services (databases) and so forth. You can disable role checking by specifying the following in `application.ini`: 
 
 ```
-system = "doc-renderer-cluster"
-components {
-  "project-doc" {
-    endpoints.web.services = ["http://milo.typesafe.com"]
-  }
-}
+-Dconductr.resource-provider.match-offer-roles=off
 ```
 
-i.e. note that the encoding of a version has been removed from the component's name.
+## Proxying
 
-### Rationale
+conductr-haproxy is now provided as a bundle with the "haproxy" role. When running conductr-haproxy you should specify a scale for the number of HAProxy services in your cluster. In addition the nodes that run the HAProxy service must have the "haproxy" role from a ConductR perspective.
 
-`[sbt-bundle](https://github.com/sbt/sbt-bundle#conductr-bundle-plugin)` has been enhanced to support two new types of version so that version information can be retained and reasoned with reliably. The versions are:
+### Amazon's ELB
 
-* `compatibilityVersion`; and
-* `systemVersion`
-
-A `compatibilityVersion` is a versioning scheme that will be included in a bundle's name that describes the level of compatibility with bundles that go before it. By default we take the major version component of a version as defined by [http://semver.org/]. However you can make this mean anything that you need it to mean in relation to bundles produced prior to it. We take the notion of a compatibility version from [http://ometer.com/parallel.html]."
-
-The `systemVersion` is a version to associate with a system. This setting normally correlates to the value of `compatibilityVersion`, but doesn't have to. Systems declared using the `system` property can technically span across different bundles. Again, the meaning given to the `systemVersion` can be anything you need it to mean. However for Akka cluster based services it declares the name of the Akka cluster to join and is compatible with (Akka cluster requires binary compatibility for your service's messages given serialization concerns).
-
-When migrating we recommend that you update your `sbt-bundle`, `sbt-conductr` and `sbt-conductr-sandbox` plugins to their 1.1 versions. These plugins can continue to work with ConductR 1.0 as they are backward compatible. However in order for `sbt-conductr` to convey the new versioning scheme, you are required to enable the new API:
-
-```scala
-ConductRKeys.conductrApiVersion := "1.1"
-```
-
-## Logging
-
-The use of Elasticsearch for collecting event and log data is no longer considered experimental and is therefore enabled by default. If you wish to continue using a syslog receiver then please apply to the following settings in your `application.ini` (the following relates to connectivity with a locally installed rsyslog):
-
-```
--Dcontrail.syslog.server.host=127.0.0.1 
--Dcontrail.syslog.server.port=514 
--Dcontrail.syslog.server.elasticsearch.enabled=off
-```
+Prior to 1.2, we recommended that you configure the ELB to poll the /bundles endpoint of the control protocol. Given conductr-haproxy you should now configured the ELB to poll the http://:9009/status. This endpoint will return an HTTP OK status when HAProxy has been correctly configured therefore leading to a more reliable configuration of the ELB. See [the cluster setup considerations document](ClusterSetupConsiderations#Cluster security considerations) for more information.

@@ -133,7 +133,7 @@ and there is also another:
 The `Env` one is discussed in the section below. Other than the `import`s for the types, the only difference in terms of API are usage is how a `ConnectionContext` is established. A `ConnectionContext` for Play requires an `ExecutionContext` at a minimum. For convenience, we provide a default ConnectionContext using the default execution context. This may be imported e.g.:
 
 ```scala
-  import com.typesafe.conductr.bundlelib.play.ConnectionContext.Implicits.defaultContext
+  import com.typesafe.conductr.lib.play.ConnectionContext.Implicits.*
 ```
 
 There is also a lower level method where the `ExecutionContext` is passed in:
