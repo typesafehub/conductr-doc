@@ -4,7 +4,7 @@
 
 A Developer Sandbox Docker image is available so that developers can validate and debug ConductR applications without needing to run a full multi-node cluster. The sbt plugin [sbt-conductr-sandbox](https://github.com/typesafehub/sbt-conductr-sandbox) is using this Docker image and can be utilized locally by developers as well as by Continous Integration (CI) and other automation to validate bundles within a cluster context.
 
-The ConductR Developer Sandbox is available to freely all developers. To request access to the sandbox, login to Typesafe.com to visit the [ConductR Developer page](https://www.typesafe.com/product/conductr/developer).
+The ConductR Developer Sandbox is available to freely all developers. To request access to the sandbox, login to lightbend.com to visit the [ConductR Developer page](https://www.lightbend.com/product/conductr/developer).
 
 > The Docker image of `sbt-conductr-sandbox` contains the full version of ConductR. However, it is not recommended to use this version in production because it is pre-configured for non production scenarios and because this ConductR version is started inside a Docker container.
 
@@ -17,7 +17,7 @@ The following description is intended to provide a taste of what `sbt-conductr-s
     ```scala
     addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.2.1")
     ```
-2. Configure the `build.sbt` as described by the [ConductR download page](https://www.typesafe.com/product/conductr/developer).
+2. Configure the `build.sbt` as described by the [ConductR download page](https://www.lightbend.com/product/conductr/developer).
 
 3. Reload the sbt session:
 

@@ -1,6 +1,6 @@
 # ConductR Documentation
 
-Documentation for conductr.typesafe.com
+Documentation for conductr.lightbend.com
 
 Feel free to contribute and correct!
 

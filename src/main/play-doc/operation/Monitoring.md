@@ -1,8 +1,8 @@
 # Typesafe Monitoring
 
-[Typesafe Monitoring](http://www.typesafe.com/products/typesafe-monitoring) is a suite of insight tools for monitoring Typesafe Reactive Platform (RP) applications. These tools gain visibility into ConductR and its bundles — to respond early to changes that could indicate problems, to tune a system, or to track down the cause of unexpected behavior.
+[Typesafe Monitoring](http://www.lightbend.com/products/typesafe-monitoring) is a suite of insight tools for monitoring Typesafe Reactive Platform (RP) applications. These tools gain visibility into ConductR and its bundles — to respond early to changes that could indicate problems, to tune a system, or to track down the cause of unexpected behavior.
 
-This guide discusses ConductR specifics regarding Typesafe Monitoring. For a comprehensive description please visit [Typesafe Monitoring's documentation](http://resources.typesafe.com/monitoring/docs/home.html).
+This guide discusses ConductR specifics regarding Typesafe Monitoring. For a comprehensive description please visit [Typesafe Monitoring's documentation](http://resources.lightbend.com/monitoring/docs/home.html).
 
 ## Monitoring ConductR
 
@@ -40,4 +40,4 @@ javaOptions in Bundle ++= Seq(
   )
 ```
 
-Be sure to have your bundle developers become familiar with ["Cinnamon"](http://resources.typesafe.com/monitoring/docs/install/cinnamon.html) - Typesafe Monitoring's API.
+Be sure to have your bundle developers become familiar with ["Cinnamon"](http://resources.lightbend.com/monitoring/docs/install/cinnamon.html) - Typesafe Monitoring's API.
