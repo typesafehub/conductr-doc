@@ -66,13 +66,13 @@ conduct run ${frontend_bundle_id}
 
 The script above performs the following:
 
-* Loads all bundles required by [Reactive Maps](http://www.typesafe.com/activator/template/reactive-maps) in the following order: Backend Region, Backend Summary, and Frontend.
+* Loads all bundles required by [Reactive Maps](http://www.lightbend.com/activator/template/reactive-maps) in the following order: Backend Region, Backend Summary, and Frontend.
 * Start the bundles with the following order: Backend Region, Backend Summary, and Frontend.
 * The Backend Summary will be run in the same host as Backend Region due to `--affinity` switch.
 
 Note the `-q` switch applied to the `conduct load` command in the example above. The `-q` switch will ensure only the `bundle_id` of the loaded bundle is displayed on the standard output. The `bundle_id` then can be referenced from the subsequent commands.
 
-In the example above the bundle shorthand expression `reactive-maps-backend-region`, `reactive-maps-backend-summary`, and `reactive-maps-frontend` will be resolved against the [Reactive Maps](http://www.typesafe.com/activator/template/reactive-maps) bundle published to Bintray.
+In the example above the bundle shorthand expression `reactive-maps-backend-region`, `reactive-maps-backend-summary`, and `reactive-maps-frontend` will be resolved against the [Reactive Maps](http://www.lightbend.com/activator/template/reactive-maps) bundle published to Bintray.
 
 
 ## Built-in bundle resolvers

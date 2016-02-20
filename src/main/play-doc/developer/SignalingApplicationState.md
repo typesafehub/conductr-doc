@@ -16,7 +16,7 @@ The library comes in multiple flavours:
 To use it add one of the libraries as a dependency to your `build.sbt`:
 
 ```scala
-resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
+resolvers += "typesafe-releases" at "http://repo.lightbend.com/typesafe/maven-releases"
 
 libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "1.2.0"
 ```

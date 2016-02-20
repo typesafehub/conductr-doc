@@ -81,7 +81,7 @@ As you move through our documentation you will  come across references to Conduc
 
 Now we can go ahead an start the ConductR cluster locally.
 
-1. Configure the `build.sbt` as described by the [ConductR download page](https://www.typesafe.com/product/conductr/developer).
+1. Configure the `build.sbt` as described by the [ConductR download page](https://www.lightbend.com/product/conductr/developer).
 
 2. Reload the sbt session:
 
