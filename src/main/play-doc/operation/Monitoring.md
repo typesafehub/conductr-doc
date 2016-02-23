@@ -2,11 +2,11 @@
 
 [Typesafe Monitoring](http://www.lightbend.com/products/typesafe-monitoring) is a suite of insight tools for monitoring Typesafe Reactive Platform (RP) applications. These tools gain visibility into ConductR and its bundles — to respond early to changes that could indicate problems, to tune a system, or to track down the cause of unexpected behavior.
 
-This guide discusses ConductR specifics regarding Typesafe Monitoring. For a comprehensive description please visit [Typesafe Monitoring's documentation](http://resources.lightbend.com/monitoring/docs/home.html).
+This guide discusses ConductR specifics regarding Lightbend Monitoring. For a comprehensive description please visit [Lightbend Monitoring's documentation](http://resources.lightbend.com/monitoring/docs/home.html).
 
 ## Monitoring ConductR
 
-ConductR is a Typesafe RP based application and has been configured to support Typesafe Monitoring by enabling some settings within its `conf/application.ini`.
+ConductR is a Lightbend RP based application and has been configured to support Typesafe Monitoring by enabling some settings within its `conf/application.ini`.
 
 ### Enabling ConductR Monitoring for Takipi
 
@@ -36,7 +36,7 @@ Note also that the Takipi agent will require installation at each ConductR node.
 
 ## Monitoring Bundles
 
-You can also incorporate Typesafe Monitoring capabilities into your bundles. This section assumes you have [signed up with Takipi]((https://app.takipi.com/)) and installed its agent at each ConductR node.
+You can also incorporate Lightbend Monitoring capabilities into your bundles. This section assumes you have [signed up with Takipi]((https://app.takipi.com/)) and installed its agent at each ConductR node.
 
 ### Enabling Bundle Monitoring for Takipi
 
