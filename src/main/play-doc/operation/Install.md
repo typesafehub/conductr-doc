@@ -7,7 +7,7 @@ Choose on of the following installation guides to get started:
 
 # Linux Installation
 
-> In order to obtain the Debian or RPM installations of ConductR then please [contact our sales department](https://www.typesafe.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.typesafe.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
+> In order to obtain the Debian or RPM installations of ConductR then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
 
 -
 
@@ -246,7 +246,7 @@ Prior to using the Ansible playbooks to create your cluster, you will needs the 
 
 ## Ansible Instructions
 
-The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays and playbooks provision [Typesafe ConductR](https://conductr.typesafe.com) cluster nodes in AWS EC2 using [Ansible](http://www.ansible.com).
+The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays and playbooks provision [Lightbend ConductR](https://conductr.lightbend.com) cluster nodes in AWS EC2 using [Ansible](http://www.ansible.com).
 
 Use create-network-ec2.yml to setup a new Virtual Private Cloud (VPC) and create your cluster in the new VPC. You only need to provide your access keys and what region to execute in. The playbook outputs a vars file for use with the build-cluster-ec.yml.
 

@@ -14,7 +14,7 @@ Prior to 1.1 `sbt-bundle` encoded your project's version into a bundle's name an
 system = "doc-renderer-cluster"
 components {
   "project-doc-1.0-SNAPSHOT" {
-    endpoints.web.services = ["http://milo.typesafe.com"]
+    endpoints.web.services = ["http://milo.lightbend.com"]
   }
 }
 ```
@@ -25,7 +25,7 @@ For 1.1 this should now look like:
 system = "doc-renderer-cluster"
 components {
   "project-doc" {
-    endpoints.web.services = ["http://milo.typesafe.com"]
+    endpoints.web.services = ["http://milo.lightbend.com"]
   }
 }
 ```

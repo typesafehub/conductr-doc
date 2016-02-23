@@ -8,35 +8,35 @@ The remainder of this section will familiarize you with ConductR's architecture.
 
 ## Functional Scope
 
-The following use-case diagram illustrates the scope of Typesafe ConductR:
+The following use-case diagram illustrates the scope of Lightbend ConductR:
 
 [[images/scope.png]]
 
-During the latter part of development of a project, developers will typically package their artifacts and start running them for near-production style scenarios. An example of this is with a Play application development. During the early stages developers will typically run their project from within Activator, making changes to their code having gathered rapid feedback from the browser window. Once most of the project's functionality is written developers will then issue a "stage" command to produce a distribution on the file system that they can run their project from. The project will run differently given things such as CDN resolution, asset fingerprinting, minification; activities that would otherwise degrade the speed required for development mode. As a part of the staging activity build tools permit the staging of a bundle that can be used by Typesafe ConductR ( _Create Bundle_ and _Run Bundle Locally_). This bundle is able to be deployed and run on the developer's machine.
+During the latter part of development of a project, developers will typically package their artifacts and start running them for near-production style scenarios. An example of this is with a Play application development. During the early stages developers will typically run their project from within Activator, making changes to their code having gathered rapid feedback from the browser window. Once most of the project's functionality is written developers will then issue a "stage" command to produce a distribution on the file system that they can run their project from. The project will run differently given things such as CDN resolution, asset fingerprinting, minification; activities that would otherwise degrade the speed required for development mode. As a part of the staging activity build tools permit the staging of a bundle that can be used by Lightbend ConductR ( _Create Bundle_ and _Run Bundle Locally_). This bundle is able to be deployed and run on the developer's machine.
 
 During the course of development the developer will create a configuration that is also used for running a bundle locally ( _Develop Config_). This configuration names a project's component declaring its environmental requirements. These configurations are versioned and provide an audit trail of the changes to a component overall.
 
-When a component is ready for deploying (for example, into testing or production) the developer will provide the component's bundle to operations ( _Stage Bundle_). Operations will develop a component's configuration further for suitability with target environments ( _Develop Config_). Not only can configurations be versioned but they can also be isolated in terms of target environments. For example there may be a configuration targeting production deployment, another for functional testing and so forth. Once configurations have been developed they can be deployed. Staged bundles are referenced by the deployed configuration and are deployed onto infrastructure as a consequence. Operations also take care of preparing physical or virtual hardware and operating systems in order that they can receive these deployments. Operations are responsible for maintaining Typesafe ConductR by configuring networks, databases and so forth. ( _Maintain Infrastructure_).
+When a component is ready for deploying (for example, into testing or production) the developer will provide the component's bundle to operations ( _Stage Bundle_). Operations will develop a component's configuration further for suitability with target environments ( _Develop Config_). Not only can configurations be versioned but they can also be isolated in terms of target environments. For example there may be a configuration targeting production deployment, another for functional testing and so forth. Once configurations have been developed they can be deployed. Staged bundles are referenced by the deployed configuration and are deployed onto infrastructure as a consequence. Operations also take care of preparing physical or virtual hardware and operating systems in order that they can receive these deployments. Operations are responsible for maintaining Lightbend ConductR by configuring networks, databases and so forth. ( _Maintain Infrastructure_).
 
 ## Solution Architecture
 
 ### Overview
 
-The following component diagram illustrates the components of Typesafe ConductR:
+The following component diagram illustrates the components of Lightbend ConductR:
 
 [[images/arch.png]]
 
-Typesafe ConductR fundamentally consists of the _ConductR_ process; an application that is responsible for deploying components throughout a medium to large networked cluster of machines. We see that a medium sized cluster begins at where more than 3 host machines are involved. ConductR provides a control protocol via HTTP/REST/JSON so that many types of client may communicate with it.
+Lightbend ConductR fundamentally consists of the _ConductR_ process; an application that is responsible for deploying components throughout a medium to large networked cluster of machines. We see that a medium sized cluster begins at where more than 3 host machines are involved. ConductR provides a control protocol via HTTP/REST/JSON so that many types of client may communicate with it.
 
 ### Clients
 
 Many types of client are possible given HTTP/REST/JSON. For developers, an sbt plugin named `sbt-conductr` provides control protocol commands (load, unload, start etc.) for managing the lifecycle of bundles. Similarly for operators, a set of command line tools are provided and can be run on Windows and Unix style environments.
 
-Again for developers, [Typesafe Activator](http://typesafe.com/activator) can also communicate with Typesafe ConductR. Activator communicates with sbt via the sbt-server protocol and so all tasks and settings available to the sbt-conductr plugin will be available to Activator. Therefore Activator can be used to prepare bundles and publish them to the cluster, or on a local machine for testing.
+Again for developers, [Typesafe Activator](http://lightbend.com/activator) can also communicate with Lightbend ConductR. Activator communicates with sbt via the sbt-server protocol and so all tasks and settings available to the sbt-conductr plugin will be available to Activator. Therefore Activator can be used to prepare bundles and publish them to the cluster, or on a local machine for testing.
 
 ### Bundles
 
-Typesafe ConductR provides an `sbt-bundle` plugin to produce bundles. The plugin is as an extension of the [sbt-native-packager](https://github.com/sbt/sbt-native-packager#sbt-native-packager) plugin. Bundles are `zip` files that are named in accordance with their calculated digest. They contain the following files:
+Lightbend ConductR provides an `sbt-bundle` plugin to produce bundles. The plugin is as an extension of the [sbt-native-packager](https://github.com/sbt/sbt-native-packager#sbt-native-packager) plugin. Bundles are `zip` files that are named in accordance with their calculated digest. They contain the following files:
 
 * A bundle descriptor file named `bundle.conf`
 * The files relating to the component under a directory named under the component's name/version combination
@@ -53,18 +53,18 @@ A bundle descriptor file ( _bundle.conf_) contains the following information:
 
 #### Docker
 
-Docker is the supported container technology. Typesafe ConductR abstracts Docker interactions so that:
+Docker is the supported container technology. Lightbend ConductR abstracts Docker interactions so that:
 
 * a container image is built using files belonging to a component described by a bundle
 * the container's dynamic ports (if any) can be supplied in order to avoid conflicting with any non Docker ports in use
 
-This abstraction also allows other forms of container to be supported by Typesafe ConductR in the future.
+This abstraction also allows other forms of container to be supported by Lightbend ConductR in the future.
 
 Note also that a bundle's components do not have to run within a container. They may also run within the same host as the ConductR if required. When considering JVM applications we encourage the container-less approach as it can minimise start-up times. Consider Docker for use-cases when you have a native component that profits from the "write once, run anywhere" goal of containers.
 
 #### Proxying Network Endpoints
 
-A strong requirement of Typesafe ConductR is to strive for the high availability of services. For example, there should be little to no disruption to the availability of a component's service due to upgrades.
+A strong requirement of Lightbend ConductR is to strive for the high availability of services. For example, there should be little to no disruption to the availability of a component's service due to upgrades.
 
 In order to meet this requirement the proxying of network traffic where a static port is mapped to a number of dynamically allocated ports is required. For example, suppose there is a component with a configuration of _x_. The component provides an https service on port 443 and manages all requests given a path of "/someservice". Supposing also that there is a virtual IP address of 192.168.1.123 allocated to a number of nodes in the cluster then the following external request for `/someservice` will be routed to our component running on any one of a number of hosts:
 
@@ -74,7 +74,7 @@ GET https://192.168.1.123:443/someservice
 
 If the component is required to be loaded again, but with a new configuration of _y_ then we must load the component into the cluster while the one with configuration _x_ remains available. If we did not do this then there would be a period of unavailability between unloading the component with _x_ and then loading it with _y_ given that the components compete for the same external port.
 
-In order to avoid port contention we have just one process on a machine binding to port 443 in our example. This process is a proxy that is able to route network traffic in accordance with configuration that maps traffic on port 443 to another IP and port combination representing the component. A component will be allocated a port that does not contend with other ports in use on the machine. Typesafe ConductR forwards this information on to a proxy and the proxy is reconfigured in real time with no loss of availability to the component's service.
+In order to avoid port contention we have just one process on a machine binding to port 443 in our example. This process is a proxy that is able to route network traffic in accordance with configuration that maps traffic on port 443 to another IP and port combination representing the component. A component will be allocated a port that does not contend with other ports in use on the machine. Lightbend ConductR forwards this information on to a proxy and the proxy is reconfigured in real time with no loss of availability to the component's service.
 
 There are other benefits to proxying given their external facing use cases:
 
@@ -83,7 +83,7 @@ There are other benefits to proxying given their external facing use cases:
 * Sharding http requests
 * Load balancing
 
-The information required to configure proxy services is made available from Typesafe ConductR. Mapping information is provided for tcp, http, https and udp based endpoints.
+The information required to configure proxy services is made available from Lightbend ConductR. Mapping information is provided for tcp, http, https and udp based endpoints.
 
 Finally, in order to be fully resilient, it is recommend that a proxy is available on each host where ConductR is running. Therefore any proxy should be able to locate any service on any host. ConductR uses an eventually-consistent data approach known as Conflict-free Replicated Data Types (CRDTs) to share this information across all proxies.
 
