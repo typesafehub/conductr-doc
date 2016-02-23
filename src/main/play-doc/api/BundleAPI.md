@@ -1,4 +1,4 @@
-# Typesafe ConductR %PLAY_VERSION%
+# Lightbend ConductR %PLAY_VERSION%
 
 
 ## The Bundle API
