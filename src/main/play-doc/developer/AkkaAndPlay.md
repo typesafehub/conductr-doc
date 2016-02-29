@@ -2,17 +2,20 @@
 
 [conductr-bundle-lib](https://github.com/typesafehub/conductr-bundle-lib#typesafe-conductr-bundle-library) comes in multiple flavors depending on whether you need it for Akka and/or Play development, and also the specific versions of Akka and Play. The libraries are structured as follows in this regard:
 
-* Akka 2.3/Akka 2.4 for Java and Scala - [akka23-conductr-bundle-lib](#akka23-conductr-bundle-lib)
-* Play 2.3 for Java and Scala (including Akka 2.3) - [play23-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
+* Akka 2.4 for Java and Scala - [akka24-conductr-bundle-lib](#akka23|24-conductr-bundle-lib)
+* Akka 2.3 for Java and Scala - [akka23-conductr-bundle-lib](#akka23|24-conductr-bundle-lib)
+* Play 2.5 for Scala (including Akka 2.4) - [play25-conductr-bundle-lib](#play25-conductr-bundle-lib)
 * Play 2.4 for Java and Scala (including Akka 2.3) - [play24-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
+* Play 2.3 for Java and Scala (including Akka 2.3) - [play23-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
 
-## akka23-conductr-bundle-lib
 
-> Note that Akka 2.3 and 2.4 are binary compatible and so the akka23-conductr-bundle-lib can be used for both.
+## akka[23|24]-conductr-bundle-lib
+
+Please select the Akka 2.3 or 2.4 variant depending on whether you are using Akka 2.3 or Play 2.4 respectively.
 
 This library provides a reactive API using [Akka Http](http://akka.io/docs/) and should be used when you are using Akka. The library can be used for both Java and Scala.
 
-As with the previous discussions on`conductr-bundle-lib` there are these two services:
+As with the previous discussions on `conductr-bundle-lib` there are these two services:
 
 * `com.typesafe.conductr.bundlelib.akka.LocationService`
 * `com.typesafe.conductr.bundlelib.akka.StatusService`
@@ -48,7 +51,7 @@ class MyService(cache: CacheLike) extends Actor with ImplicitConnectionContext {
   import context.dispatcher
 
   override def preStart(): Unit =
-    LocationService.lookup("/someservice", URI("http://127.0.0.1:9000"), cache).pipeTo(self)
+    LocationService.lookup("someservice", URI("http://127.0.0.1:9000"), cache).pipeTo(self)
 
   override def receive: Receive =
     initial
@@ -85,7 +88,7 @@ Similarly here is a service lookup:
 
 ```java
 ConnectionContext cc = ConnectionContext.create(system);
-LocationService.getInstance().lookupWithContext("/whatever", URI("tcp://localhost:1234"), cache, cc)
+LocationService.getInstance().lookupWithContext("whatever", URI("tcp://localhost:1234"), cache, cc)
 ```
 
 ### Akka Clustering
@@ -114,6 +117,59 @@ In the above, no declaration of `services` is required as akka remoting is an in
 > Note that conductr-bundle-lib will search for an endpoint named `akka-remote` by default. This should not ever need to be overridden and it is convenient that it is consistent across bundles sharing the same Akka cluster.
 
 > The Akka cluster of your application or service is distinct to your applications and services given the bundle's `system` and `systemVersion` properties. `sbt-bundle` will set these properties to the name of your bundle and its `compatibilityVersion` by default. The `compatibilityVersion` is the major component of your project's version by default. All of these properties are able to be overridden using bundle keys. You can therefore associate multiple bundles into a single Akka cluster by using the same system and systemVersion. Akka remote ports are always dynamically allocated given the above endpoint declaration, and so you can even have multiple bundles with multiple systems all running alongside each other, some even sharing the same system but different versions.
+
+## play25-conductr-bundle-lib
+
+> If you are using Play 2.5 then this section is for you. Otherwise jump below to the [play[23|24]-conductr-bundle-lib](#play23|24-conductr-bundle-lib) section.
+
+This library provides a reactive API using [Play WS](https://www.playframework.com/documentation/2.5.x/ScalaWS) and should be used when you are using Play. The library depends on `akka24-conductr-bundle-lib` and can be used for both Java and Scala. As per Play's conventions, `play.api` is used for the Scala API and just `play` is used for Java.
+
+As with `conductr-bundle-lib` there are two services:
+
+* `com.typesafe.conductr.bundlelib.play.LocationService` (Java) or `com.typesafe.conductr.bundlelib.play.api.LocationService` (Scala)
+* `com.typesafe.conductr.bundlelib.play.StatusService` (Java) or `com.typesafe.conductr.bundlelib.play.api.StatusService` (Scala)
+
+and there is also another:
+
+* `com.typesafe.conductr.bundlelib.play.Env` (Java) or `com.typesafe.conductr.bundlelib.play.api.Env` (Scala)
+
+Please read the section on `conductr-bundle-lib` and then `scala-conductr-bundle-lib` for an introduction to these services. The `Env` one is discussed in the section below. The major difference between the APIs for Play 2.5 and the other variants is that components are expected to be injected. For example, to use the `LocationService` in your controller (Scala):
+
+```scala
+class MyGreatController @Inject() (locationService: LocationService, locationCache: CacheLike) extends Controller {
+  ...
+  locationService.lookup("known", URI(""), locationCache)
+  ...
+}
+```
+
+The following components are available for injection:
+
+* CacheLike
+* ConnectionContext
+* LocationService
+* StatusService
+
+Note that your `application.conf` should contain the following (for Scala):
+
+```
+play.application.loader = "com.typesafe.conductr.bundlelib.play.lib.ConductRApplicationLoader"
+```
+
+For Java, just change the `play.api` to `play` in the above.
+
+Note that if you are using your own application loader then you should ensure that the Akka and Play ConductR-related properties are loaded. Here's a complete implementation (for Scala):
+
+```scala
+class MyCustomApplicationLoader extends ApplicationLoader {
+  def load(context: ApplicationLoader.Context): Application = {
+    val conductRConfig = Configuration(AkkaEnv.asConfig) ++ Configuration(PlayEnv.asConfig)
+    val newConfig = context.initialConfiguration ++ conductRConfig
+    val newContext = context.copy(initialConfiguration = newConfig)
+    (new GuiceApplicationLoader).load(newContext)
+  }
+}
+```
 
 ## play[23|24]-conductr-bundle-lib
 
@@ -174,8 +230,6 @@ Your `application.conf` should contain the following:
 
 ```
 play.application.loader = "com.typesafe.conductr.bundlelib.play.ConductRApplicationLoader"
-
-play.modules.enabled += "com.typesafe.conductr.bundlelib.play.ConductRLifecycleModule"
 ```
 
 Note that if you are using your own application loader then you should ensure that the Akka and Play ConductR-related properties are loaded. Here's a complete implementation:
