@@ -58,3 +58,9 @@ The use of Elasticsearch for collecting event and log data is no longer consider
 -Dcontrail.syslog.server.port=514 
 -Dcontrail.syslog.server.elasticsearch.enabled=off
 ```
+
+## Reloading HAProxy
+
+ConductR-HAProxy now provides a `reloadHAProxy.sh` script to handle the reloading of HAProxy across systemv and systemd platforms. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
+
+Node installation has changed to use `/usr/bin/reloadHAProxy.sh` in `sudoers` instead of calling `/etc/init.d/haproxy reload.`
