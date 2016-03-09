@@ -21,7 +21,7 @@ The following description is intended to provide a taste of what `sbt-conductr-s
 
     ```
     SandboxKeys.imageVersion in Global := "YOUR_CONDUCTR_SANDBOX_VERSION"
-    ````
+    ```
 3. Reload the sbt session:
 
     ```scala
