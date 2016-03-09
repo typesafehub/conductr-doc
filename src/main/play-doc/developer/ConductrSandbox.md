@@ -15,10 +15,13 @@ The following description is intended to provide a taste of what `sbt-conductr-s
 1. Add the sbt plugin to the `project/plugins.sbt` of your project:
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.2.1")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.2.2")
     ```
-2. Configure the `build.sbt` as described by the [ConductR download page](https://www.lightbend.com/product/conductr/developer).
+2. Specify the ConductR Developer Sandbox version in the `build.sbt`.Please visit the [ConductR Developer page](http://www.lightbend.com/product/conductr/developer) to retrieve the current version:
 
+    ```
+    SandboxKeys.imageVersion in Global := "YOUR_CONDUCTR_SANDBOX_VERSION"
+    ````
 3. Reload the sbt session:
 
     ```scala
