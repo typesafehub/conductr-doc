@@ -48,7 +48,7 @@ play.application.loader = "com.typesafe.conductr.bundlelib.play.ConductRApplicat
 1. Add `sbt-conductr-sandbox` to the `project/plugins.sbt`:
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.2.1")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.2.2")
     ```
 2. Specify `sbt-bundle` keys in the `build.sbt`:   
 
@@ -57,10 +57,7 @@ play.application.loader = "com.typesafe.conductr.bundlelib.play.ConductRApplicat
     BundleKeys.nrOfCpus := 1.0
     BundleKeys.memory := 64.MiB
     BundleKeys.diskSpace := 10.MB
-    BundleKeys.roles := Set("web")
-    BundleKeys.endpoints := Map("my-app" -> Endpoint("http", services = Set(URI("http://:9000"))))
-    javaOptions in Bundle ++= Seq("-Dhttp.address=$MY_APP_BIND_IP", "-Dhttp.port=$MY_APP_BIND_PORT")
-    ```
+    ```    
 3. Reload the sbt session:
 
     ```scala
@@ -80,8 +77,11 @@ As you move through our documentation you will  come across references to Conduc
 
 Now we can go ahead an start the ConductR cluster locally.
 
-1. Configure the `build.sbt` as described by the [ConductR download page](https://www.lightbend.com/product/conductr/developer).
+1. Specify the ConductR Developer Sandbox version in the `build.sbt`. This version is available gratis during development with registration at lightbend.com. Please visit the [ConductR Developer page](http://www.lightbend.com/product/conductr/developer) to retrieve the current version:
 
+    ```
+    SandboxKeys.imageVersion in Global := "YOUR_CONDUCTR_SANDBOX_VERSION"
+    ````
 2. Reload the sbt session:
 
     ```scala
