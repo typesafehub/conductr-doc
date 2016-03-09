@@ -81,7 +81,7 @@ Now we can go ahead an start the ConductR cluster locally.
 
     ```
     SandboxKeys.imageVersion in Global := "YOUR_CONDUCTR_SANDBOX_VERSION"
-    ````
+    ```
 2. Reload the sbt session:
 
     ```scala
