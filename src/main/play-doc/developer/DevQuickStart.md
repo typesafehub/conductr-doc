@@ -20,10 +20,13 @@ The focus of this section is to get started quickly. The full documentation of t
 
 * [Docker](https://www.docker.com/)
 * [sbt](http://www.scala-sbt.org/download.html)
+* [conductr-cli](CLI)
 
 Docker is required so that you can run the ConductR cluster as if it were running on a number of machines in your network. You won't need to understand much about Docker for ConductR other than installing it as described in its "Get Started" section. If you are on Windows or Mac then you will become familiar with `docker-machine` which is a utility that controls a virtual machine for the purposes of running Docker.
 
 sbt is our interactive build tool. Reading the getting started guide for sbt is recommended.
+
+The conductr-cli is used to communicate with the ConductR cluster.
 
 ## Signaling application state
 
@@ -32,7 +35,7 @@ First let us setup the Play 2.4 application for ConductR. Your application shoul
 ```scala
 resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
 
-libraryDependencies += "com.typesafe.conductr" %% "play24-conductr-bundle-lib" % "1.3.0"
+libraryDependencies += "com.typesafe.conductr" %% "play24-conductr-bundle-lib" % "1.4.0"
 ```
 
 Now you can add a guice module in the `application.conf`. This module tells ConductR when your application has been started and therefore ready to start processing requests:
@@ -48,7 +51,7 @@ play.application.loader = "com.typesafe.conductr.bundlelib.play.ConductRApplicat
 1. Add `sbt-conductr-sandbox` to the `project/plugins.sbt`:
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.2.2")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.4.0")
     ```
 2. Specify `sbt-bundle` keys in the `build.sbt`:   
 
