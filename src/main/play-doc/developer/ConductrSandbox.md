@@ -24,7 +24,7 @@ The conductr-cli is used to communicate with the ConductR cluster.
 1. Add the sbt plugin to the `project/plugins.sbt` of your project:
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.4.0")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.4.1")
     ```
 2. Specify the ConductR Developer Sandbox version in the `build.sbt`.Please visit the [ConductR Developer page](http://www.lightbend.com/product/conductr/developer) to retrieve the current version:
 
