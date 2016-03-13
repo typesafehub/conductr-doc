@@ -10,12 +10,21 @@ The ConductR Developer Sandbox is available to freely all developers. To request
 
 The following description is intended to provide a taste of what `sbt-conductr-sandbox` can do for you. Please refer to [its documentation](https://github.com/typesafehub/sbt-conductr-sandbox) for more details.
 
+## Prerequisites
+
+* [Docker](https://www.docker.com/)
+* [conductr-cli](CLI)
+
+Docker is required so that you can run the ConductR cluster as if it were running on a number of machines in your network. You won't need to understand much about Docker for ConductR other than installing it as described in its "Get Started" section. If you are on Windows or Mac then you will become familiar with `docker-machine` which is a utility that controls a virtual machine for the purposes of running Docker.
+
+The conductr-cli is used to communicate with the ConductR cluster.
+
 ## Setting up sbt-conductr-sandbox
 
 1. Add the sbt plugin to the `project/plugins.sbt` of your project:
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.2.2")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.4.0")
     ```
 2. Specify the ConductR Developer Sandbox version in the `build.sbt`.Please visit the [ConductR Developer page](http://www.lightbend.com/product/conductr/developer) to retrieve the current version:
 
