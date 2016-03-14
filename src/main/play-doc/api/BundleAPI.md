@@ -27,7 +27,7 @@ GET {SERVICE_LOCATOR}{service-name}
 Field            | Description
 -----------------|------------
 SERVICE\_LOCATOR | The environment variable value of the same name. This environment variable translates to an http address e.g. `http://10.0.1.22:9008` given that ConductR is running on `10.0.1.22` with a service locator port bound to 9008.
-service-name     | The name of the service required and expressed as a path e.g. `/customers`. Only the first portion of a path is considered e.g. `/customers/123` means that only `/customers` will be looked up. This approach permits most HTTP clients to be used with very little code change when compared to not using the service locator.
+service-name     | The name of the service required and expressed as a path e.g. `/customers`. Only the first portion of a path is considered e.g. `/customers/123` means that only `/customers` will be used as the service name. This approach permits most HTTP clients to be used with very little code change when compared to not using the service locator.
 
 ### Responses
 
@@ -41,7 +41,7 @@ Cache-Control: max-age={max-age}
 
 Field        | Description
 -------------|------------
-location-url | The location of the requested service including any trailing parts to the path requested e.g. `/customers/123` would result in `http://10.0.1.22:10121/customers/123` supposing that service's host address is `10.0.1.22`, and the endpoint service host port is `10121`. If the protocol for the service was TCP then that will be reflected in the returned location's protocol field. For example looking up `/jms` may yield `tcp://10.0.1.22:10121`.
+location-url | The location of the requested service less the first component which is the service name, but including any trailing parts to the path requested e.g. `/customers/123` would result in `http://10.0.1.22:10121/123` supposing that service's host address is `10.0.1.22`, and the endpoint service host port is `10121`. If the protocol for the service was TCP then that will be reflected in the returned location's protocol field. For example looking up `/jms` may yield `tcp://10.0.1.22:10121`.
 max-age      | The Time-To-Live (TTL) seconds before it is recommended to retain any previous value returned by this service. You should also evict any cached value if any subsequent request on the `location-url` fails.
 
 #### Failure
