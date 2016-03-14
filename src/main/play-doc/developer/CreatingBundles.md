@@ -21,6 +21,12 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-bundle" % "1.2.1")
 
 > If you already added `sbt-conductr-sandbox` then you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr-sandbox`.
 
+The plugin will then requiring enabling for your project (note that the plugin is automatically enabled for Play and Lagom projects):
+
+```scala
+lazy val root = project.in(file(".")).enablePlugins(JavaAppPackaging)
+```
+
 You will then need to declare what are known as "scheduling parameters" for ConductR. These parameters effectively describe what resources are used by your application or service and are used to determine which machine they will run on. Here's a minimum set of parameter specifying that 1 cpu, 64MiB memory and 5MB of disk space is required when your application or service runs:
 
 ```scala
