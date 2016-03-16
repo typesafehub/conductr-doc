@@ -7,7 +7,7 @@ The following description is intended to provide a taste of what `sbt-conductr` 
 To use `sbt-conductr` first add the plugin your build (typically your `project/plugins.sbt` file); be sure to check at [the plugin's website](https://github.com/sbt/sbt-conductr#sbt-conductr) for the latest version to use:
 
 ```scala
-addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.5.0")
+addSbtPlugin("com.typesafe.conductr" % "sbt-conductr" % "1.5.1")
 ```
 
 > If you add this plugin as above, you do not need to have an explicit declaration for `sbt-bundle`. `sbt-bundle` will be automatically added as a dependency of `sbt-conductr`. If you have already added `sbt-conductr-sandbox` as an sbt plugin before then `sbt-conductr` doesn't need to be added as well. `sbt-conductr` will be automatically added as a dependency of `sbt-conductr-sandbox`.
