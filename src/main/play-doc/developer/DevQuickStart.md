@@ -51,7 +51,7 @@ play.application.loader = "com.typesafe.conductr.bundlelib.play.ConductRApplicat
 1. Add `sbt-conductr-sandbox` to the `project/plugins.sbt`:
 
     ```scala
-    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.4.0")
+    addSbtPlugin("com.typesafe.conductr" % "sbt-conductr-sandbox" % "1.4.2")
     ```
 2. Specify `sbt-bundle` keys in the `build.sbt`:   
 
