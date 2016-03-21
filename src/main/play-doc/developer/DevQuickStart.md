@@ -35,7 +35,7 @@ First let us setup the Play 2.4 application for ConductR. Your application shoul
 ```scala
 resolvers += "typesafe-releases" at "http://repo.typesafe.com/typesafe/maven-releases"
 
-libraryDependencies += "com.typesafe.conductr" %% "play24-conductr-bundle-lib" % "1.4.1"
+libraryDependencies += "com.typesafe.conductr" %% "play24-conductr-bundle-lib" % "1.4.2"
 ```
 
 Now you can add a guice module in the `application.conf`. This module tells ConductR when your application has been started and therefore ready to start processing requests:
