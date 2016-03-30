@@ -72,7 +72,7 @@ play.application.loader = "com.typesafe.conductr.bundlelib.play.ConductRApplicat
     bundle:dist
     ```
 
-The new bundle should be created in your `target/bundle` directory. The `sbt-bundle` effectively describe what resources are used by your application and are used to determine which machine they will run on in the ConductR cluster.
+The new bundle should be created in your `target/bundle` directory. The `sbt-bundle` effectively describe what resources are used by your application and are used to determine which machine they will run on in the ConductR cluster. For example, 64 MiB means that your bundle will require a total of 64 megabytes of memory to run on its machine. Knowing this information helps ConductR schedule your bundle's execution where there are resources available. You should always profile your application or service in order to understand what resources it will require.
 
 As you move through our documentation you will  come across references to ConductR's environment variables e.g. `MY_APP_BIND_PORT`. Please refer to [our documentation](BundleEnvironmentVariables) for information on the meaning of these environment variables should you need to.
 
