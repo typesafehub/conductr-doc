@@ -6,7 +6,7 @@ Bundles provide ConductR with some basic knowledge about components in a *bundle
 ([Typesafe configuration](https://github.com/typesafehub/config) is used):
 
 ```
-version               = "1.1.0"
+version               = "1"
 name                  = "simple-test"
 compatibilityVersion  = "1"
 system                = "simple-test"
@@ -51,7 +51,7 @@ services			 | Discussed [below](#Endpoints).
 start-command        | Command line args required to start the component. Paths are expressed relative to the component's bin folder. The default is to use the bash script in the bin folder. Arguments can be passed to a Docker container run command via a special `dockerArgs` command should additional args be required: `start-command = ["dockerArgs","-v","/var/lib/postgresql/data:/var/lib/postgresql/data"]`.
 system               | A logical name that can be used to associate multiple bundles with each other. This could be an application or service association e.g. myapp. Defaults to the package name.
 systemVersion        | A version to associate with a system. This setting defaults to the value of compatibilityVersion.
-version				 | The version of the bundle.conf file. Should be set to `1.1.0`.
+version				 | The version of the bundle.conf file. Should be set to `1`.
 
 ConductR application bundles should not contain deployment specific configuration information such keys, passwords or secrets. Deployment target specific configuration and secrets should instead be set in a [configuration bundle](#Configuration-Bundles). The configuration bundle is deployed together with the application bundle. This enables a single application bundle to be deployed to multiple environments such test, staging and production by changing only the configuration bundle it is paired with at deployment instead of rebuilding the application bundle.
 
@@ -117,7 +117,7 @@ We provide a [CLI](https://github.com/typesafehub/typesafe-conductr-cli#command-
 As a quick example, suppose that you wish to bundle [ActiveMQ](http://activemq.apache.org/) as a Docker component with a `Dockerfile`. You can do something like this (btw: we appreciate that you cannot change the world in one go and don't always have the luxury of using Akka for messaging!):
 
 ```
-version               = "1.1.0"
+version               = "1"
 name                  = "jms-docker"
 compatibilityVersion  = "1"
 
@@ -168,7 +168,7 @@ For example, to a run a single instance of [Redis](http://redis.io/) under Condu
 In the `redis` folder, add the following as a file named `bundle.conf`.
 
 ```bash
-version               = "1.1.0"
+version               = "1"
 name                  = "redis-broker"
 compatibilityVersion  = "3"
 system                = "redis"
