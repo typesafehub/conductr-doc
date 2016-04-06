@@ -1,6 +1,6 @@
 # ConductR release notes
 
 
-## 1.1.0
+## 1.2.0
 
 Initial release.
