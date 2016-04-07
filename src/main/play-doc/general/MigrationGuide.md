@@ -21,3 +21,14 @@ conductr-haproxy is now provided as a bundle with the "haproxy" role. When runni
 ### Amazon's ELB
 
 Prior to 1.2, we recommended that you configure the ELB to poll the /bundles endpoint of the control protocol. Given conductr-haproxy you should now configured the ELB to poll the http://:9009/status. This endpoint will return an HTTP OK status when HAProxy has been correctly configured therefore leading to a more reliable configuration of the ELB. See [the cluster setup considerations document](ClusterSetupConsiderations#Cluster security considerations) for more information.
+
+## Syslog
+
+In additional to disabling Elasticsearch via configuration, a service lookup must now also be disabled. ConductR's default behavior is to locate the service endpoint for logging when required. Supposing that you are using RSYSLOG locally then ConductR's `application.ini` should contain the following:
+
+```
+  -Dcontrail.syslog.server.host=127.0.0.1
+  -Dcontrail.syslog.server.port=514
+  -Dcontrail.syslog.server.elasticsearch.enabled=off 
+  -Dcontrail.syslog.server.service-locator.enabled=off
+```
