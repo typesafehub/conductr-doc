@@ -161,7 +161,8 @@ To configure ConductR for RSYSLOG:
 echo \
   -Dcontrail.syslog.server.host=127.0.0.1 \
   -Dcontrail.syslog.server.port=514 \
-  -Dcontrail.syslog.server.elasticsearch.enabled=off | \
+  -Dcontrail.syslog.server.elasticsearch.enabled=off \
+  -Dcontrail.syslog.server.service-locator.enabled=off | \
   sudo tee -a /usr/share/conductr/conf/application.ini
 sudo /etc/init.d/conductr restart
 ```
@@ -188,7 +189,8 @@ Supposing that the address assigned to your at Papertrail is `logs2.papertrailap
 echo \
   -Dcontrail.syslog.server.host=logs2.papertrailapp.com \
   -Dcontrail.syslog.server.port=38564 \
-  -Dcontrail.syslog.server.elasticsearch.enabled=off | \
+  -Dcontrail.syslog.server.elasticsearch.enabled=off \
+  -Dcontrail.syslog.server.service-locator.enabled=off | \
   sudo tee -a /usr/share/conductr/conf/application.ini
 sudo /etc/init.d/conductr restart
 ```
