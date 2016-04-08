@@ -5,6 +5,7 @@ This document describes what is required to move between version 1.0 to 1.1. Her
 
 * [Bundle versioning](#Bundle-versioning)
 * [Logging](#Logging)
+* [Reloading HAProxy](#Reloading-HAProxy)
 
 ## Bundle versioning
 
