@@ -84,22 +84,23 @@ Typesafe config provides the ability to substitute environment variables if they
 
 
 ```scala
-BundleKeys.endpoints := Map("customer-service" -> Endpoint("http", services = Set(URI("http://:5444/customers"))))
+BundleKeys.endpoints := Map("customer-service" -> Endpoint("http", 0, "customers", RequestAcl(Http("^/customers".r))))
 ```
 
-With the above Typesafe config you can then access the host and ip to use from within your application using code along the lines of following and using akka-http as an example:
+* The endpoint name is `customer-service`.
+* The endpoint exposes `http` based service.
+* The port is declared as `0`, meaning it will be assigned with a port number picked by ConductR.
+* The service name is `customers` which can be used to resolve the endpoint by service name. Refer to [[Resolving services|ResolvingServices]] for further details.
+* The endpoint will accept any http request that starts with the path `/customers`. Refer to [[ACL configuration
+|RequestAclConfiguration]] for further details.
+
+With the above Typesafe config you can then resolve the ip address and port within your application. The following example additionally uses Akka HTTP to start a HTTP server:
 
 ```scala
-  val ip = config.getString("customer-service.ip")
-  val port = config.getInt("customer-service.port")
-  Http(system).bind(ip, port) // ... and so forth
+val ip = config.getString("customer-service.ip")
+val port = config.getInt("customer-service.port")
+Http(system).bind(ip, port) // ... and so forth
 ```
-
-### Preserving paths at the proxy
-
-Given the previous example where the service URI was "http://:5444/customers", ConductR will interpret the first path component (`customers`) as the service name for the purposes of service lookup. By default ConductR will then remove the first path component when rewriting the request. This means that your application or service will receive everything under the root of `/` which is quite handy for many web applications where they do not have a context root defined. Where applications or services expect the context root to be preserved when passing through ConductR's proxy, then the service URI can be instead expressed as "http://:5444/customers?preservePath".
-
-> For ConductR 1.2 onward the service URI convention will be able to be expressed using an alternative Access Control List (ACL) feature. ACLs will separate out the service name for the purposes of service lookup, and how an application or service expresses itself for the purposes of proxying (if at all). Furthermore the ACLs will move away from the service URI declaration of how an application or service is presented at the proxy. Instead, proxying concerns will be dealt entirely within ConductR's proxy and not as part of a developer's bundle, leading to a great deal more convenience and flexibility when configuring a proxy.
 
 ## Docker bundles
 
@@ -125,7 +126,7 @@ BundleKeys.memory := 2.GB
 BundleKeys.diskSpace := 10.GB
 BundleKeys.roles := Set("postgres94")
 BundleKeys.endpoints := Map(
-  "postgres" -> Endpoint("tcp", 5432, services = Set(uri("tcp://:5432")))
+  "postgres" -> Endpoint("tcp", 5432, "postgres", RequestAcls(Tcp(5432)))
 )
 
 // Additional args for the docker run can be supplied here (see the sbt-bundle

@@ -22,9 +22,20 @@ components = {
     start-command    = ["angular-seed-play/bin/angular-seed-play", "-Xms=67108864", "-Xmx=67108864"]
     endpoints        = {
       "angular-seed-play" = {
-        protocol  = "http"
-        bind-port = 0
-        services  = ["http://:9000"]
+        protocol      = "http"
+        bind-port     = 0
+        service-name  = "angular-seed-play"
+        acls          = [
+          {
+            http = {
+              requests = [
+                {
+                  path-beg = "/"
+                }
+              ]
+            }
+          }
+        ]
       }
     }
   }
@@ -47,7 +58,8 @@ name				 | The human readable name of the bundle. This name appears often in ope
 nrOfCpus             | The number of cpus required to run the bundle (can be fractions thereby expressing a portion of CPU). Required.
 protocol			 | Discussed [below](#Endpoints).
 roles                | The types of node in the cluster that this bundle can be deployed to. Defaults to "web".
-services			 | Discussed [below](#Endpoints).
+service-name	     | Discussed [below](#Endpoints).
+acls     			 | Discussed [below](#Endpoints).
 start-command        | Command line args required to start the component. Paths are expressed relative to the component's bin folder. The default is to use the bash script in the bin folder. Arguments can be passed to a Docker container run command via a special `dockerArgs` command should additional args be required: `start-command = ["dockerArgs","-v","/var/lib/postgresql/data:/var/lib/postgresql/data"]`.
 system               | A logical name that can be used to associate multiple bundles with each other. This could be an application or service association e.g. myapp. Defaults to the package name.
 systemVersion        | A version to associate with a system. This setting defaults to the value of compatibilityVersion.
@@ -71,11 +83,13 @@ service-port | The port number to be used as the public-facing port. It is proxi
 host-port    | This is not declared but is dynamically allocated if bundle is running in a container. Otherwise it has the same value as bind-port.
 bind-port    | The port the bundle component's application or service actually binds to. When this is 0 it will be dynamically allocated (which is the default).
 
-Endpoints are declared using an `endpoint` setting using a Map of endpoint-name/`Endpoint(bindProtocol, bindPort, services)` pairs.
+Endpoints are declared using an `endpoint` setting using a Map of `endpoint-name` -> `Endpoint(bindProtocol, bindPort, serviceName, acls)` pairs.
 
 The bind-port allocated to your bundle will be available as an environment variable to your component. For example, given the default settings where an endpoint named "web" is declared that has a dynamically allocated port, an environment variable named `WEB_BIND_PORT` will become available. `WEB_BIND_IP` is also available and should be used as the interface to bind to.  
 
-Service names are declared through a "services" URI for each endpoint. A service name is used address the service when performing a service lookup. The first path component of the services URI is deemed to be the service name, and it is possible to not have one (as in the case above). A URI with the service name of "/customers" would be "http://:9000/customers" following on from the example above.
+Service names are declared through `serviceName` property for each endpoint. A service name is used address the service when performing a service lookup. [[Resolving services|ResolvingServices]] describes service resolution in a greater detail.
+
+The request acls is declared through the `acls` property, and allows declaration of HTTP, TCP, and UDP based endpoints. [[ACL configuration|AclConfiguration]] describes how to configure request acls in a greater detail.
 
 ### Docker Containers and ports
 
@@ -84,23 +98,20 @@ When your component will run within a container you may alternatively declare th
 ```json
     endpoints        = {
       "angular-seed-play" = {
-        protocol  = "http"
-        bind-port = 9000
-        services  = ["http://:9000"]
-      }
-    }
-```
-
-### Service ports
-
-The services define the protocol, port, and/or path under which your service will be addressed to the outside world on. For example, if http and port 80 are to be used to provide your services and then the following expression can be used to resolve `/myservice` on:
-
-```json
-    endpoints        = {
-      "angular-seed-play" = {
-        protocol  = "http"
-        bind-port = 0
-        services  = ["http:/myservice"]
+        protocol      = "http"
+        bind-port     = 9000
+        service-name  = "angular-seed-play"
+        acls          = [
+          {
+            http = {
+              requests = [
+                {
+                  path-beg = "/"
+                }
+              ]
+            }
+          }
+        ]
       }
     }
 ```
@@ -138,7 +149,14 @@ components = {
       "jms" = {
         bind-protocol = "tcp"
         bind-port     = 61616
-        services      = ["tcp://:61616"]
+        service-name  = "jms"
+        acls          = [
+          {
+            tcp = {
+              requests = [61616]
+            }
+          }
+        ]
       }
     }
   }
@@ -187,7 +205,14 @@ components = {
       "logbroker" = {
         bind-protocol  = "tcp"
         bind-port     = 0
-        services      = ["http://:6379/redis"]
+        service-name  = "redis"
+        acls          = [
+          {
+            tcp = {
+              requests = [6379]
+            }
+          }
+        ]
       }
     }
   }

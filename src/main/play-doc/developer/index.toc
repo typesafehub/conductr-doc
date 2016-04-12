@@ -8,5 +8,6 @@ BundleConfiguration:Bundle configuration
 ResolvingServices:Resolving other services
 AkkaAndPlay:Bundle library flavors
 BundleEnvironmentVariables:Environment variables
+AclConfiguration:ACL configuration
 TCPLookups:TCP & UDP service lookups
 Filesystems:Filesystems
