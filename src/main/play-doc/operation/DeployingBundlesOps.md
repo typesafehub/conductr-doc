@@ -103,7 +103,7 @@ Shorthand Expression                                                            
 -------------------------------------------------------------------------------------------|------------
 reactive-maps-frontend                                                                     | Latest version of the `reactive-maps-frontend` bundle hosted within `organization` called `typesafe` and `repository` called `bundle`.
 reactive-maps-frontend:v1                                                                  | Latest version of the `reactive-maps-frontend` bundle having `compatibility-version` of `v1` hosted within `organization` called `typesafe` and `repository` called `bundle`.
-reactive-maps-frontend-v1-023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2 | `reactive-maps-frontend` bundle having `compatibility-version` of `v1` and `digest` of `023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2` hosted within `organization` called `typesafe` and `repository` called `bundle`.
+reactive-maps-frontend:v1-023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2 | `reactive-maps-frontend` bundle having `compatibility-version` of `v1` and `digest` of `023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2` hosted within `organization` called `typesafe` and `repository` called `bundle`.
 my-company/secret-repo/super-bundle:v1                                                     | Latest version of the `super-bundle` bundle having `compatibility-version` of `v1` hosted within `organization` called `my-company` and `repository` called `secret-repo`.
 
 
