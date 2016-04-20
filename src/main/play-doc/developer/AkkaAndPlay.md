@@ -103,7 +103,8 @@ import com.typesafe.config.ConfigFactory
 
 val config = Env.asConfig
 val systemName = sys.env.getOrElse("BUNDLE_SYSTEM", "MyApp1")
-val app1 = ActorSystem(systemName, config.withFallback(ConfigFactory.load()))
+val systemVersion = sys.env.getOrElse("BUNDLE_SYSTEM_VERSION", "1")
+val app1 = ActorSystem(s"$systemName-$systemVersion", config.withFallback(ConfigFactory.load()))
 ```
 
 Clusters will then be formed correctly. The above call of `Env.asConfig` looks for an endpoint named `akka-remote` by default. Therefore you must declare the Akka remoting port as a bundle endpoint. The following endpoint declaration within a `build.sbt` shows how:
