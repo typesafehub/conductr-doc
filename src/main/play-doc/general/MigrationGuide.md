@@ -33,6 +33,16 @@ components {
 
 i.e. note that the encoding of a version has been removed from the component's name.
 
+Akka applications using ConductR managed systems must now also include the provided system version in the ActorSystem name.
+
+```scala
+
+val config = Env.asConfig
+val systemName = sys.env.getOrElse("BUNDLE_SYSTEM", "MyApp1")
+val systemVersion = sys.env.getOrElse("BUNDLE_SYSTEM_VERSION", "1")
+val app1 = ActorSystem(s"$systemName-$systemVersion", config.withFallback(ConfigFactory.load()))
+```
+
 ### Rationale
 
 `[sbt-bundle](https://github.com/sbt/sbt-bundle#conductr-bundle-plugin)` has been enhanced to support two new types of version so that version information can be retained and reasoned with reliably. The versions are:
