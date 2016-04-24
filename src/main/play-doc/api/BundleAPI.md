@@ -4,7 +4,7 @@
 ## The Bundle API
 
 
-The [ConductR bundle library](https://github.com/typesafehub/conductr-bundle-lib#typesafe-conductr-bundle-library) provides a convenient Scala, Akka and Play API over an underlying REST API. This document details the underlying REST API.
+The [ConductR bundle library](https://github.com/typesafehub/conductr-lib#typesafe-conductr-bundle-library) provides a convenient Scala, Akka and Play API over an underlying REST API. This document details the underlying REST API.
 
 The following services are covered by the bundle API:
 
