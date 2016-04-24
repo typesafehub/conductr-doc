@@ -86,7 +86,7 @@ conduct load /tmp/downloads/reactive-maps-frontend-v1-023f9da2243a0751c2e231b452
 conduct load http://192.168.0.1/files/reactive-maps-frontend-v1-023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2.zip
 ```
 
-The Bintray resolver accepts a [bundle shorthand expression](#Bundle-shorthand-expression) which is translated to a Bintray download URL. Bundles can be published to Bintray using [sbt-bundle](https://github.com/sbt/sbt-bintray-bundle) plugin.
+The Bintray resolver accepts a [bundle shorthand expression](#Bundle-shorthand-expression) which is translated to a Bintray download URL. Bundles can be published to Bintray using [sbt-bintray-bundle](https://github.com/sbt/sbt-bintray-bundle) plugin.
 
 
 ## Bundle shorthand expression

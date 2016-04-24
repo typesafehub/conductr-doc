@@ -1,11 +1,12 @@
 DevQuickStart: Quick start
+SetupSbtConductr: Setup sbt-conductr
 SignalingApplicationState:Signaling application state
-ResolvingServices:Resolving other services
-AkkaAndPlay:Akka and Play specifics
+ConductrSandbox:Managing ConductR sandbox
 CreatingBundles: Creating bundles
 DeployingBundles:Deploying bundles
 BundleConfiguration:Bundle configuration
+ResolvingServices:Resolving other services
+AkkaAndPlay:Bundle library flavors
 BundleEnvironmentVariables:Environment variables
-ConductrSandbox:Advanced sandbox
 TCPLookups:TCP & UDP service lookups
 Filesystems:Filesystems
