@@ -142,4 +142,33 @@ BundleKeys.checks := Seq(uri("docker+$POSTGRES_HOST"))
 
 > When deploying Docker bundles to the sandbox they won't work. The sandbox is using Docker itself and you cannot run Docker within Docker. For development purposes setup a single VM and configure it as per the regular Linux installation along with Docker. You'll then be able to test your Docker bundles locally.
 
+## Publishing bundles
 
+Bundles are able to be published to repositories such that they can be pulled down and used by others at a later stage. At the time of writing [Bintray](https://bintray.com/) is a supported provider of repositories. Bintray supports the publishing of bundles to both private and public repositories. Once published, the `conduct load` command can be used to pull down the latest or a specific version of your bundle with ease. For example, to pull down Cassandra from our organization's standard repository and load it into ConductR:
+
+```
+conduct load cassandra
+```
+
+The `cassandra` bundle will be resolved against supported repositories, the latest one determined, and it is then pulled down and loaded into ConductR. See [Deploying Bundles](DeployingBundlesOps) for more information on the `load` command's syntax when needing to specifying repositories other than our standard one. It generally boils down to something similar to `conduct load mygreatorg/mygreatbundle`.
+
+The [sbt-bintray-bundle](https://github.com/sbt/sbt-bintray-bundle) is used to provide Bintray bundle publishing capabilities for your project. This plugin uses the [bintray sbt plugin](https://github.com/softprops/bintray-sbt#bintray-sbt) where most of its settings are supported.
+
+To add the Bintray bundle plugin to your `plugins.sbt`, or equivalent (check the [plugin's site](https://github.com/sbt/sbt-bintray-bundle) for the latest version):
+
+```scala
+addSbtPlugin("com.typesafe.sbt" % "sbt-bintray-bundle" % "1.0.1")
+```
+
+Once the plugin is added you need to declare some settings for your build. Here are some taken from [a sample Lagom based application](https://github.com/lagom/activator-lagom-java-chirper):
+
+```scala
+licenses in ThisBuild := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
+bintrayVcsUrl in Bundle in ThisBuild := Some("https://github.com/lagom/activator-lagom-java-chirper")
+bintrayOrganization in Bundle in ThisBuild := Some("typesafe")
+bintrayReleaseOnPublish in Bundle in ThisBuild := true
+```
+
+Each publication to Bintray requires the declaration of a license file and a URL back to the source code repository. The `bintrayOrganization` will reflect your Bintray organization. `bintrayReleaseOnPublish` declares that a bundle will become available for downloading immediately, rather than reside in a "staging" state where it will then require publishing at Bintray. The bundle repository used by default is named "bundle". If you want to use another repository then you must use the `bintrayRepository` setting to declare it.
+
+Other bundle repositories will be supported in the future and ConductR's forthcoming support for Continuous Delivery will leverage webhook events from Bintray in order to automatically deploy published bundles.
