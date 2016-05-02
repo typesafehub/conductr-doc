@@ -32,3 +32,19 @@ In additional to disabling Elasticsearch via configuration, a service lookup mus
   -Dcontrail.syslog.server.elasticsearch.enabled=off 
   -Dcontrail.syslog.server.service-locator.enabled=off
 ```
+
+### Service ports
+
+**The services is now deprecated in lieu of [request acl](RequestAclConfiguration).**
+
+The services define the protocol, port, and/or path under which your service will be addressed to the outside world on. For example, if http and port 80 are to be used to provide your services and then the following expression can be used to resolve `/myservice` on:
+
+```json
+    endpoints        = {
+      "angular-seed-play" = {
+        protocol  = "http"
+        bind-port = 0
+        services  = ["http:/myservice"]
+      }
+    }
+```

@@ -6,4 +6,5 @@ Monitoring:Typesafe Monitoring
 ManageServices:Managing ConductR services
 ClusterSetupConsiderations:Cluster setup considerations
 ClusterTroubleshooting:Cluster troubleshooting
+DynamicProxyConfiguration:Dynamic proxy configuration
 ConfigurationRef:Configuration Reference
