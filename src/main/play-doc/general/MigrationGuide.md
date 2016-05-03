@@ -33,18 +33,425 @@ In additional to disabling Elasticsearch via configuration, a service lookup mus
   -Dcontrail.syslog.server.service-locator.enabled=off
 ```
 
-### Service ports
+## Service endpoint declaration
 
-**The services is now deprecated in lieu of [request acl](RequestAclConfiguration).**
+The services endpoint declaration defines the protocol, port, and/or path under which your service will be addressed to the outside world.
 
-The services define the protocol, port, and/or path under which your service will be addressed to the outside world on. For example, if http and port 80 are to be used to provide your services and then the following expression can be used to resolve `/myservice` on:
+**From 1.2 onwards, the service endpoint declaration is deprecated in lieu of [[request ACL|AclConfiguration]].**
 
-```json
-    endpoints        = {
-      "angular-seed-play" = {
-        protocol  = "http"
-        bind-port = 0
-        services  = ["http:/myservice"]
+The [[request ACL|AclConfiguration]] in conjunction with [[dynamic proxy configuration|DynamicProxyConfiguration]] provides additional proxy mapping flexibility on top of what was previously provided by the service ports. This will allow operations to have a complete control on the proxy configuration.
+
+### Migrating HTTP-based services
+
+Some HTTP based service definition can be migrated by supplying its [[request ACL|AclConfiguration]] equivalent, while others require a customized HAProxy configuration.
+
+#### Migrating services definition
+
+The following HTTP based service definition can be migrated by supplying its [[request ACL|AclConfiguration]] equivalent.
+
+##### Services mapped to root path
+
+Given the following example where the service URI was "http://my-service", ConductR will interpret the first path component (`my-service`) as the service name for the purposes of service lookup. By default ConductR will then remove the first path component when rewriting the request. This means that your application or service will be deployed as root context or `/`.
+
+###### Migrating build.sbt
+
+Modify the `Endpoint` declared within the `BundleKeys.endpoints`.
+
+From:
+
+```
+BundleKeys.endpoints := Map(
+  "endpoint-label" -> Endpoint("http", 0, Set(URI("http://my-service")))
+)
+```
+
+To:
+
+```
+BundleKeys.endpoints := Map(
+  "endpoint-label" -> Endpoint("http", 0, "my-service",
+    RequestAcl(Http("^/my-service".r -> "/"))
+  )
+)
+```
+
+###### Migrating bundle.conf
+
+Modify the `endpoints` section declared within the `bundle.conf` as such.
+
+From:
+
+```
+    endpoints         = {
+      "endpoint-label" = {
+        bind-protocol = "http"
+        bind-port     = 0
+        services      = ["http://my-service]
+      }
+    }
+```
+
+To:
+
+```
+    endpoints         = {
+      "endpoint-label" = {
+        bind-protocol = "http"
+        bind-port     = 0
+        service-name  = "my-service"
+        acls          = [
+          {
+            http = {
+              requests = [
+                {
+                  path-beg = "/my-service"
+                  rewrite = "/"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+```
+
+
+
+##### Services mapped with preserved path
+
+The `preservePath` query parameter on a service declaration indicated that the context root path should be preserved when passing through ConductR's proxy. Given the service URI `http://my-service?preservePath`, the service is accessible from the outside world on HTTP port allocated by ConductR under `/my-sevice` context.
+
+This behaviour can now be declared with a request ACL.
+
+###### Migrating build.sbt
+
+Modify the `Endpoint` declared within the `BundleKeys.endpoints`.
+
+From:
+
+```
+BundleKeys.endpoints := Map(
+  "endpoint-label" -> Endpoint("http", 0, Set(URI("http://my-service?preservePath")))
+)
+```
+
+To:
+
+```
+BundleKeys.endpoints := Map(
+  "endpoint-label" -> Endpoint("http", 0, "my-service",
+    RequestAcl(Http("^/my-service".r))
+  )
+)
+```
+
+###### Migrating bundle.conf
+
+Modify the `endpoints` section declared within the `bundle.conf` as such.
+
+From:
+
+```
+    endpoints         = {
+      "endpoint-label" = {
+        bind-protocol = "http"
+        bind-port     = 0
+        services      = ["http://my-service?preservePath"]
+      }
+    }
+```
+
+To:
+
+```
+    endpoints         = {
+      "endpoint-label" = {
+        bind-protocol = "http"
+        bind-port     = 0
+        service-name  = "my-service"
+        acls          = [
+          {
+            http = {
+              requests = [
+                {
+                  path-beg = "/my-service"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+```
+
+#### Supplying customized HAProxy template configuration
+
+The following services definition will require a customized HAProxy configuration.
+
+The [[Dynamic proxy configuration|DynamicProxyConfiguration]] describes the steps required to generate a customized HAProxy configuration.
+
+Generating a customized HAProxy configuration will rely on the [[ifAcl|DynamicProxyConfiguration#ifAcl]] directive which accepts `system`, `systemVersion`, and `endpointLabel` as input argument.
+
+When declaring bundle settings via `build.sbt`, unless declared explicitly, the `system` and `systemVersion` settings may fallback to a default value as described by [sbt-conductr settings](https://github.com/typesafehub/sbt-conductr#bundle-settings).
+
+
+##### Customized port number
+
+A service may declare an endpoint exposed on a custom port number. Given the service URI `http://:6789/my-service`, the service is accessible from the outside world on HTTP port `6789` under `/my-service` context.
+
+###### Migrating build.sbt
+
+Modify the `Endpoint` declared within the `BundleKeys.endpoints`.
+
+From:
+
+```
+name := "my-bundle"
+BundleKeys.compatibilityVersion := "1.1"
+BundleKeys.endpoints := Map(
+  "endpoint-label" -> Endpoint("http", 0, Set(URI("http://:6789/my-service")))
+)
+
+```
+
+To:
+
+```
+BundleKeys.endpoints := Map(
+  "endpoint-label" -> Endpoint("http", 0, "my-service",
+    RequestAcl(Http("^/my-service".r -> "/"))
+  )
+)
+```
+
+
+###### Migrating bundle.conf
+
+Modify the `endpoints` section declared within the `bundle.conf` as such.
+
+From:
+
+```
+    system             = "my-bundle"
+    systemVersion      = "1.1"
+    endpoints          = {
+      "endpoint-label" = {
+        bind-protocol  = "http"
+        bind-port      = 0
+        services       = ["http://:6789/my-service"]
+      }
+    }
+```
+
+To:
+
+```
+    endpoints         = {
+      "endpoint-label" = {
+        bind-protocol = "http"
+        bind-port     = 0
+        service-name  = "my-service"
+        acls          = [
+          {
+            http = {
+              requests = [
+                {
+                  path-beg = "/my-service"
+                  rewrite = "/"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+```
+
+###### Supplying customized HAProxy configuration
+
+The [[Dynamic proxy configuration|DynamicProxyConfiguration]] describes the steps required to generate a customized HAProxy configuration.
+
+Populate the "Custom Endpoint Configuration" section described in the [[populate custom HAProxy configuration template|DynamicProxyConfiguration#Populate-the-custom-HAProxy-configuration-template]] step as such:
+
+```
+{{#eachAcls bundles defaultHttpPort=9443}}
+  {{#ifAcl 'my-bundle' '1.1' 'endpoint-label'}}
+frontend my_www_frontend
+  bind {{haproxyHost}}:6789
+  mode http
+  acl my_www_path_match path_beg /my-service
+  use_backend my_www_backend if my_www_path_match
+
+backend my_www_backend
+  mode http
+  reqrep ^([^\ :]*)\ /my-service/?(.*) \1\ /\2
+    {{#eachBackendServer}}
+  server {{serverName}} {{host}}:{{port}} maxconn 1024
+    {{/eachBackendServer}}
+  {{/ifAcl}}
+{{/eachAcls}}
+
+```
+
+The snippet above will expose other HTTP endpoint at port `9443`, this value can be replaced with any valid port number accordingly.
+
+##### Host header match
+
+A service may declare an endpoint exposed on a particular host address. Given the service URI `http://www.acme.com`, the service is accessible from the outside world on HTTP port `80` when the HTTP host header is `www.acme.com`.
+
+###### Migrating build.sbt
+
+Modify the `Endpoint` declared within the `BundleKeys.endpoints`.
+
+From:
+
+```
+name := "my-bundle"
+BundleKeys.compatibilityVersion := "1.1"
+BundleKeys.endpoints := Map(
+  "endpoint-label" -> Endpoint("http", 0, Set(URI("http://www.acme.com")))
+)
+
+```
+
+To:
+
+```
+BundleKeys.endpoints := Map(
+  "endpoint-label" -> Endpoint("http", 0, "my-service",
+    RequestAcl(Http("^/".r))
+  )
+)
+```
+
+Where `my-service` is the service name for the endpoint for the purpose of service lookup.
+
+###### Migrating bundle.conf
+
+Modify the `endpoints` section declared within the `bundle.conf` as such.
+
+From:
+
+```
+    system             = "my-bundle"
+    systemVersion      = "1.1"
+    endpoints          = {
+      "endpoint-label" = {
+        bind-protocol  = "http"
+        bind-port      = 0
+        services       = ["http://www.acme.com"]
+      }
+    }
+```
+
+To:
+
+```
+    endpoints         = {
+      "endpoint-label" = {
+        bind-protocol = "http"
+        bind-port     = 0
+        service-name  = "my-service"
+        acls          = [
+          {
+            http = {
+              requests = [
+                {
+                  path-beg = "/"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+```
+
+Where `my-service` is the service name for the endpoint for the purpose of service lookup.
+
+
+###### Supplying customized HAProxy configuration
+
+The [[Dynamic proxy configuration|DynamicProxyConfiguration]] describes the steps required to generate a customized HAProxy configuration.
+
+Populate the "Custom Endpoint Configuration" section described in the [[populate custom HAProxy configuration template|DynamicProxyConfiguration#Populate-the-custom-HAProxy-configuration-template]] step as such:
+
+```
+{{#eachAcls bundles defaultHttpPort=9443}}
+  {{#ifAcl 'my-bundle' '1.1' 'endpoint-label'}}
+frontend my_www_frontend
+  bind {{haproxyHost}}:80
+  mode http
+  acl my_www_host_match hdr(host) -i www.acme.com
+  use_backend my_www_backend if my_www_host_match
+
+backend my_www_backend
+  mode http
+    {{#eachBackendServer}}
+  server {{serverName}} {{host}}:{{port}} maxconn 1024
+    {{/eachBackendServer}}
+  {{/ifAcl}}
+{{/eachAcls}}
+
+```
+
+The snippet above will expose other HTTP endpoint at port `9443`, this value can be replaced with any valid port number accordingly.
+
+### Migrating TCP-based services
+
+TCP based service can be migrated by supplying its [[request ACL|AclConfiguration]] equivalent.
+
+#### Migrating build.sbt
+
+Modify the `Endpoint` declared within the `BundleKeys.endpoints`.
+
+From:
+
+```
+BundleKeys.endpoints := Map(
+  "logbroker" -> Endpoint("tcp", 0, Set(URI("http://:6379/redis")))
+)
+```
+
+To:
+
+```
+BundleKeys.endpoints := Map(
+  "logbroker" -> Endpoint("tcp", 0, "redis", RequestAcl(Tcp(6379)))
+)
+```
+
+#### Migrating bundle.conf
+
+Modify the `endpoints` section declared within the `bundle.conf` as such.
+
+From:
+
+```
+    endpoints         = {
+      "logbroker" = {
+        bind-protocol = "tcp"
+        bind-port     = 0
+        services      = ["http://:6379/redis"]
+      }
+    }
+```
+
+To:
+
+```
+    endpoints         = {
+      "logbroker" = {
+        bind-protocol = "tcp"
+        bind-port     = 0
+        service-name  = "redis"
+        acls          = [
+          {
+            tcp = {
+              requests = [6379]
+            }
+          }
+        ]
       }
     }
 ```
