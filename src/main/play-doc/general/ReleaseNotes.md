@@ -1,5 +1,19 @@
 # ConductR release notes
 
+### 1.1.4
+
+1. The Resource Provider now uses committed virtual memory size for the value of available memory in resource offers. This has been demonstrated to provide a better measure of how much memory can be allocated for a new bundle process over free memory and swap calculated values.
+
+2. The bundleInstallationChanged event has been added for bundle installation changes and is now available to server-sent events(SSE) clients. This new event is used by the ResourceProvider to request resources on all installation change events. This enables bundle scaling to be more reliable under stress, such as scaling when resources are highly constrained.
+
+4. Ensure that bundles are always written to a single volume of a node. This ensures the ability to atomically move a bundle when using an operator specified bundle location.
+
+5. Utilize sbt-conductr 2.0.1, providing a consistent developer sandbox experience from both sbt and the command line.
+
+6. Adds bundle id and configuration id to ESlite service. Improves ESlite tests.
+
+7. Improvements to ConductR tests including upgrading Scala test versions, using Trireme for sbt-mocha and concurrency restrictions to address inconsistent test issues.
+
 ### 1.1.3
 
 1. The Resource Provider now outputs its view of what resources it believes are available so that operators can better diagnose failure to obtain suitable resource offers.
