@@ -425,7 +425,7 @@ SG-Nodes Inbound Rules
 
 Create an external facing load balancer from the EC2 control panel. You will need to create an internet gateway and attach it to your VPC in order to have a public load balancer. We'll add an optional HTTPS protocol listener on port 443 to the default port 80 HTTP listener. For this tutorial we will map both of our listeners to instance port 9999. Add all three subnets to the load balancer and assign the load balancer to the SG-ELB security group. Optionally you can upload an SSL Certificate to use the ELB as your TLS endpoint if you added the HTTPS listener. For health monitoring we'll use ConductR's proxy status endpoint, HTTP:9009/status. This endpoint will return an OK when ConductR's proxy has been configured.
 
-### Preparing the AMI
+### Preparing the ConductR AMI
 
 Launch a single instance of the desired base AMI to use as our image master. We'll use the Ubuntu 14.04 LTS HVM EBS-SSD boot image in US-East-1, ami-76b2a71e. If you choose another base image, use an EBS boot image as they are much easy to image unless you know what your doing there. Be certain to assign a public ip address in instance details to make it easy to ssh into.
 
@@ -454,6 +454,10 @@ sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
 
 ConductR is automatically registered as a service and started.
 
+#### Obtaining ConductR Agent package
+
+Locate ConductR agent package from `/usr/share/conductr/agent` as a file called `conductr-agent_%PLAY_VERSION%_all.deb` Debian. Secure copy (scp) this file away from the image host as we are going to use it for building the ConductR Agent AMI.
+
 #### Installation miscellany
 
 The ConductR service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
@@ -465,7 +469,44 @@ echo '$ModLoad imtcp' | sudo tee -a /etc/rsyslog.d/conductr.conf
 echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
 ```
 
-### Installing a Proxy
+### Create the ConductR AMI
+
+With our packages installed we can create the ConductR machine image. Image the host by selecting the running instance in the EC2 dashboard and using the Create Image option from the Actions menus. We are now done with the image host and it can be terminated.
+
+### Preparing the ConductR Agent AMI
+
+Use the same base image used for ConductR, i.e. Ubuntu 14.04 LTS HVM EBS-SSD boot image in US-East-1, ami-76b2a71e.
+
+Access the console of the image instance with root access. For Ubuntu AMIs this is done as the user ubuntu using the PEM file specified at launch. The user ubuntu has sudo access. Other images will use different users. Check with the image provider for the correct user name to use.
+
+#### Installing JRE 8
+
+Install Java 8 as the default JRE. You will need to accept the Oracle license agreement.
+
+``` bash
+sudo add-apt-repository -y ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get -y install oracle-java8-installer && sudo apt-get clean
+sudo apt-get -y install oracle-java8-set-default
+echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
+```
+
+#### Installing ConductR Agent
+
+Secure copy the ConductR Agent package you have obtained from the ConductR image host, i.e. the `conductr-agent_%PLAY_VERSION%_all.deb` Debian package. Install ConductR Agent as any other Debian package.
+
+``` bash
+sudo dpkg -i conductr-agent_%PLAY_VERSION%_all.deb
+```
+
+ConductR Agent is automatically registered as a service and started.
+
+#### Installation miscellany
+
+The ConductR Agent service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr-agent/running.pid` and its install location is `/usr/share/conductr-agent`.
+
+
+#### Installing a Proxy
 
 Proxying application endpoints is required when external communication to a service is required. We will be using `HAProxy`. Add a dedicated Personal Package Archive (PPA) and install HAProxy.
 
@@ -509,9 +550,9 @@ ConductR supports running applications and services within Docker. If you plan o
 sudo usermod -a -G docker conductr
 ```
 
-### Create the AMI
+### Create the ConductR Agent AMI
 
-With our packages installed we can create the ConductR machine image. Image the host by selecting the running instance in the EC2 dashboard and using the Create Image option from the Actions menus. We are now done with the image host and it can be terminated.
+With our packages installed we can create the ConductR Agent machine image. Image the host by selecting the running instance in the EC2 dashboard and using the Create Image option from the Actions menus. We are now done with the image host and it can be terminated.
 
 ### Bring up the cluster
 
@@ -534,6 +575,22 @@ Pick one node as the seed node and instruct the other two instances to use the o
 echo --seed 10.0.2.20:9004 | sudo tee -a /usr/share/conductr/conf/application.ini
 sudo service conductr restart
 ```
+
+### Bring up the ConductR Agent
+
+Once your ConductR Agent AMI is available, launch three instances. In this tutorial we'll launch one instance into SN-A, SN-B and SN-C each so that our cluster spans three availability zones. All instances will be launched into our SG-Nodes security group. Be certain to assign public IP addresses to we can ssh into our nodes.
+
+We will now configure ConductR Agent on the instances and connect them to the ConductR cluster. Here we are connecting the agent initially to `10.0.2.20` which is the seed node of our cluster.
+
+``` bash
+echo -DCONDUCTR_IP=$(hostname -i) | sudo tee -a /usr/share/conductr-agent/conf/application.ini
+echo --core-node 10.0.2.20:9004 | sudo tee -a /usr/share/conductr-agent/conf/application.ini
+sudo service conductr restart
+```
+
+The ConductR seed node `10.0.2.20:9004` will be used as the initial node for the ConductR Agent to connect into the ConductR cluster. Upon startup, the address of the remaining members of the cluster will be obtained by ConductR agent. This information will be used by ConductR Agent to re-establish connectivity any member of the cluster upon disconnection or restart.
+
+Repeat these steps on each of the three instances ConductR AMI.
 
 ### Check the cluster
 ConductR provides cluster and application information as well as its control interface via a REST API.
