@@ -313,7 +313,7 @@ The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays an
 
 Use create-network-ec2.yml to setup a new Virtual Private Cloud (VPC) and create your cluster in the new VPC. You only need to provide your access keys and what region to execute in. The playbook outputs a vars file for use with the build-cluster-ec.yml.
 
-The playbook build-cluster-ec2.yml launches three instances across two availability zones. ConductR is installed on all instances and configured to form a cluster. The nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
+The playbook build-cluster-ec2.yml launches six instances across three availability zones. ConductR is installed on three instances and configured to form a cluster. ConductR Agent is installed on the remaining three instances, and configured to connect to ConductR. The ConductR Agent nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
 
 ### Prepare controller host
 
@@ -370,7 +370,7 @@ Re-running the create network playbook in the same EC2 region refreshes the netw
  
 ### Build cluster
 
-The second playbook launches three instances into the specified VPC and configures them into a cluster with an Elastic Load Balancer (ELB). The use of an ELB provides us with a single DNS name to access our cluster by, but its use is not required. 
+The second playbook launches six instances into the specified VPC. The three ConductR instances are configured into a cluster. The remaining three ConductR Agent instances are configured to connect to the ConductR instances. The ConductR Agent instances will also be configured with an Elastic Load Balancer (ELB). The use of an ELB provides us with a single DNS name to access our cluster by, but its use is not required.
 
 We pass both our vars file and EC2 PEM key file to our playbook as command line arguments. The VARS_FILE template can be the one created from the create network script. If you want to use an existing network instead, there is a `vars.yml` template you can use as a template without running the create network script. 
 
@@ -380,7 +380,7 @@ The private-key value must be the local path and filename of the keypair that ha
 ansible-playbook build-cluster-ec2.yml -e "VARS_FILE=vars/{{EC2_REGION}}_vars.yml" --private-key /path/to/{{keypair}}
 ```
 
-If the playbook completes successfully, you will have a three node cluster that can be accessed using the ELB DNS name. ConductR comes with a `visualizer` sample application. The playbook created ELB includes a listener mapping port 80 to Visualizer's port 9999 port mapping. 
+If the playbook completes successfully, you will have a six node cluster that can be accessed using the ELB DNS name. ConductR comes with a `visualizer` sample application. The playbook created ELB includes a listener mapping port 80 to Visualizer's port 9999 port mapping.
 
 Head over to the next section [[Managing application|ManagingApplication]] to learn how to deploy visualizer application to your fresh ConductR cluster. You can ssh into one of the cluster nodes using it's public ip address to deploy Visualizer. Use the username from the `REMOTE_USER` (currently "ubuntu") and the PEM file as for the identify file (-i). The ConductR CLI has been installed to all nodes for you. Once deployed, you can view the Visualizer via port 80 using the ELB DNS name in your browser.
 
