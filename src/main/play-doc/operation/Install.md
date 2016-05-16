@@ -41,7 +41,7 @@ echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
 
 ## Installing ConductR on the first machine
 
-This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
+This tutorial uses three systems with the addresses `172.17.0.{1,2,3}` for ConductR and `172.17.0.{11,12,13}` for ConductR Agent. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
 
 ``` bash
 sudo hostname $(hostname -i)
@@ -156,6 +156,50 @@ You should now see a new node in the cluster members list by using the following
 ```
 
 Install optional dependencies if required. Each ConductR node requires same optional dependencies to be installed.
+
+## Installing ConductR Agent
+
+Perform the following installation steps on the `172.17.0.{11,12,13}` machine designated for ConductR agent.
+
+The ConductR Agent package can be obtained from the seed node machine `172.17.0.1` under `/usr/share/conductr/agent` as a file called `conductr-agent_%PLAY_VERSION%_all.deb` Debian or `conductr-agent_%PLAY_VERSION%-1.noarch.rpm` Rpm.
+
+Copy the ConductR Agent package file from `172.17.0.1` to `172.17.0.11`.
+
+Once the ConductR Agent package file is copied, install ConductR Agent as any other Debian or Rpm package.
+
+``` bash
+[172.17.0.11]$ sudo dpkg -i conductr-agent_%PLAY_VERSION%_all.deb
+```
+or
+
+``` bash
+[172.17.0.11]$ sudo yum install conductr-agent-%PLAY_VERSION%-1.noarch.rpm
+```
+
+ConductR Agent is automatically registered as a service and started.
+
+ConductR Agent needs to be configured to listen on the host machine's interface, and the ConductR Agent also need to be told of the address of the ConductR node.
+
+``` bash
+[172.17.0.11]$ echo -DCONDUCTR_AGENT_IP=$(hostname) | sudo tee -a /usr/share/conductr-agent/conf/application.ini
+[172.17.0.11]$ echo --core-node 172.17.0.1:9004 | sudo tee -a /usr/share/conductr-agent/conf/application.ini
+[172.17.0.11]$ sudo service conductr-agent restart
+```
+
+Repeat the steps above on `172.17.0.12` and `172.17.0.13`.
+
+The ConductR seed node `172.17.0.1:9004` will be used as the initial node for the ConductR Agent to connect into the ConductR cluster. Upon startup, the address of the remaining members of the cluster will be obtained by ConductR agent. This information will be used by ConductR Agent to re-establish connectivity any member of the cluster upon disconnection or restart.
+
+
+### Installation miscellany
+
+The ConductR Agent service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr-agent/running.pid` and its install location is `/usr/share/conductr-agent`.
+
+By default ConductR Agent's logging is quite sparse. Unless an error or warning occurs then there will be no log output. To increase the verbosity of the logging you can use this command:
+
+``` bash
+[172.17.0.11]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr-agent/conf/application.ini
+```
 
 ## Installing a Proxy
 
