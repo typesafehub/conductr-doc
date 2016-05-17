@@ -1,5 +1,12 @@
 # ConductR release notes
 
+### 1.1.5
+
+1. A problem was fixed when there was a bundle belonging to a system shared by other bundles, and that it also had multiple endpoints, causing the xxx_OTHER_xxx series of environment variables to become empty when there was no other instance of the same bundle running. This problem could prevent bundles from joining an established Akka cluster.
+
+2. A clearer message and HTTP status is now returned by ConductR when there is no Elasticsearch running and the `conduct logs` command (or its API) is used. An HTTP "Service Unavailable" status is returned.
+
+
 ### 1.1.4
 
 1. The Resource Provider now uses committed virtual memory size for the value of available memory in resource offers. This has been demonstrated to provide a better measure of how much memory can be allocated for a new bundle process over free memory and swap calculated values.
