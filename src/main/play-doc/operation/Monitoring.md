@@ -21,6 +21,8 @@ echo \
 sudo /etc/init.d/conductr restart
 ```
 
+The same also goes for conductr-haproxy's `application.ini` and service.
+
 Note also that the Takipi agent will require installation at each ConductR node.
 
 ## Monitoring Bundles
