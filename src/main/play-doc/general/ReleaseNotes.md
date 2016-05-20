@@ -1,13 +1,13 @@
 # ConductR release notes
 
-### 1.1.5
+### 1.1.5 May 17, 2016
 
 1. A problem was fixed when there was a bundle belonging to a system shared by other bundles, and that it also had multiple endpoints, causing the xxx_OTHER_xxx series of environment variables to become empty when there was no other instance of the same bundle running. This problem could prevent bundles from joining an established Akka cluster.
 
 2. A clearer message and HTTP status is now returned by ConductR when there is no Elasticsearch running and the `conduct logs` command (or its API) is used. An HTTP "Service Unavailable" status is returned.
 
 
-### 1.1.4
+### 1.1.4 May 4, 2016
 
 1. The Resource Provider now uses committed virtual memory size for the value of available memory in resource offers. This has been demonstrated to provide a better measure of how much memory can be allocated for a new bundle process over free memory and swap calculated values.
 
@@ -21,7 +21,7 @@
 
 7. Improvements to ConductR tests including upgrading Scala test versions, using Trireme for sbt-mocha and concurrency restrictions to address inconsistent test issues.
 
-### 1.1.3
+### 1.1.3 - Apr 15, 2016
 
 1. The Resource Provider now outputs its view of what resources it believes are available so that operators can better diagnose failure to obtain suitable resource offers.
 
@@ -36,7 +36,7 @@ Prior this release, calling HTTP get on `/bundles/some/random/path` will return 
 
 6. Syslog connectivity was broken. This has now been repaired.
 
-### 1.1.2
+### 1.1.2 - Mar 3, 2016
 
 1. Preserve the first component of a path that is rewritten at the proxy.
 
@@ -46,11 +46,11 @@ Prior this release, calling HTTP get on `/bundles/some/random/path` will return 
 
 4. Integrate StateEvents and StateQueries actors to provide a consistent view of bundle state between the two to prevent possible race condition.
 
-## 1.1.1
+## 1.1.1 - Feb 25, 2016
 
 1. When a load or a scale fails due to no resources being available then ConductR now reports this. For loading this means that the initial http load request is responded with a `Forbidden` http status`, along with a message. For all other scenarios, an error event is raised on the bundle and `conduct events` can be used to discover what happened.
 2. Bundle replication would sometimes fail due to there being insufficient resources. In this scenario CPU, memory and disk space were being checked. However replication only requires a check in terms of disk space, and so this is now the case. Replication should therefore be more reliable in scenarios where there is low CPU or memory availability.
 
-## 1.1.0
+## 1.1.0 - Feb 14, 2016
 
 Initial release.
