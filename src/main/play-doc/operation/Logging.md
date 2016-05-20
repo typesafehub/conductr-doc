@@ -51,6 +51,8 @@ Firstly you must tell ConductR where your customized Elasticsearch instance is w
 -Dcontrail.syslog.server.port=<some-port>
 ```
 
+The same also goes for conductr-haproxy's `application.ini`.
+
 The Elasticsearch bundle that we provide has been configured to support back-pressure when receiving event and logging data from ConductR. By default Elasticsearch will accept bulk index requests regardless of whether it will process them. This means that under certain load conditions, Elasticsearch could lose data being sent to it. To counter this, here is the configuration we use for Elasticsearch (we have chosen a sharding factor of 5, substitute yours accordingly):
 
 ```
@@ -167,6 +169,8 @@ echo \
 sudo /etc/init.d/conductr restart
 ```
 
+The same also goes for conductr-haproxy's `application.ini` and service.
+
 ...and to configure RSYSLOG:
 
 ``` bash
@@ -195,6 +199,8 @@ echo \
 sudo /etc/init.d/conductr restart
 ```
 
+The same also goes for conductr-haproxy's `application.ini` and service.
+
 ## Other solutions
 
 ConductR is compatible with any log aggregator speaking the syslog protocol. The log messages of a bundle are written to `stdout` and `stderr`. When using another logging infrastructure we recommend to deploy this infrastructure inside the ConductR cluster. You do not want to send lots of log traffic across the internet. Another approach is to use a syslog collector such as [rsyslog](http://www.rsyslog.com/) to filter the log messages before sending them to the logging cloud service.
@@ -214,6 +220,8 @@ echo \
 sudo /etc/init.d/conductr restart
 ```
 
+The same also goes for conductr-haproxy's `application.ini` and service.
+
 With this setting only ConductR `debug` level logs will be visible. In other words, `debug` level messages from frameworks and libraries utilized by ConductR will not be visible.
 
 To view all `debug` level log messages, configure ConductR as:
@@ -225,6 +233,8 @@ echo \
   sudo tee -a /usr/share/conductr/conf/application.ini
 sudo /etc/init.d/conductr restart
 ```
+
+The same also goes for conductr-haproxy's `application.ini` and service.
 
 With this setting debug messages from various frameworks and libraries utilized by ConductR will be visible, e.g. debug messages from Akka.
 

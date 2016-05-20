@@ -33,6 +33,8 @@ In additional to disabling Elasticsearch via configuration, a service lookup mus
   -Dcontrail.syslog.server.service-locator.enabled=off
 ```
 
+The same also goes for conductr-haproxy's `application.ini`.
+
 ## Service endpoint declaration
 
 The services endpoint declaration defines the protocol, port, and/or path under which your service will be addressed to the outside world.
