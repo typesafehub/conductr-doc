@@ -119,6 +119,25 @@ In the above, no declaration of `services` is required as akka remoting is an in
 
 > The Akka cluster of your application or service is distinct to your applications and services given the bundle's `system` and `systemVersion` properties. `sbt-bundle` will set these properties to the name of your bundle and its `compatibilityVersion` by default. The `compatibilityVersion` is the major component of your project's version by default. All of these properties are able to be overridden using bundle keys. You can therefore associate multiple bundles into a single Akka cluster by using the same system and systemVersion. Akka remote ports are always dynamically allocated given the above endpoint declaration, and so you can even have multiple bundles with multiple systems all running alongside each other, some even sharing the same system but different versions.
 
+#### Downing Strategies
+
+[The Akka documentation does not recommend auto-downing](http://doc.akka.io/docs/akka/2.4.6/scala/cluster-usage.html#Automatic_vs__Manual_Downing) for use within your Akka cluster based application/service. Instead it recommends that you manually shutdown a non-responsive service or provide a more robust automated strategy, such as using the Reactive Platform based Split Brain Resolver (SBR) package.
+
+As a subscriber to the Lightbend Reactive Platform you can use SBR as an automated downing mechanism. In this case note that a) the downing strategy may conflict with ConductR's (ConductR's is "keep majority"); and b) that you must handle the `MemberRemoved` event if it is received for the current member - SBR will not shutdown your application/service automatically. 
+
+In the case of contending strategies, this may not be a problem depending on your application/service's availability requirements. Suppose that your application/service chooses "keep oldest" as a strategy, and that the oldest member is in the minority portion of ConductR's cluster. If ConductR's SBR's "keep majority" decides to shutdown your oldest member, it will re-schedule it for execution again, but in the majority side of the cluster. In the case of "keep-oldest" resulting in reducing the number of running instances to one, your system may suffer an outage in terms of the length of time it takes ConductR to reschedule it for execution on the majority side of the cluster (seconds). This problem can be further mitigated by using an SBR timeout for "keep oldest" that is greater than ConductR's. 
+
+A reasonable start point when considering an SBR based strategy to use in conjunction with ConductR is to use the following configuration:
+
+```
+akka.cluster.split-brain-resolver.active-strategy = keep-majority
+akka.cluster.down-removal-margin = 30 seconds
+```
+
+> Always consult the Akka SBR documentation for details on the above parameters and to determine the best strategy for your particular application/service.
+
+With any downing strategy, you should consider the availability requirements of your application/service. If the application/service requires high availability then we suggest running at least 3 instances of it, and always an odd number in order to facilitate downing strategy decisions that rely on quorums (such as "keep majority").
+
 ## play25-conductr-bundle-lib
 
 > If you are using Play 2.5 then this section is for you. Otherwise jump below to the [play[23|24]-conductr-bundle-lib](#play23|24-conductr-bundle-lib) section.
