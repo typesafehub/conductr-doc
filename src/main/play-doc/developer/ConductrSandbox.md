@@ -25,7 +25,7 @@ Given the above you will then have a ConductR process running in the background 
 The sandbox contains handy features which can be optionally enabled during startup by specifying the `--feature` option, e.g.:
     
 ```scala
-[my-app] sandbox run --feature visualization
+[my-app] sandbox run <CONDUCTR_VERSION> --feature visualization
 [info] Running ConductR...
 [info] Running container cond-0 exposing 192.168.59.103:9000 192.168.59.103:9909...
 ```

@@ -15,11 +15,9 @@
 
 4. Ensure that bundles are always written to a single volume of a node. This ensures the ability to atomically move a bundle when using an operator specified bundle location.
 
-5. Utilize sbt-conductr 2.0.1, providing a consistent developer sandbox experience from both sbt and the command line.
+5. Adds bundle id and configuration id to ESlite service. Improves ESlite tests.
 
-6. Adds bundle id and configuration id to ESlite service. Improves ESlite tests.
-
-7. Improvements to ConductR tests including upgrading Scala test versions, using Trireme for sbt-mocha and concurrency restrictions to address inconsistent test issues.
+6. Improvements to ConductR tests including upgrading Scala test versions, using Trireme for sbt-mocha and concurrency restrictions to address inconsistent test issues.
 
 ### 1.1.3 - Apr 15, 2016
 
