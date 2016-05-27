@@ -39,7 +39,7 @@ The conductr-cli is used to communicate with the ConductR cluster.
 To use `sbt-conductr` for your project add the plugin to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.0.1")
+addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.0")
 ```
 
 ## Signaling application state
@@ -48,7 +48,7 @@ Your application should tell ConductR when it has completed its initialization a
 
 ## Creating application bundle
 
-To produce a bundle for your application use the `bundle:dist` command:
+To produce a bundle for your application use the `bundle:dist` command from within sbt:
  
 ```scala
 bundle:dist
@@ -62,10 +62,10 @@ As you move through our documentation you will come across references to Conduct
 
 Now, you can go ahead and start the ConductR cluster locally. For that you should use the ConductR sandbox which is a docker image based on Ubuntu that includes ConductR. With this docker image you can easily spin up multiple ConductR nodes on your local machine. The `sandbox run` command will pick up and run this ConductR docker image. In order to use this command we need to specify the ConductR version. Please visit the [ConductR Developer page](https://www.lightbend.com/product/conductr/developer) to pick up the latest ConductR version from the section **Quick Configuration**.
 
-Afterwards, you can start the ConductR cluster by executing:
+Afterwards, you can start the ConductR cluster by executing the following from within sbt:
 
 ```scala
-sandbox run --feature visualization
+sandbox run <CONDUCTR_VERSION> --feature visualization
 [info] Running ConductR...
 [info] Running container cond-0 exposing 192.168.59.103:9909...
 ```
@@ -76,21 +76,18 @@ The `visualization` feature is simple Play application that visualizes the Condu
 
 ## Deploying application bundle to ConductR
 
-1. Load your application bundle to ConductR:
-    
-    ```scala
-    conduct load <HIT THE TAB KEY AND THEN RETURN>
-    ```
-2. Run bundle on one node:
-    
-    ```scala
-    conduct run my-app
-    ```
+From within sbt:
 
-3. Access your application at http://docker-host-ip:9000.
+```scala
+install
+```
+
+The above will introspect your project and any sub projects for bundles and their configuration, restart the sandbox to ensure a clean state and then load and run your bundles. You can then access your application at http://docker-host-ip:9000.
 
 In the visualizer web interface you should see now two bundles running, the visualizer bundle itself and your application bundle.
 
 [[images/visualizer_with_app.png]]
 
 That's it! You now have ConductR running with the visualizer and your own application. Head over to the next chapters to learn in greater detail how to setup, configure and run your applications on ConductR.
+
+> Note that the `conduct` and `sandbox` commands are also available from the command line for usage outside of sbt.
