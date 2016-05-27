@@ -2,7 +2,9 @@
 
 Once you've created a bundle you can deploy it using ConductR's RESTful API, even using [curl](http://curl.haxx.se/) if you want. However we've made it a little easier than that. You can of course use ConductR's CLI as discussed in the [[Operations guide|CLI]]. Alternatively, given that we've been discussing bundling your application or service mostly from an sbt perspective, you can use [sbt-conductr](https://github.com/sbt/sbt-conductr#sbt-conductr). The sbt plugin makes the same commands available within the sbt session as the `conductr-cli` on the terminal.
 
-To deploy a bundle use the `conduct load` command:
+The quickstart section introduced the `install` command so that you can conveniently load and run your entire project in ConductR. You can also control the loading and running of a bundle with `conduct` sub commands.
+
+To load a bundle use the `conduct load` command:
 
 ```bash
 conduct load <HIT THE TAB KEY AND THEN RETURN>
@@ -24,3 +26,7 @@ You can also run, stop and unload bundles by using this plugin. This may be usef
 > The host running sbt in this example must have access to the ConductR daemon ports. Please see  [[Cluster security considerations|ClusterSetupConsiderations#Cluster-security-considerations]] for further information on controlling cluster access.
 
 That is all that is required in essence. For more information head out to the [documentation](https://github.com/sbt/sbt-conductr/blob/master/README.md) of `sbt-conductr`.
+
+## Generating an installation script
+
+An installation script can be conveniently generated for your project. Just like the `install` command, a `generateInstallationScript` command will introspect your project for bundles and associated configurations and then generate a bash based script. You are encouraged to copy this script and tailor it so that you can conveniently deploy your project's bundles to production and other environments.

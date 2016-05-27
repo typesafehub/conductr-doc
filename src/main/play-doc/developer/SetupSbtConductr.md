@@ -20,7 +20,7 @@ The conductr-cli is used to communicate with the ConductR cluster.
 Add sbt-conductr to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.0.1")
+addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.0")
 ```
 
 This makes several commands available within sbt. We'll use these commands on the next pages.
