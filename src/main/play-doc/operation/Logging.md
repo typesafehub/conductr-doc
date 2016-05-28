@@ -44,11 +44,12 @@ To change the settings create a new bundle configuration by modiying the `bundle
 
 You can configure ConductR to use an alternate Elasticsearch cluster for events and logging. Here are some considerations for you if you should choose this path.
 
-Firstly you must tell ConductR where your customized Elasticsearch instance is within its `application.ini`:
+Firstly you must tell ConductR where your customized Elasticsearch instance is within its `application.ini`, and also turn off ConductR service locating it given the fixed location:
 
 ```
 -Dcontrail.syslog.server.host=<some-ip>
 -Dcontrail.syslog.server.port=<some-port>
+-Dcontrail.syslog.server.service-locator.enabled=off
 ```
 
 The same also goes for conductr-haproxy's `application.ini`.
