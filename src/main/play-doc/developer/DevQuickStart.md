@@ -46,18 +46,6 @@ addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.0")
 
 Your application should tell ConductR when it has completed its initialization and is ready for work. Fortunately, `sbt-conductr` does this for a Play application automatically.
 
-## Creating application bundle
-
-To produce a bundle for your application use the `bundle:dist` command from within sbt:
- 
-```scala
-bundle:dist
-``` 
-
-The new bundle should be created in your `target/bundle` directory.
-
-As you move through our documentation you will come across references to ConductR's environment variables e.g. `MY_APP_BIND_PORT`. Please refer to [our documentation](BundleEnvironmentVariables) for information on the meaning of these environment variables should you need to.
-
 ## Starting ConductR cluster
 
 Now, you can go ahead and start the ConductR cluster locally. For that you should use the ConductR sandbox which is a docker image based on Ubuntu that includes ConductR. With this docker image you can easily spin up multiple ConductR nodes on your local machine. The `sandbox run` command will pick up and run this ConductR docker image. In order to use this command we need to specify the ConductR version. Please visit the [ConductR Developer page](https://www.lightbend.com/product/conductr/developer) to pick up the latest ConductR version from the section **Quick Configuration**.
@@ -82,7 +70,9 @@ From within sbt:
 install
 ```
 
-The above will introspect your project and any sub projects for bundles and their configuration, restart the sandbox to ensure a clean state and then load and run your bundles. You can then access your application at http://docker-host-ip:9000.
+The above will introspect your project and any sub projects, generate "bundles" and their configuration, restart the sandbox to ensure a clean state and then load and run your application. You can then access your application at http://docker-host-ip:9000. 
+
+> Bundles and their configuration are tamperproof given a digest hash incorporated into their filename. ConductR will verify this hash against the one supplied in the filename when loading a bundle. With bundles and configuration then, you can roll releases forward and backward with a high degree of confidence.
 
 In the visualizer web interface you should see now two bundles running, the visualizer bundle itself and your application bundle.
 
