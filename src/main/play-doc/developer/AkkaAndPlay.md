@@ -188,6 +188,22 @@ class MyCustomApplicationLoader extends ApplicationLoader {
 }
 ```
 
+### Controlling startup signalling
+
+The Play flavors of conductr-bundle-lib automatically signal that your application has started with the `StatusService`. In the event that you want finer control over signalling then you can provide your own lifecycle handler. Use [the conductr-bundle-lib one[(https://github.com/typesafehub/conductr-lib/blob/master/play25-conductr-bundle-lib/src/main/scala/com/typesafe/conductr/bundlelib/play/api/ConductRLifecycle.scala)] as a reference. You must also disable the existing lifecycle module and of course register your own. To disable the existing one:
+
+```
+play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
+```
+
+`play.modules.enabled` is used correspondly to declare your custom lifecycle module.
+
+A common use-case when using Akka clustering with your Play application is to wait until a cluster is ready. In this case your lifecycle module should then subscribe to member up and signal to the `StatusService` within the handler:
+
+```scala
+Cluster(system).registerOnMemberUp(yourhandler)
+```
+
 ## play[23|24]-conductr-bundle-lib
 
 [sbt-conductr](https://github.com/typesafehub/sbt-conductr) is automatically adding this library to your Play project.
@@ -279,6 +295,22 @@ object Global extends GlobalSettings {
 }
 ```
 
+### Controlling startup signalling
+
+In the case of Play 2.4, the Play flavors of conductr-bundle-lib automatically signal that your application has started with the `StatusService`. In the event that you want finer control over signalling then you can provide your own lifecycle handler. Use [the conductr-bundle-lib one[(https://github.com/typesafehub/conductr-lib/blob/master/play24-conductr-bundle-lib/src/main/scala/com/typesafe/conductr/bundlelib/play/api/ConductRLifecycle.scala)] as a reference. You must also disable the existing lifecycle module and of course register your own. To disable the existing one:
+
+```
+play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
+```
+
+`play.modules.enabled` is used correspondly to declare your custom lifecycle module.
+
+A common use-case when using Akka clustering with your Play application is to wait until a cluster is ready. In this case your lifecycle module should then subscribe to member up and signal to the `StatusService` within the handler:
+
+```scala
+Cluster(system).registerOnMemberUp(yourhandler)
+```
+
 ## lagom10-conductr-bundle-lib
 
 > If you are using Lagom 1.0.x then this section is for you.
@@ -287,7 +319,7 @@ object Global extends GlobalSettings {
 
 Note that if you are using your own application loader then you should ensure that the Akka, Play and Lagom ConductR-related properties are loaded. Here's a complete implementation (in Scala):
 
-```java
+```scala
 class MyCustomApplicationLoader extends ApplicationLoader {
   def load(context: ApplicationLoader.Context): Application = {
     val conductRConfig = Configuration(AkkaEnv.asConfig) ++ Configuration(PlayEnv.asConfig) ++ Configuration(LagomEnv.asConfig)
@@ -297,4 +329,20 @@ class MyCustomApplicationLoader extends ApplicationLoader {
     (new GuiceApplicationLoader(new GuiceApplicationBuilder(environment = prodEnv))).load(newContext)
   }
 }
+```
+
+### Controlling startup signalling
+
+The Lagom flavors of conductr-bundle-lib automatically signal that your application has started with the `StatusService`. In the event that you want finer control over signalling then you can provide your own lifecycle handler. Use [the conductr-bundle-lib one[(https://github.com/typesafehub/conductr-lib/blob/master/play25-conductr-bundle-lib/src/main/scala/com/typesafe/conductr/bundlelib/play/api/ConductRLifecycle.scala)] as a reference. You must also disable the existing lifecycle module and of course register your own. To disable the existing one:
+
+```
+play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
+```
+
+`play.modules.enabled` is used correspondly to declare your custom lifecycle module.
+
+A common use-case when using Akka clustering with your Play application is to wait until a cluster is ready. In this case your lifecycle module should then subscribe to member up and signal to the `StatusService` within the handler:
+
+```scala
+Cluster(system).registerOnMemberUp(yourhandler)
 ```
