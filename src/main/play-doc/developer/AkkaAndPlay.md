@@ -190,7 +190,7 @@ class MyCustomApplicationLoader extends ApplicationLoader {
 
 ### Controlling startup signalling
 
-The Play flavors of conductr-bundle-lib automatically signal that your application has started with the `StatusService`. In the event that you want finer control over signalling then you can provide your own lifecycle handler. Use [the conductr-bundle-lib one[(https://github.com/typesafehub/conductr-lib/blob/master/play25-conductr-bundle-lib/src/main/scala/com/typesafe/conductr/bundlelib/play/api/ConductRLifecycle.scala)] as a reference. You must also disable the existing lifecycle module and of course register your own. To disable the existing one:
+The Play flavors of conductr-bundle-lib automatically signal that your application has started with the `StatusService`. In the event that you want finer control over signalling then you can provide your own lifecycle handler. Use [the conductr-bundle-lib one](https://github.com/typesafehub/conductr-lib/blob/master/play25-conductr-bundle-lib/src/main/scala/com/typesafe/conductr/bundlelib/play/api/ConductRLifecycle.scala)] as a reference. You must also disable the existing lifecycle module and of course register your own. To disable the existing one:
 
 ```
 play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
@@ -297,7 +297,7 @@ object Global extends GlobalSettings {
 
 ### Controlling startup signalling
 
-In the case of Play 2.4, the Play flavors of conductr-bundle-lib automatically signal that your application has started with the `StatusService`. In the event that you want finer control over signalling then you can provide your own lifecycle handler. Use [the conductr-bundle-lib one[(https://github.com/typesafehub/conductr-lib/blob/master/play24-conductr-bundle-lib/src/main/scala/com/typesafe/conductr/bundlelib/play/api/ConductRLifecycle.scala)] as a reference. You must also disable the existing lifecycle module and of course register your own. To disable the existing one:
+In the case of Play 2.4, the Play flavors of conductr-bundle-lib automatically signal that your application has started with the `StatusService`. In the event that you want finer control over signalling then you can provide your own lifecycle handler. Use [the conductr-bundle-lib one](https://github.com/typesafehub/conductr-lib/blob/master/play24-conductr-bundle-lib/src/main/scala/com/typesafe/conductr/bundlelib/play/api/ConductRLifecycle.scala)] as a reference. You must also disable the existing lifecycle module and of course register your own. To disable the existing one:
 
 ```
 play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
@@ -333,7 +333,7 @@ class MyCustomApplicationLoader extends ApplicationLoader {
 
 ### Controlling startup signalling
 
-The Lagom flavors of conductr-bundle-lib automatically signal that your application has started with the `StatusService`. In the event that you want finer control over signalling then you can provide your own lifecycle handler. Use [the conductr-bundle-lib one[(https://github.com/typesafehub/conductr-lib/blob/master/play25-conductr-bundle-lib/src/main/scala/com/typesafe/conductr/bundlelib/play/api/ConductRLifecycle.scala)] as a reference. You must also disable the existing lifecycle module and of course register your own. To disable the existing one:
+The Lagom flavors of conductr-bundle-lib automatically signal that your application has started with the `StatusService`. In the event that you want finer control over signalling then you can provide your own lifecycle handler. Use [the conductr-bundle-lib one](https://github.com/typesafehub/conductr-lib/blob/master/play25-conductr-bundle-lib/src/main/scala/com/typesafe/conductr/bundlelib/play/api/ConductRLifecycle.scala)] as a reference. You must also disable the existing lifecycle module and of course register your own. To disable the existing one:
 
 ```
 play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
