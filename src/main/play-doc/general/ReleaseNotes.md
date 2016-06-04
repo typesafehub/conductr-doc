@@ -1,5 +1,19 @@
 # ConductR release notes
 
+### 1.1.6 June 6, 2016
+
+1. Changes to syslog connectivity in order to avoid CLOSED_WAIT states.
+
+2. A native library is now used in order to collect metrics so that resource offers may be created reliably. In addition the wrong metric was being used to determine the amount of free memory available to a host. This could prevent bundles with memory requirements exceeding 4GiB from being run. Changes in this area should result in the correct offering of memory allocations, including a fairer sharing of resources across the cluster.
+
+3. Elasticsearch 2.x compatibility has been incorporated when using it as an external log collector i.e. when not using the Elasticsearch bundle shipped with ConductR. Prior to this release, only Elasticsearch 1.x was supported.
+
+4. When a bundle is failed to be matched against resource offers during scaling, the `conduct events` command will now report more information on why. The last 10 distinctly declined resource offers received will be reported. This new reporting mechanism should assist in the diagnosis of resource shortages of a ConductR cluster.
+
+5. A serialisation issue was fixed that could prevent a bundle from scaling correctly.
+
+6. Some default timeout settings have been improved to reflect slower clusters such as the developer sandbox, but perhaps also slower clusters in general.
+
 ### 1.1.5 May 17, 2016
 
 1. A problem was fixed when there was a bundle belonging to a system shared by other bundles, and that it also had multiple endpoints, causing the xxx_OTHER_xxx series of environment variables to become empty when there was no other instance of the same bundle running. This problem could prevent bundles from joining an established Akka cluster.
