@@ -16,7 +16,7 @@ Choose on of the following installation guides to get started:
 
 ## Prerequisites
 
-* Debian or Rpm based system (recommended: Ubuntu 14.04 LTS or RHEL/CentOS 7)
+* x86/64 bit Debian or Rpm based Linux system (recommended: Ubuntu 14.04 LTS or RHEL/CentOS 7)
 * Oracle Java Runtime Environment 8 (JRE 8)
 * Python 3.4
 * Debian or Rpm package of ConductR
