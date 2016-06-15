@@ -1,5 +1,19 @@
 # ConductR release notes
 
+### 1.1.7 June 15, 2016
+
+1. An internal change has been made to handling of `StatusService` messages. These changes are concerned with scalability and resiliency.
+
+2. When the ConductR service terminates gracefully it now informs the cluster so that its data can be cleaned up and thus avoid ConductR making poor decisions based on stale data. Secondly, in the event that ConductR abnormally exits a cluster then it shall ensure that any host related data is removed during startup.
+
+3. conductr-haproxy has been improved so that bundle state changes are handled while HAProxy is in the process of being updated. There was a chance previously where these state changes could have been missed.
+
+4. ConductR dependencies have been refreshed in order to take advantage of the most recent Akka release and thereby benefiting from some resiliency improvements around Akka clustering.
+
+5. The latest Reactive Monitoring has been incorporated.
+
+6. RPM distributions suffered a regression for 1.1.6. This problem has now been fixed.
+
 ### 1.1.6 June 6, 2016
 
 1. Changes to syslog connectivity in order to avoid CLOSED_WAIT states.
