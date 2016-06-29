@@ -1,5 +1,9 @@
 # ConductR release notes
 
+### 1.1.8.rc.1 June 30, 2016 * * * Developer Sandbox Only * * *
+
+1. There was a proxy configuration issue with the developer sandbox that could result in a race condition when the Docker container was restarted; as is the case with the sbt-conductr `install` command. The problem would sometimes manifest itself with `conduct logs` returning a `502` error. This issue does *not* affect production releases i.e. RPM and Debian releases.
+
 ### 1.1.7 June 15, 2016
 
 1. An internal change has been made to handling of `StatusService` messages. These changes are concerned with scalability and resiliency.
