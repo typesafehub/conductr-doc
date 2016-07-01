@@ -32,15 +32,20 @@ Note that Lagom or Play user can enable one of the following plugins instead:
 
 You will then need to declare what are known as "scheduling parameters" for ConductR. These parameters effectively describe what resources are used by your application or service and are used to determine which machine they will run on. 
 
-The Play and Lagom bundle plugins are providing [default scheduling parameters](https://github.com/typesafehub/sbt-conductr/blob/master/README.md#scheduling-parameters), i.e. it is not mandatory to declare scheduling paramters for these kind of applications. However, we recommend to define custom settings for each of your application.  
+The Play and Lagom bundle plugins provide [default scheduling parameters](https://github.com/typesafehub/sbt-conductr/blob/master/README.md#scheduling-parameters), i.e. it is not mandatory to declare scheduling parameters for these kind of applications. However, we recommend to define custom settings for each of your application.  
 
-In the following example we specify that 1 CPU, 64 MB memory and 5 MB of disk space is required when your application or service runs:
+In the following example we specify that 1 CPU, 64 MiB JVM heap memory, 128 MiB resident memory and 5 MB of disk space is required when your application or service runs:
 
 ```scala
 import ByteConversions._
 
+javaOptions in Universal := Seq(
+  "-J-Xmx64m",
+  "-J-Xms64m"
+)
+
 BundleKeys.nrOfCpus := 1.0
-BundleKeys.memory := 64.MiB
+BundleKeys.memory := 128.MiB
 BundleKeys.diskSpace := 5.MB
 ``` 
 
@@ -94,6 +99,12 @@ With the above Typesafe config you can then access the host and ip to use from w
   val port = config.getInt("customer-service.port")
   Http(system).bind(ip, port) // ... and so forth
 ```
+
+### More on memory
+
+The javaOptions values declare the maximum and minimum heap size for your application respectively. Profiling your application under load will help you determine an optimal heap size. We recommend declaring the BundleKeys.memory value to be approximately twice that of the heap size. BundleKeys.memory represents the resident memory size of your application, which includes the heap, thread stacks, code caches, the code itself and so forth. On Unix, use the top command and observe the resident memory column (RES) with your application under load.
+
+BundleKeys.memory is used for locating machines with enough resources to run your application, and so it is particularly important to size it before you go to production.
 
 ### Preserving paths at the proxy
 
