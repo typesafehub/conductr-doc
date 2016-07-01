@@ -12,7 +12,7 @@ compatibilityVersion  = "1"
 system                = "simple-test"
 systemVersion         = "1"
 nrOfCpus              = 1.0
-memory                = 67108864
+memory                = 134217728
 diskSpace             = 10485760
 roles                 = ["web"]
 components = {
@@ -53,7 +53,7 @@ description			 | A human readable description of the bundle component.
 diskSpace            | The amount of disk space required to host an expanded bundle and configuration.
 endpoints            | Discussed [below](#Endpoints).
 file-system-type	 | Describes the type of the bundle and can be either "universal" or "docker". A universal type means that this bundle copmonent will be run outside of a container. The Host environment will therefore be available, including a Java runtime. Docker types expect a Dockerfile to reside within a component. The Docker component will be built and run at the time of the bundle being run.
-memory               | The total amount of system memory required to run the bundle.
+memory               | The amount of resident memory required to run the bundle. Use the Unix top command to determine this value by observing the RES and rounding up to the nearest 10MiB.
 name				 | The human readable name of the bundle. This name appears often in operational output such as the CLI.
 nrOfCpus             | The number of cpus required to run the bundle (can be fractions thereby expressing a portion of CPU). Required.
 protocol			 | Discussed [below](#Endpoints).
