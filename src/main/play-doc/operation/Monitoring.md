@@ -1,12 +1,12 @@
-# Typesafe Monitoring
+# Lightbend Monitoring
 
-[Typesafe Monitoring](http://www.lightbend.com/products/typesafe-monitoring) is a suite of insight tools for monitoring Typesafe Reactive Platform (RP) applications. These tools gain visibility into ConductR and its bundles — to respond early to changes that could indicate problems, to tune a system, or to track down the cause of unexpected behavior.
+[Lightbend Monitoring](http://www.lightbend.com/products/monitoring) is a suite of insight tools for monitoring Lightbend Platform applications. These tools gain visibility into ConductR and its bundles — to respond early to changes that could indicate problems, to tune a system, or to track down the cause of unexpected behavior.
 
-This guide discusses ConductR specifics regarding Lightbend Monitoring. For a comprehensive description please visit [Lightbend Monitoring's documentation](http://resources.typesafe.com/monitoring/docs/home.html).
+This guide discusses ConductR specifics regarding Lightbend Monitoring. For a comprehensive description please visit [Lightbend Monitoring's documentation](http://monitoring.lightbend.com/docs/latest/home.html).
 
 ## Monitoring ConductR
 
-ConductR is a Lightbend RP based application and has been configured to support Typesafe Monitoring by enabling some settings within its `conf/application.ini`.
+ConductR is a Lightbend Platform based application and has been configured to support Lightbend Monitoring by enabling some settings within its `conf/application.ini`.
 
 ### Enabling ConductR Monitoring for Takipi
 
@@ -42,4 +42,4 @@ javaOptions in Bundle ++= Seq(
   )
 ```
 
-Be sure to have your bundle developers become familiar with ["Cinnamon"](http://resources.typesafe.com/monitoring/docs/install/cinnamon.html) - Typesafe Monitoring's API.
+Be sure to have your bundle developers become familiar with ["Cinnamon"](http://monitoring.lightbend.com/docs/latest/home.html) - Lightbend Monitoring's API.
