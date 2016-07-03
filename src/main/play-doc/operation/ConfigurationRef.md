@@ -529,7 +529,7 @@ cinnamon {
 
   instrumentation = off
 
-  takipi.actors {
+  akka.actors {
     "/user/*" {
       report-by = class
     }
