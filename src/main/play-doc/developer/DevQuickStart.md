@@ -39,7 +39,7 @@ The conductr-cli is used to communicate with the ConductR cluster.
 To use `sbt-conductr` for your project add the plugin to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.5")
+addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.6")
 ```
 
 ## Signaling application state
