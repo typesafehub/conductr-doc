@@ -41,7 +41,7 @@ echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
 
 ## Installing ConductR on the first machine
 
-This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
+This tutorial uses three systems with the addresses `172.17.0.{1,2,3}` for ConductR and `172.17.0.{11,12,13}` for ConductR Agent. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
 
 ``` bash
 sudo hostname $(hostname -i)
@@ -157,6 +157,50 @@ You should now see a new node in the cluster members list by using the following
 
 Install optional dependencies if required. Each ConductR node requires same optional dependencies to be installed.
 
+## Installing ConductR Agent
+
+Perform the following installation steps on the `172.17.0.{11,12,13}` machine designated for ConductR agent.
+
+The ConductR Agent package can be obtained from the seed node machine `172.17.0.1` under `/usr/share/conductr/agent` as a file called `conductr-agent_%PLAY_VERSION%_all.deb` Debian or `conductr-agent_%PLAY_VERSION%-1.noarch.rpm` Rpm.
+
+Copy the ConductR Agent package file from `172.17.0.1` to `172.17.0.11`.
+
+Once the ConductR Agent package file is copied, install ConductR Agent as any other Debian or Rpm package.
+
+``` bash
+[172.17.0.11]$ sudo dpkg -i conductr-agent_%PLAY_VERSION%_all.deb
+```
+or
+
+``` bash
+[172.17.0.11]$ sudo yum install conductr-agent-%PLAY_VERSION%-1.noarch.rpm
+```
+
+ConductR Agent is automatically registered as a service and started.
+
+ConductR Agent needs to be configured to listen on the host machine's interface, and the ConductR Agent also need to be told of the address of the ConductR node.
+
+``` bash
+[172.17.0.11]$ echo -DCONDUCTR_AGENT_IP=$(hostname) | sudo tee -a /usr/share/conductr-agent/conf/application.ini
+[172.17.0.11]$ echo --core-node 172.17.0.1:9004 | sudo tee -a /usr/share/conductr-agent/conf/application.ini
+[172.17.0.11]$ sudo service conductr-agent restart
+```
+
+Repeat the steps above on `172.17.0.12` and `172.17.0.13`.
+
+The ConductR seed node `172.17.0.1:9004` will be used as the initial node for the ConductR Agent to connect into the ConductR cluster. Upon startup, the address of the remaining members of the cluster will be obtained by ConductR agent. This information will be used by ConductR Agent to re-establish connectivity any member of the cluster upon disconnection or restart.
+
+
+### Installation miscellany
+
+The ConductR Agent service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr-agent/running.pid` and its install location is `/usr/share/conductr-agent`.
+
+By default ConductR Agent's logging is quite sparse. Unless an error or warning occurs then there will be no log output. To increase the verbosity of the logging you can use this command:
+
+``` bash
+[172.17.0.11]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr-agent/conf/application.ini
+```
+
 ## Installing a Proxy
 
 _Perform each step in this section on all nodes: `172.17.0.1`, `172.17.0.2` and `172.17.0.3`. For full resilience a proxy should be installed for each machine that ConductR is installed on._
@@ -269,7 +313,7 @@ The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays an
 
 Use create-network-ec2.yml to setup a new Virtual Private Cloud (VPC) and create your cluster in the new VPC. You only need to provide your access keys and what region to execute in. The playbook outputs a vars file for use with the build-cluster-ec.yml.
 
-The playbook build-cluster-ec2.yml launches three instances across two availability zones. ConductR is installed on all instances and configured to form a cluster. The nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
+The playbook build-cluster-ec2.yml launches six instances across three availability zones. ConductR is installed on three instances and configured to form a cluster. ConductR Agent is installed on the remaining three instances, and configured to connect to ConductR. The ConductR Agent nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
 
 ### Prepare controller host
 
@@ -326,7 +370,7 @@ Re-running the create network playbook in the same EC2 region refreshes the netw
  
 ### Build cluster
 
-The second playbook launches three instances into the specified VPC and configures them into a cluster with an Elastic Load Balancer (ELB). The use of an ELB provides us with a single DNS name to access our cluster by, but its use is not required. 
+The second playbook launches six instances into the specified VPC. The three ConductR instances are configured into a cluster. The remaining three ConductR Agent instances are configured to connect to the ConductR instances. The ConductR Agent instances will also be configured with an Elastic Load Balancer (ELB). The use of an ELB provides us with a single DNS name to access our cluster by, but its use is not required.
 
 We pass both our vars file and EC2 PEM key file to our playbook as command line arguments. The VARS_FILE template can be the one created from the create network script. If you want to use an existing network instead, there is a `vars.yml` template you can use as a template without running the create network script. 
 
@@ -336,7 +380,7 @@ The private-key value must be the local path and filename of the keypair that ha
 ansible-playbook build-cluster-ec2.yml -e "VARS_FILE=vars/{{EC2_REGION}}_vars.yml" --private-key /path/to/{{keypair}}
 ```
 
-If the playbook completes successfully, you will have a three node cluster that can be accessed using the ELB DNS name. ConductR comes with a `visualizer` sample application. The playbook created ELB includes a listener mapping port 80 to Visualizer's port 9999 port mapping. 
+If the playbook completes successfully, you will have a six node cluster that can be accessed using the ELB DNS name. ConductR comes with a `visualizer` sample application. The playbook created ELB includes a listener mapping port 80 to Visualizer's port 9999 port mapping.
 
 Head over to the next section [[Managing application|ManagingApplication]] to learn how to deploy visualizer application to your fresh ConductR cluster. You can ssh into one of the cluster nodes using it's public ip address to deploy Visualizer. Use the username from the `REMOTE_USER` (currently "ubuntu") and the PEM file as for the identify file (-i). The ConductR CLI has been installed to all nodes for you. Once deployed, you can view the Visualizer via port 80 using the ELB DNS name in your browser.
 
@@ -381,7 +425,7 @@ SG-Nodes Inbound Rules
 
 Create an external facing load balancer from the EC2 control panel. You will need to create an internet gateway and attach it to your VPC in order to have a public load balancer. We'll add an optional HTTPS protocol listener on port 443 to the default port 80 HTTP listener. For this tutorial we will map both of our listeners to instance port 9999. Add all three subnets to the load balancer and assign the load balancer to the SG-ELB security group. Optionally you can upload an SSL Certificate to use the ELB as your TLS endpoint if you added the HTTPS listener. For health monitoring we'll use ConductR's proxy status endpoint, HTTP:9009/status. This endpoint will return an OK when ConductR's proxy has been configured.
 
-### Preparing the AMI
+### Preparing the ConductR AMI
 
 Launch a single instance of the desired base AMI to use as our image master. We'll use the Ubuntu 14.04 LTS HVM EBS-SSD boot image in US-East-1, ami-76b2a71e. If you choose another base image, use an EBS boot image as they are much easy to image unless you know what your doing there. Be certain to assign a public ip address in instance details to make it easy to ssh into.
 
@@ -410,6 +454,10 @@ sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
 
 ConductR is automatically registered as a service and started.
 
+#### Obtaining ConductR Agent package
+
+Locate ConductR agent package from `/usr/share/conductr/agent` as a file called `conductr-agent_%PLAY_VERSION%_all.deb` Debian. Secure copy (scp) this file away from the image host as we are going to use it for building the ConductR Agent AMI.
+
 #### Installation miscellany
 
 The ConductR service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
@@ -421,7 +469,44 @@ echo '$ModLoad imtcp' | sudo tee -a /etc/rsyslog.d/conductr.conf
 echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
 ```
 
-### Installing a Proxy
+### Create the ConductR AMI
+
+With our packages installed we can create the ConductR machine image. Image the host by selecting the running instance in the EC2 dashboard and using the Create Image option from the Actions menus. We are now done with the image host and it can be terminated.
+
+### Preparing the ConductR Agent AMI
+
+Use the same base image used for ConductR, i.e. Ubuntu 14.04 LTS HVM EBS-SSD boot image in US-East-1, ami-76b2a71e.
+
+Access the console of the image instance with root access. For Ubuntu AMIs this is done as the user ubuntu using the PEM file specified at launch. The user ubuntu has sudo access. Other images will use different users. Check with the image provider for the correct user name to use.
+
+#### Installing JRE 8
+
+Install Java 8 as the default JRE. You will need to accept the Oracle license agreement.
+
+``` bash
+sudo add-apt-repository -y ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get -y install oracle-java8-installer && sudo apt-get clean
+sudo apt-get -y install oracle-java8-set-default
+echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
+```
+
+#### Installing ConductR Agent
+
+Secure copy the ConductR Agent package you have obtained from the ConductR image host, i.e. the `conductr-agent_%PLAY_VERSION%_all.deb` Debian package. Install ConductR Agent as any other Debian package.
+
+``` bash
+sudo dpkg -i conductr-agent_%PLAY_VERSION%_all.deb
+```
+
+ConductR Agent is automatically registered as a service and started.
+
+#### Installation miscellany
+
+The ConductR Agent service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr-agent/running.pid` and its install location is `/usr/share/conductr-agent`.
+
+
+#### Installing a Proxy
 
 Proxying application endpoints is required when external communication to a service is required. We will be using `HAProxy`. Add a dedicated Personal Package Archive (PPA) and install HAProxy.
 
@@ -465,9 +550,9 @@ ConductR supports running applications and services within Docker. If you plan o
 sudo usermod -a -G docker conductr
 ```
 
-### Create the AMI
+### Create the ConductR Agent AMI
 
-With our packages installed we can create the ConductR machine image. Image the host by selecting the running instance in the EC2 dashboard and using the Create Image option from the Actions menus. We are now done with the image host and it can be terminated.
+With our packages installed we can create the ConductR Agent machine image. Image the host by selecting the running instance in the EC2 dashboard and using the Create Image option from the Actions menus. We are now done with the image host and it can be terminated.
 
 ### Bring up the cluster
 
@@ -490,6 +575,22 @@ Pick one node as the seed node and instruct the other two instances to use the o
 echo --seed 10.0.2.20:9004 | sudo tee -a /usr/share/conductr/conf/application.ini
 sudo service conductr restart
 ```
+
+### Bring up the ConductR Agent
+
+Once your ConductR Agent AMI is available, launch three instances. In this tutorial we'll launch one instance into SN-A, SN-B and SN-C each so that our cluster spans three availability zones. All instances will be launched into our SG-Nodes security group. Be certain to assign public IP addresses to we can ssh into our nodes.
+
+We will now configure ConductR Agent on the instances and connect them to the ConductR cluster. Here we are connecting the agent initially to `10.0.2.20` which is the seed node of our cluster.
+
+``` bash
+echo -DCONDUCTR_IP=$(hostname -i) | sudo tee -a /usr/share/conductr-agent/conf/application.ini
+echo --core-node 10.0.2.20:9004 | sudo tee -a /usr/share/conductr-agent/conf/application.ini
+sudo service conductr restart
+```
+
+The ConductR seed node `10.0.2.20:9004` will be used as the initial node for the ConductR Agent to connect into the ConductR cluster. Upon startup, the address of the remaining members of the cluster will be obtained by ConductR agent. This information will be used by ConductR Agent to re-establish connectivity any member of the cluster upon disconnection or restart.
+
+Repeat these steps on each of the three instances ConductR AMI.
 
 ### Check the cluster
 ConductR provides cluster and application information as well as its control interface via a REST API.
