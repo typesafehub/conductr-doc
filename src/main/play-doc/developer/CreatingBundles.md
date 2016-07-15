@@ -34,7 +34,7 @@ You will then need to declare what are known as "scheduling parameters" for Cond
 
 The Play and Lagom bundle plugins provide [default scheduling parameters](https://github.com/typesafehub/sbt-conductr/blob/master/README.md#scheduling-parameters), i.e. it is not mandatory to declare scheduling parameters for these kind of applications. However, we recommend to define custom settings for each of your application.  
 
-In the following example we specify that 1 CPU, 64 MiB JVM heap memory, 128 MiB resident memory and 5 MB of disk space is required when your application or service runs:
+In the following example we specify that 0.1 CPU, 64 MiB JVM heap memory, 128 MiB resident memory and 5 MB of disk space is required when your application or service runs:
 
 ```scala
 import ByteConversions._
@@ -44,7 +44,7 @@ javaOptions in Universal := Seq(
   "-J-Xms64m"
 )
 
-BundleKeys.nrOfCpus := 1.0
+BundleKeys.nrOfCpus := 0.1
 BundleKeys.memory := 128.MiB
 BundleKeys.diskSpace := 5.MB
 ``` 
