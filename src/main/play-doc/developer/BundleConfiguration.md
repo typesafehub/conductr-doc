@@ -11,7 +11,7 @@ name                  = "simple-test"
 compatibilityVersion  = "1"
 system                = "simple-test"
 systemVersion         = "1"
-nrOfCpus              = 1.0
+nrOfCpus              = 0.1
 memory                = 134217728
 diskSpace             = 10485760
 roles                 = ["web"]
@@ -55,7 +55,7 @@ endpoints            | Discussed [below](#Endpoints).
 file-system-type	 | Describes the type of the bundle and can be either "universal" or "docker". A universal type means that this bundle copmonent will be run outside of a container. The Host environment will therefore be available, including a Java runtime. Docker types expect a Dockerfile to reside within a component. The Docker component will be built and run at the time of the bundle being run.
 memory               | The amount of resident memory required to run the bundle. Use the Unix top command to determine this value by observing the RES and rounding up to the nearest 10MiB.
 name				 | The human readable name of the bundle. This name appears often in operational output such as the CLI.
-nrOfCpus             | The number of cpus required to run the bundle (can be fractions thereby expressing a portion of CPU). Required.
+nrOfCpus             | The minimum number of cpus required to run the bundle (can be fractions thereby expressing a portion of CPU). This value is considered when starting a bundle on a node. If the specified CPUs exceeds the available CPUs on a node, then this node is not considered for scaling the bundle. Once running, the application is not restricted to the given value and tries to use all available CPUs on the node. Required.
 protocol			 | Discussed [below](#Endpoints).
 roles                | The types of node in the cluster that this bundle can be deployed to. Defaults to "web".
 service-name	     | Discussed [below](#Endpoints).
@@ -135,7 +135,7 @@ compatibilityVersion  = "1"
 system         = "jms-docker"
 systemVersion  = "1"
 
-nrOfCpus   = 1.0
+nrOfCpus   = 0.1
 memory     = 67108864
 diskSpace  = 10485760
 roles      = ["jms"]
