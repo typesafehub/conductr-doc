@@ -4,7 +4,7 @@ Sometimes it is useful to setup a Linux environment that is close to production,
 
 When setting up a non-production environment be sure to disable a ConductR node's ability to automatically re-form the cluster it had prior to being shutdown. While this feature is useful for individual production nodes (it provides self-healing after a split-brain style scenario where a minority of nodes are restarted automatically), for non-production environments it can prevent an entire cluster from re-forming given a completely fresh restart. Again, fresh restarts are typical for non-production style environments.
 
-In order to prevent ConductR from attempting to recover its former cluster, uncomment the `--seed-node-file-disabled` option within the `application.ini` of each ConductR installation.
+In order to prevent ConductR from attempting to recover its former cluster, uncomment the `--seed-node-file-disabled` option within the `conductr.ini` of each ConductR Core installation.
 
 # Cluster resiliency considerations
 

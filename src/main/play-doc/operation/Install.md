@@ -19,7 +19,8 @@ Choose on of the following installation guides to get started:
 * x86/64 bit Debian or Rpm based Linux system (recommended: Ubuntu 14.04 LTS or RHEL/CentOS 7)
 * Oracle Java Runtime Environment 8 (JRE 8)
 * Python 3.4
-* Debian or Rpm package of ConductR
+* Debian or Rpm package of ConductR Core
+* Debian or Rpm package of ConductR Agent
 
 ### Installing JRE 8
 
@@ -27,7 +28,7 @@ Install Java 8 as the default JRE on the system.
 
 On Ubuntu, you can use the webupd8team repository provided that you accept the Oracle license agreement.
 
-``` bash
+```bash
 sudo add-apt-repository -y ppa:webupd8team/java
 sudo apt-get update
 sudo apt-get -y install oracle-java8-installer && sudo apt-get clean
@@ -41,28 +42,32 @@ echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
 
 ## Installing ConductR on the first machine
 
+ConductR comprises of the ConductR Core and ConductR Agent. ConductR Core is responsible for cluster-wide scaling and replication decision making, as well as hosting the application files or the bundles. ConductR Agent is responsible for executing the application processes. The ConductR Core and the ConductR Agent are ran as separate processes, and hence separate services within the operating system.
+
 This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
 
-``` bash
+```bash
 sudo hostname $(hostname -i)
 ```
 
+### Installing ConductR Core on the first machine
+
 The tutorial also assumes that you have obtained the `conductr_%PLAY_VERSION%_all.deb` Debian or `conductr_%PLAY_VERSION%-1.noarch.rpm` Rpm package.
 
-Install ConductR as any other Debian or Rpm package.
+Install ConductR Core as any other Debian or Rpm package.
 
-``` bash
+```bash
 [172.17.0.1]$ sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
 ```
 or
 
-``` bash
+```bash
 [172.17.0.1]$ sudo yum install conductr-%PLAY_VERSION%-1.noarch.rpm
 ```
 
-ConductR is automatically registered as a service and started. ConductR provides cluster and application information as well as its control interface via a REST API.
+ConductR Core is automatically registered as a service and started. ConductR provides cluster and application information as well as its control interface via a REST API exposed as part of the ConductR Core.
 
-``` bash
+```bash
 [172.17.0.1]$ curl -s 127.0.0.1:9005/members | python3 -m json.tool
 ```
 
@@ -86,29 +91,77 @@ A typical response contains the current members of the cluster (shown here as ju
 }
 ```
 
-The IP addresses in the response indicate that ConductR is listening to the `localhost` address. To be able to form an inter-machine cluster, ConductR must be configured to listen to the machine's host interface. This can be enabled adding a property declaration for `CONDUCTR_IP` to the start command as follows:
+The IP addresses in the response indicate that ConductR Core is listening to the `localhost` address. To be able to form an inter-machine cluster, ConductR Core must be configured to listen to the machine's host interface. This can be enabled adding a property declaration for `CONDUCTR_IP` to the start command as follows:
 
-``` bash
-[172.17.0.1]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/application.ini
+```bash
+[172.17.0.1]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/conductr.ini
 [172.17.0.1]$ sudo service conductr restart
 ```
 
 Check for the cluster information once again, but now use the host address of the machine.
 
-``` bash
+```bash
 [172.17.0.1]$ curl -s $(hostname):9005/members | python3 -m json.tool
 ```
 
+The ConductR Core service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
+
+### Installing ConductR Agent on the first machine
+
+The tutorial also assumes that you have obtained the `conductr-agent_%PLAY_VERSION%_all.deb` Debian or `conductr-agent_%PLAY_VERSION%-1.noarch.rpm` Rpm package.
+
+Install ConductR Agent as any other Debian or Rpm package.
+
+```bash
+[172.17.0.1]$ sudo dpkg -i conductr-agent_%PLAY_VERSION%_all.deb
+```
+or
+
+```bash
+[172.17.0.1]$ sudo yum install conductr-agent-%PLAY_VERSION%-1.noarch.rpm
+```
+
+ConductR Agent is automatically registered as a service and started.
+
+ConductR Agent needs to be connected to a ConductR core node in order for ConductR to run any application process. To establish this connection, configure ConductR Agent as such:
+
+```bash
+[172.17.0.1]$ echo -Dconductr.agent.ip=$(hostname) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo --core-node $(hostname):9004 | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+```
+
+By default ConductR Agent and ConductR Core are using `/tmp` as its working directory. Since both ConductR Agent and ConductR Core are installed in the same machine, move the ConductR Agent working directory as such:
+
+```bash
+[172.17.0.1]$ echo -Dconductr.agent.storage-dir=/tmp/conductr-agent/bundles | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo -Dconductr.agent.bundle-pidfile-dir=/tmp/conductr-agent/bundles/pids | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+```
+
+Once configured, restart the ConductR Agent service.
+
+```bash
+[172.17.0.1]$ sudo service conductr-agent restart
+```
+
+The ConductR Agent service runs under the `conductr-agent` user along with the `conductr-agent` group. Its pid file is written to: `/var/run/conductr-agent/running.pid` and its install location is `/usr/share/conductr-agent`.
+
+
 ### Installation miscellany
 
-The ConductR service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
+Logging will require configuration for each machine where ConductR Core and ConductR Agent is installed. Please refer to the section on [[logging|Logging]] and select the appropriate method for you. ConductR is bundled with an Elasticsearch based solution and is configured for that by default.
 
-Logging will require configuration for each machine where ConductR is installed. Please refer to the section on [[logging|Logging]] and select the appropriate method for you. ConductR is bundled with an Elasticsearch based solution and is configured for that by default.
+By default ConductR's logging is quite sparse. Unless an error or warning occurs then there will be no log output.
 
-By default ConductR's logging is quite sparse. Unless an error or warning occurs then there will be no log output. To increase the verbosity of the logging you can use this command:
+To increase the verbosity of the ConductR Core logging you can use this command:
 
-``` bash
-[172.17.0.1]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr/conf/application.ini
+```bash
+[172.17.0.1]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr/conf/conductr.ini
+```
+
+Similarly for ConductR Agent:
+
+```bash
+[172.17.0.1]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 ```
 
 ### Optional dependencies
@@ -117,13 +170,13 @@ By default ConductR's logging is quite sparse. Unless an error or warning occurs
 
 ConductR supports running applications and services within Docker. If you plan on running Docker based bundles, you will need to install [Docker](https://docs.docker.com/) according to [the official documentation](https://docs.docker.com/installation/ubuntulinux/). Once Docker is installed then add ConductR's user/group to the `docker` group so that it has [the correct permissions in order to access Docker](http://docs.docker.com/installation/ubuntulinux/#giving-non-root-access):
 
-``` bash
+```bash
 [172.17.0.1]$ sudo usermod -a -G docker conductr
 ```
 
 ## Installing ConductR on the remaining machines
 
-_Repeat each step in this section also on the `172.17.0.3` machine._
+_Repeat each step in this section also on the `172.17.0.2` and `172.17.0.3` machine._
 
 First ensure that the following ports are available between the machines forming the cluster:
 
@@ -131,31 +184,56 @@ First ensure that the following ports are available between the machines forming
 * 9006 - Bundle streaming between ConductR nodes
 * 10000 to 10999 - the default range of ports allocated to bundle component endpoints
 
-The node running on the `172.17.0.1` machine is called a seed node, which is a node that is going to be used as the initial contact point when joining a cluster. Install ConductR on the new machine and configure the address of a seed node:
+### Installing ConductR Core on the remaining machines
 
-``` bash
+The node running on the `172.17.0.1` machine is called a seed node, which is a node that is going to be used as the initial contact point when joining a cluster. Install ConductR Core on the new machine and configure the address of a seed node:
+
+```bash
 [172.17.0.2]$ sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
 ```
 or
 
-``` bash
+```bash
 sudo yum install conductr_%PLAY_VERSION%-1.noarch.rpm
 ```
 then
 
-``` bash
-[172.17.0.2]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/application.ini
-[172.17.0.2]$ echo --seed 172.17.0.1:9004 | sudo tee -a /usr/share/conductr/conf/application.ini
+```bash
+[172.17.0.2]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/conductr.ini
+[172.17.0.2]$ echo --seed 172.17.0.1:9004 | sudo tee -a /usr/share/conductr/conf/conductr.ini
 [172.17.0.2]$ sudo service conductr restart
 ```
 
 You should now see a new node in the cluster members list by using the following query:
 
-``` bash
+```bash
 [172.17.0.2]$ curl -s 172.17.0.2:9005/members | python3 -m json.tool
 ```
 
-Install optional dependencies if required. Each ConductR node requires same optional dependencies to be installed.
+### Installing ConductR Agent on the remaining machines
+
+Install ConductR Agent and configure:
+
+```bash
+[172.17.0.1]$ sudo dpkg -i conductr-agent_%PLAY_VERSION%_all.deb
+```
+or
+
+```bash
+[172.17.0.1]$ sudo yum install conductr-agent-%PLAY_VERSION%-1.noarch.rpm
+```
+
+then
+
+```bash
+[172.17.0.1]$ echo -Dconductr.agent.ip=$(hostname) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo --core-node $(hostname):9004 | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo -Dconductr.agent.storage-dir=/tmp/conductr-agent/bundles | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo -Dconductr.agent.bundle-pidfile-dir=/tmp/conductr-agent/bundles/pids | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ sudo service conductr-agent restart
+```
+
+Install optional dependencies if required. Each ConductR Agent node requires same optional dependencies to be installed.
 
 ## Installing a Proxy
 
@@ -165,11 +243,11 @@ Proxying application endpoints is required when running more than one instance o
 
 We will be using `HAProxy`. Install HAProxy version 1.5 or newer.
 
-``` bash
+```bash
 [172.17.0.1]$ sudo apt-get -y install haproxy
 ```
 or
-``` bash
+```bash
 [172.17.0.1]$ sudo yum install haproxy
 ```
 
@@ -177,7 +255,7 @@ On Red Hat Enterprise Linux (RHEL) 6, haproxy is in the RHEL Server Load Balance
 
 On some Debian distributions you may need to add a dedicated Personal Package Archive (PPA) in order to install HAProxy 1.5 via the package manager. For example:
 
-``` bash
+```bash
 [172.17.0.1]$ sudo add-apt-repository -y ppa:vbernat/haproxy-1.5
 [172.17.0.1]$ sudo apt-get update
 [172.17.0.1]$ sudo apt-get -y install haproxy
@@ -185,25 +263,74 @@ On some Debian distributions you may need to add a dedicated Personal Package Ar
 
 ConductR provides a ConductR-HAProxy bundle that listens for bundle events from ConductR and updates the local HAProxy configuration file accordingly. We must specifically allow the bundle to use `sudo` to reload HAProxy.
 
-First, we have the user `conductr` own the HAProxy config file.
+First, we have the user `conductr-agent` own the HAProxy config file.
 
-``` bash
-[172.17.0.1]$ sudo chown conductr:conductr /etc/haproxy/haproxy.cfg
+```bash
+[172.17.0.1]$ sudo chown conductr-agent:conductr-agent /etc/haproxy/haproxy.cfg
 ```
 
-After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration. We will limit the bundle's sudo privileges to running a single script in `/usr/bin` for that purpose. Grant permissions to the `conductr` user to write and run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
+### Installing HAProxy reload script
 
-``` bash
-[172.17.0.1]$ sudo touch /usr/bin/reloadHAProxy.sh
+After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration.
+
+Provide the following HAProxy reload script in `/usr/bin/reloadHAProxy.sh`. The reload script will determine whether `systemv`, `upstart`, or `systemd` is being used in the underlying operating system, and it will issue HAProxy reload accordingly.
+
+```bash
+#!/usr/bin/env bash
+
+if [[ `systemctl` =~ -\.mount ]]; then
+  INIT=systemd
+elif [[ `/sbin/init --version` =~ upstart ]]; then
+  INIT=upstart
+elif [[ -f /etc/init.d/cron && ! -h /etc/init.d/cron ]]; then
+  INIT=systemv
+else
+  INIT=unknown
+fi
+
+if [[ $INIT = upstart || $INIT = systemv ]]; then
+   /etc/init.d/haproxy reload
+else
+  /bin/systemctl reload  haproxy.service
+fi
+```
+
+Alternatively execute the following command to install the reload script in `/usr/bin`.
+
+```bash
+[172.17.0.1]$ sudo cat >/usr/bin/reloadHAProxy.sh <<'EOL'
+#!/usr/bin/env bash
+
+if [[ `systemctl` =~ -\.mount ]]; then
+  INIT=systemd
+elif [[ `/sbin/init --version` =~ upstart ]]; then
+  INIT=upstart
+elif [[ -f /etc/init.d/cron && ! -h /etc/init.d/cron ]]; then
+  INIT=systemv
+else
+  INIT=unknown
+fi
+
+if [[ $INIT = upstart || $INIT = systemv ]]; then
+   /etc/init.d/haproxy reload
+else
+  /bin/systemctl reload  haproxy.service
+fi
+EOL
+```
+
+We will limit the bundle's sudo privileges to running a single script in `/usr/bin` for that purpose. Grant permissions to the `conductr-agent` user to write and run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
+
+```bash
 [172.17.0.1]$ sudo chmod 0770 /usr/bin/reloadHAProxy.sh
-[172.17.0.1]$ sudo chown conductr:conductr /usr/bin/reloadHAProxy.sh
-[172.17.0.1]$ echo "conductr ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
+[172.17.0.1]$ sudo chown conductr-agent:conductr-agent /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ echo "conductr-agent ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
 ```
 
-On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the conductr user in `sudoers`.
+On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the `conductr-agent` user in `sudoers`.
 
-``` bash
-[172.17.0.1]$ echo 'Defaults: conductr  !requiretty' | sudo tee -a /etc/sudoers
+```bash
+[172.17.0.1]$ echo 'Defaults: conductr-agent  !requiretty' | sudo tee -a /etc/sudoers
 ```
 
 We are now ready to run the bundle.
@@ -214,16 +341,16 @@ ConductR-HAProxy bundle listens for bundle changes within ConductR and updates t
 
 ### Prepare ConductR-HAProxy nodes
 
-_Perform each step in this section on all nodes: `172.17.0.1`, `172.17.0.2` and `172.17.0.3`.
+_Perform each step in this section on all nodes: `172.17.0.1`, `172.17.0.2` and `172.17.0.3`_.
 
 ConductR-HAProxy bundle must be installed on all nodes where HAProxy is installed, and these nodes can be distinguished by the `haproxy` role. Assign the `haproxy` role to the nodes where the proxy will be hosted.
 
 Append the `haproxy` role to the default `web` role as follows:
 
 ```bash
-[172.17.0.1]$ echo -Dakka.cluster.roles.0=web | sudo tee -a /usr/share/conductr/conf/application.ini
-[172.17.0.1]$ echo -Dakka.cluster.roles.1=haproxy | sudo tee -a /usr/share/conductr/conf/application.ini
-[172.17.0.1]$ sudo service conductr restart
+[172.17.0.1]$ echo -Dakka.cluster.roles.0=web | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo -Dakka.cluster.roles.1=haproxy | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ sudo service conductr-agent restart
 ```
 
 ### Use CLI to load and run ConductR-HAProxy bundle
@@ -269,7 +396,7 @@ The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays an
 
 Use create-network-ec2.yml to setup a new Virtual Private Cloud (VPC) and create your cluster in the new VPC. You only need to provide your access keys and what region to execute in. The playbook outputs a vars file for use with the build-cluster-ec.yml.
 
-The playbook build-cluster-ec2.yml launches three instances across two availability zones. ConductR is installed on all instances and configured to form a cluster. The nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
+The playbook build-cluster-ec2.yml launches three instances across two availability zones. ConductR Core and ConductR Agent is installed on all instances and configured to form a cluster. The nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
 
 ### Prepare controller host
 
@@ -277,7 +404,7 @@ The controller host is the host from which we will run the playbooks. The contro
 
 From a shell on the controller host, clone the Ansible and ConductR-Ansible repositories.
 
-``` bash
+```bash
 sudo apt-get -y install python-setuptools autoconf g++ python2.7-dev
 sudo easy_install pip
 sudo pip install paramiko PyYAML Jinja2 httplib2 boto
@@ -294,13 +421,21 @@ cd conductr-ansible
 
 Export your AWS access key id and secret.
 
-``` bash
+```bash
 export AWS_ACCESS_KEY_ID='ABC123'
 export AWS_SECRET_ACCESS_KEY='abc123'
 export ANSIBLE_HOST_KEY_CHECKING=False
 ```
 
-Upload the ConductR installation package and your EC2 key pair file to the controller host. The ConductR installation package should be put in `conductr-ansible/conductr/files`. The file name must match the value of `CONDUCTR_PKG` in the vars file used.
+Upload the files required for ConductR installation and your EC2 key pair file to the controller host. These files comprises of:
+
+ * ConductR Core deb file
+ * ConductR Agent deb file
+ * HAProxy reload script
+
+The ConductR installation files should be put in `conductr-ansible/conductr/files`. The file name must match the value of `CONDUCTR_PKG`, `CONDUCTR_AGENT_PKG`, and `HAPROXY_RELOAD_SCRIPT` in the vars file used.
+
+The content of the HAProxy reload script can be found in [Installing HAProxy reload script](#Installing-HAProxy-reload-script).
 
 Your controller host is now ready to run plays.
 
@@ -308,13 +443,13 @@ Your controller host is now ready to run plays.
 
 ConductR-Ansible can create and prepare a new VPC for use with ConductR. Running ConductR in it's own VPC isolates the cluster from the rest of your EC2 network. If you have existing services in EC2 that ConductR needs to be able to access on the local network using an EC2 private ip address, you need to use your existing VPC. In all other cases, creating a ConductR VPC is recommended, but is not required if you are comfortabling setting up the network yourself.
 
-``` bash
+```bash
 ansible-playbook create-network-ec2.yml
 ```
 
 Runing the playbook creates a new VPC named "ConductR VPC" in the us-east-1 region. To specify a different [EC2 region](http://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region) in which to execute, pass `EC2_REGION` using a -e key value pair. For example to execute in eu-west-1 we would use: 
 
-``` bash
+```bash
 ansible-playbook create-network-ec2.yml -e "EC2_REGION=eu-west-1"
 ```
 
@@ -332,7 +467,7 @@ We pass both our vars file and EC2 PEM key file to our playbook as command line 
 
 The private-key value must be the local path and filename of the keypair that has the key pair name `KEYPAIR` specified in the vars file. For example our key pair may be named `ConductR_Key` in AWS and reside locally as `~/secrets/ConductR.pem`. In which case we would set `KEYPAIR` to `ConductR_Key` and pass `~/secrets/ConductR.pem` as our private-key argument. The private key file must be only accessible to owner and will require using `chmod 600 /path/to/{{keypair}}` if accessible to others.
 
-``` bash
+```bash
 ansible-playbook build-cluster-ec2.yml -e "VARS_FILE=vars/{{EC2_REGION}}_vars.yml" --private-key /path/to/{{keypair}}
 ```
 
@@ -340,7 +475,7 @@ If the playbook completes successfully, you will have a three node cluster that 
 
 Head over to the next section [[Managing application|ManagingApplication]] to learn how to deploy visualizer application to your fresh ConductR cluster. You can ssh into one of the cluster nodes using it's public ip address to deploy Visualizer. Use the username from the `REMOTE_USER` (currently "ubuntu") and the PEM file as for the identify file (-i). The ConductR CLI has been installed to all nodes for you. Once deployed, you can view the Visualizer via port 80 using the ELB DNS name in your browser.
 
-Re-running this playbook launches a new set of instances. This means it can be re-run to create additional ConductR clusters. For example we might re-run the playbook to create a new cluster using a new version of ConductR to test new features. If we change only the values of `CONDUCTR_PKG` and `ELB` in the vars file to a new ConductR version package and new ELB, running the playbook again will create a new cluster using the new version in the same subnets as the previous version.
+Re-running this playbook launches a new set of instances. This means it can be re-run to create additional ConductR clusters. For example we might re-run the playbook to create a new cluster using a new version of ConductR to test new features. If we change only the values of `CONDUCTR_PKG`, `CONDUCTR_AGENT_PKG`, and `ELB` in the vars file to a new ConductR version package and new ELB, running the playbook again will create a new cluster using the new version in the same subnets as the previous version.
 
 For further information about using ConductR-Ansible, please see the project [Readme](https://github.com/typesafehub/conductr-ansible/blob/master/README.md).
 
@@ -391,7 +526,7 @@ Access the console of the image instance with root access. For Ubuntu AMIs this 
 
 Install Java 8 as the default JRE. You will need to accept the Oracle license agreement.
 
-``` bash
+```bash
 sudo add-apt-repository -y ppa:webupd8team/java
 sudo apt-get update
 sudo apt-get -y install oracle-java8-installer && sudo apt-get clean
@@ -400,23 +535,26 @@ echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
 ```
 #### Installing ConductR 
 
-The tutorial assumes that you have obtained the `conductr_%PLAY_VERSION%_all.deb` Debian package. 
+The tutorial assumes that you have obtained the `conductr_%PLAY_VERSION%_all.deb` and `conductr-agent_%PLAY_VERSION%_all.deb` Debian package for ConductR Core and ConductR Agent respectively.
 
-Secure copy (scp) the ConductR installation package to the image host and install ConductR as any other Debian package.
+Secure copy (scp) the ConductR installation package to the image host and install ConductR Core and ConductR Agent as any other Debian package.
 
-``` bash
+```bash
 sudo dpkg -i conductr_%PLAY_VERSION%_all.deb
+sudo dpkg -i conductr-agent_%PLAY_VERSION%_all.deb
 ```
 
-ConductR is automatically registered as a service and started.
+ConductR Core and ConductR Agent are automatically registered as a service and started.
 
 #### Installation miscellany
 
-The ConductR service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
+The ConductR Core service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
+
+The ConductR Agent service runs under the `conductr-agent` user along with the `conductr-agent` group. Its pid file is written to: `/var/run/conductr-agent/running.pid` and its install location is `/usr/share/conductr-agent`.
 
 ConductR logs via the syslog protocol using TCP destined locally on port 514. Debian distributions such as Ubuntu come with the [RSYSLOG](http://www.rsyslog.com/) logging service and so its configuration is shown next:
 
-``` bash
+```bash
 echo '$ModLoad imtcp' | sudo tee -a /etc/rsyslog.d/conductr.conf
 echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
 ```
@@ -425,32 +563,58 @@ echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
 
 Proxying application endpoints is required when external communication to a service is required. We will be using `HAProxy`. Add a dedicated Personal Package Archive (PPA) and install HAProxy.
 
-``` bash
+```bash
 sudo add-apt-repository -y ppa:vbernat/haproxy-1.5
 sudo apt-get update
 sudo apt-get -y install haproxy
 ```
+
 ConductR provides a ConductR-HAProxy bundle that listens for bundle events from ConductR and updates the local HAProxy configuration file accordingly. We must specifically allow the bundle to use `sudo` to reload HAProxy.
 
-First, we have the user `conductr` own the HAProxy config file.
+First, we have the user `conductr-agent` own the HAProxy config file.
 
-``` bash
-[172.17.0.1]$ sudo chown conductr:conductr /etc/haproxy/haproxy.cfg
+```bash
+[172.17.0.1]$ sudo chown conductr-agent:conductr-agent /etc/haproxy/haproxy.cfg
 ```
 
-After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration. We will limit the bundle's sudo privileges to running a single script in `/usr/bin` for that purpose. Grant permissions to the `conductr` user to write and run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
+After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration.
 
-``` bash
-[172.17.0.1]$ sudo touch /usr/bin/reloadHAProxy.sh
+Provide the following HAProxy reload script in `/usr/bin/reloadHAProxy.sh`. The reload script will determine whether `systemv`, `upstart`, or `systemd` is being used in the underlying operating system, and it will issue HAProxy reload accordingly.
+
+```bash
+[172.17.0.1]$ sudo cat >/usr/bin/reloadHAProxy.sh <<'EOL'
+#!/usr/bin/env bash
+
+if [[ `systemctl` =~ -\.mount ]]; then
+  INIT=systemd
+elif [[ `/sbin/init --version` =~ upstart ]]; then
+  INIT=upstart
+elif [[ -f /etc/init.d/cron && ! -h /etc/init.d/cron ]]; then
+  INIT=systemv
+else
+  INIT=unknown
+fi
+
+if [[ $INIT = upstart || $INIT = systemv ]]; then
+   /etc/init.d/haproxy reload
+else
+  /bin/systemctl reload  haproxy.service
+fi
+EOL
+```
+
+We will limit the bundle's sudo privileges to running a single script in `/usr/bin` for that purpose. Grant permissions to the `conductr-agent` user to write and run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
+
+```bash
 [172.17.0.1]$ sudo chmod 0770 /usr/bin/reloadHAProxy.sh
-[172.17.0.1]$ sudo chown conductr:conductr /usr/bin/reloadHAProxy.sh
-[172.17.0.1]$ echo "conductr ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
+[172.17.0.1]$ sudo chown conductr-agent:conductr-agent /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ echo "conductr-agent ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
 ```
 
-On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the conductr user in `sudoers`.
+On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the `conductr-agent` user in `sudoers`.
 
-``` bash
-[172.17.0.1]$ echo 'Defaults: conductr  !requiretty' | sudo tee -a /etc/sudoers
+```bash
+[172.17.0.1]$ echo 'Defaults: conductr-agent  !requiretty' | sudo tee -a /etc/sudoers
 ```
 
 #### Optional dependencies
@@ -461,7 +625,7 @@ Consolidated logging is discussed further down.
 
 ConductR supports running applications and services within Docker. If you plan on running Docker based bundles, you will need to install [Docker](https://docs.docker.com/) according to [the official documentation](https://docs.docker.com/installation/ubuntulinux/). Once Docker is installed then add ConductR's user/group to the `docker` group so that it has [the correct permissions in order to access Docker](http://docs.docker.com/installation/ubuntulinux/#giving-non-root-access):
 
-``` bash
+```bash
 sudo usermod -a -G docker conductr
 ```
 
@@ -475,10 +639,10 @@ Once your ConductR AMI is available, launch three instances. In this tutorial we
 
 We will now configure ConductR on the instances and form a cluster. Repeat these steps on each of the three instances ConductR AMI. 
 
-To be able to form an inter-machine cluster, ConductR must be configured to listen to the machine's private host interface. This can be enabled adding a property declaration for `CONDUCTR_IP` to the start command as follows:
+To be able to form an inter-machine cluster, ConductR Core must be configured to listen to the machine's private host interface. This can be enabled adding a property declaration for `CONDUCTR_IP` to the start command as follows:
 
-``` bash
-echo -DCONDUCTR_IP=$(hostname -i) | sudo tee -a /usr/share/conductr/conf/application.ini
+```bash
+echo -DCONDUCTR_IP=$(hostname -i) | sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo service conductr restart
 ```
 
@@ -486,15 +650,15 @@ sudo service conductr restart
 
 Pick one node as the seed node and instruct the other two instances to use the other as the seed node. Here we have chosen `10.0.2.20` as the seed node and will perform this additional step on all other nodes *except* the seed node `10.0.2.20`.
 
-``` bash
-echo --seed 10.0.2.20:9004 | sudo tee -a /usr/share/conductr/conf/application.ini
+```bash
+echo --seed 10.0.2.20:9004 | sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo service conductr restart
 ```
 
 ### Check the cluster
 ConductR provides cluster and application information as well as its control interface via a REST API.
  
- ``` bash
+ ```bash
 curl -s $(hostname -i):9005/members | python3 -m json.tool
 ```
 
@@ -536,6 +700,31 @@ A typical response contains the current members of the cluster (shown here is a 
 
 ```
 
+### Configuring ConductR Agent
+
+_Repeat each step in this section on each node._
+
+ConductR Agent needs to be connected to a ConductR core node in order for ConductR to run any application process. To establish this connection, configure ConductR Agent as such:
+
+```bash
+[172.17.0.1]$ echo -Dconductr.agent.ip=$(hostname) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo --core-node $(hostname):9004 | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+```
+
+By default ConductR Agent and ConductR Core are using `/tmp` as its working directory. Since both ConductR Agent and ConductR Core are installed in the same machine, move the ConductR Agent working directory as such:
+
+```bash
+[172.17.0.1]$ echo -Dconductr.agent.storage-dir=/tmp/conductr-agent/bundles | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo -Dconductr.agent.bundle-pidfile-dir=/tmp/conductr-agent/bundles/pids | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+```
+
+Once configured, restart the ConductR Agent service.
+
+```bash
+[172.17.0.1]$ sudo service conductr-agent restart
+```
+
+
 ### Loading and Running ConductR-HAProxy Bundle
 
 ConductR-HAProxy bundle listens for bundle changes within ConductR and updates the HAProxy config to expose the bundle endpoints accordingly.
@@ -549,9 +738,9 @@ ConductR-HAProxy bundle must be installed on all nodes where HAProxy is installe
 Append the `haproxy` role to the default `web` role as follows:
 
 ```bash
-echo -Dakka.cluster.roles.0=web | sudo tee -a /usr/share/conductr/conf/application.ini
-echo -Dakka.cluster.roles.1=haproxy | sudo tee -a /usr/share/conductr/conf/application.ini
-sudo service conductr restart
+echo -Dakka.cluster.roles.0=web | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+echo -Dakka.cluster.roles.1=haproxy | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+sudo service conductr-agent restart
 ```
 
 ### Use CLI to load and run ConductR-HAProxy bundle

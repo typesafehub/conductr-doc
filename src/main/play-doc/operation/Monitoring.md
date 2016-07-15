@@ -6,24 +6,33 @@ This guide discusses ConductR specifics regarding Lightbend Monitoring. For a co
 
 ## Monitoring ConductR
 
-ConductR is a Lightbend Platform based application and has been configured to support Lightbend Monitoring by enabling some settings within its `conf/application.ini`.
+ConductR is a Lightbend Platform based application and has been configured to support Lightbend Monitoring by enabling some settings within its configuration files.
 
 ### Enabling ConductR Monitoring for Takipi
 
-To enable monitoring for ConductR with [Takipi](https://www.takipi.com/) you'll need an account by [signing up with them](https://app.takipi.com/). Once done you can enable ConductR (you'll need to do this for each node where ConductR runs):
+To enable monitoring for ConductR with [Takipi](https://www.takipi.com/) you'll need an account by [signing up with them](https://app.takipi.com/). Once done you can enable ConductR Core (you'll need to do this for each node where ConductR Core runs):
 
-``` bash
+```bash
 echo \
   -Dcinnamon.instrumentation=on \
   -J-agentlib:TakipiAgent \
   -Dtakipi.name="conductr" | \
-  sudo tee -a /usr/share/conductr/conf/application.ini
+  sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo /etc/init.d/conductr restart
 ```
 
-The same also goes for conductr-haproxy's `application.ini` and service.
+similarly for ConductR Agent (you'll need to do this for each node where ConductR Agent runs):
 
-Note also that the Takipi agent will require installation at each ConductR node.
+```bash
+echo \
+  -Dcinnamon.instrumentation=on \
+  -J-agentlib:TakipiAgent \
+  -Dtakipi.name="conductr" | \
+  sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+sudo /etc/init.d/conductr-agent restart
+```
+
+Note also that the Takipi agent will require installation at each node where ConductR Core and ConductR Agent is running.
 
 ## Monitoring Bundles
 

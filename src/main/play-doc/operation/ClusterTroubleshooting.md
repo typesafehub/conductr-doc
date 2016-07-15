@@ -2,7 +2,7 @@
 
 ## Cluster Split Brain Recovery
 
-Cluster partition is a failure that may occur when running a cluster based application. To recover from this situation ConductR utilizes Akka SBR (Split Brain Recovery). Akka SBR is a part of Akka in the [Typesafe Reactive Platform](http://www.lightbend.com/products/typesafe-reactive-platform) version `15v01p05`.
+Cluster partition is a failure that may occur when running a cluster based application. To recover from this situation ConductR utilizes Akka SBR (Split Brain Recovery). Akka SBR is a part of Akka in the [Typesafe Reactive Platform](http://www.lightbend.com/products/typesafe-reactive-platform) from version `15v01p05`.
 
 The Akka SBR strategy adopted by ConductR is `keep-majority`. This strategy ensures when cluster split occurs:
 
@@ -17,7 +17,7 @@ Restarting the entire ConductR cluster should only be considered in a face of di
 
 ### Steps
 
-* Remove the seed node and restart the `conductr` service first on one node:
+* Remove the seed node and restart the `conductr` service first on one ConductR Core node:
 
 ```bash
 sudo service conductr stop
@@ -25,7 +25,7 @@ sudo rm /usr/share/conductr/conf/seed-nodes
 sudo service conductr start
 ```
 
-*Ensure the ConductR process has been started successfully on this node.* This is achieved by issuing the following command where `NODE_IP_ADDRESS_OR_HOST` is the ip address or hostname of the node:
+*Ensure the ConductR Core process has been started successfully on this node.* This is achieved by issuing the following command where `NODE_IP_ADDRESS_OR_HOST` is the ip address or hostname of the node:
 
 ```bash
 curl http://${NODE_IP_ADDRESS_OR_HOST}:9005/members
@@ -53,7 +53,7 @@ curl http://${NODE_IP_ADDRESS_OR_HOST}:9005/members
 
 * Upon restart, the node will not find any existing seed node due to the fact the `seed-nodes` file has been removed. Therefore the node will register itself as a seed node in a new cluster.
 
-* Restart the next node:
+* Restart the next ConductR Core node:
 
 ```bash
 sudo service conductr restart
@@ -61,29 +61,41 @@ sudo service conductr restart
 
 * Upon restart, this node will attempt to reconnect to last known members of the cluster based on the information stored in the `seed-nodes` file. The node will persist with the reconnection attempt until they are successful.
 
-* If the service has been restarted successfully continue with the next node and repeat that until all services has been restarted.
+* If the service has been restarted successfully continue with the next node and repeat that until all ConductR Core services has been restarted.
 
-### Notes on the seed-nodes file
+* Restart the ConductR Agent process on all the ConductR Agent nodes:
 
-* The address of last known members in the cluster are kept in what we call seed nodes file.
+```bash
+sudo service conductr-agent restart
+```
+
+### Notes on the ConductR Core seed-nodes file
+
+* ConductR Core will keep the address of last known members in the cluster in what we call seed nodes file.
 * The file is located at `/usr/share/conductr/conf/seed-nodes`.
-* By default ConductR keeps the latest 3 reachable members in the cluster in the seed nodes file.
+* By default ConductR Core keeps the latest 3 reachable members in the cluster in this file.
+
+### Notes on the ConductR Agent core-nodes file
+
+* ConductR Agent will keep the address of last known ConductR Core nodes in what we call core nodes file.
+* The file is located at `/usr/share/conductr-agent/conf/core-nodes`.
+* By default ConductR Agent keeps the latest 3 reachable ConductR Core nodes in this file.
+
+## Bundle replication
+
+### ConductR Core node termination
+
+If ConductR Core process is lost due to shutdown or crash of the `conductr` service, the bundle will be automatically replicated on a different node within the ConductR cluster.
+
+ConductR will strive to achieve configured number of replicas, and there are `3` replicas configured by default.
 
 ## Restarting Bundles
 
-### Cluster node termination
+### ConductR Agent node termination
 
-If a bundle dies due to a shutdown or crash of the `conductr` service on a node the bundle will be automatically started on a different node within the ConductR cluster.
-   
-**Example**
+If a bundle dies due to a shutdown or crash of the `conductr-agent` service, the bundle will be automatically started on a different node within the ConductR cluster.
 
-1. An application bundle gets loaded on a 3-node ConductR cluster. By default the bundle will be replicated to all 3 nodes.
-2. We run the bundle on 2 nodes. ConductR decided to start the bundles on node 1 and 2.
-3. Node 1, on which the bundle is running, goes down.
-4. ConductR identifies this change and automatically starts the bundle on the remaining node 3 to keep the scaling factor of 2.
-5. When bringing back node 1 the bundle is automatically loaded to this node, but not started. The scaling factor is kept to 2. The bundles are still running on node 2 and 3.
-
-The application state is not automatically restored by ConductR. When deploying a stateful bundle ensure in your application that the state is getting replicated, e.g. with [Akka Distributed Data](http://doc.akka.io/docs/akka/snapshot/scala/distributed-data.html), [Akka Cluster Sharding](http://doc.akka.io/docs/akka/snapshot/scala/cluster-sharding.html) and [Persistence](http://doc.akka.io/docs/akka/snapshot/scala/persistence.html) or distributed databases. 
+The application state is not automatically restored by ConductR. When deploying a stateful bundle ensure in your application that the state is getting replicated, e.g. with [Akka Distributed Data](http://doc.akka.io/docs/akka/snapshot/scala/distributed-data.html), [Akka Cluster Sharding](http://doc.akka.io/docs/akka/snapshot/scala/cluster-sharding.html) and [Persistence](http://doc.akka.io/docs/akka/snapshot/scala/persistence.html) or distributed databases.
      
 ### Bundle termination 
     
