@@ -278,8 +278,8 @@ hasError            | `true` if some event in ConductR has raised an error, `fal
 host                | The ip address of the machine hosting the bundle's components.
 hostPort            | The port of the machine hosting the bundle component that will be mapped to the `bindPort`. `hostPort` is distinct across all services running on a host.
 isStarted           | `true` if the bundle has signalled that it has started successfully, `false` if it is in the process of starting up.
-memory              | The amount of memory required when a bundle is running. Values are expressed in bytes.
-nrOfCpus            | The number of cpus required when a bundle is running. This value can be expressed as a fraction.
+memory              | The amount of resident memory required to run the bundle. Values are expressed in bytes.
+nrOfCpus            | The minimum number of cpus required to run the bundle (can be fractions thereby expressing a portion of CPU). This value is considered when starting a bundle on a node. If the specified CPUs exceeds the available CPUs on a node, then this node is not considered for scaling the bundle. Once running, the application is not restricted to the given value and tries to use all available CPUs on the node.
 roles               | An array of strings representing the roles that a bundle plays in a ConductR cluster. These roles are matched for eligibility with cluster members when searching for one to load and scale on. Only cluster members with matching roles will be selected.
 scale               | The requested number of instance(s) of the bundle to be started and run.
 services            | An array of string URIs providing the addresses for a given endpoint's proxying.
