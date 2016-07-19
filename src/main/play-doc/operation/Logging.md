@@ -8,14 +8,14 @@ The syslog collector can send the log messages to any kind of logging solution. 
 
 Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be found in the `extra` folder inside the ConductR installation folder. Also a default configuration for a typical production environment has been provided.
 
-`conductr-elasticsearch` is using the the role `elasticsearch`. Make sure that the ConductR nodes which should run Elasticsearch have this role assigned in `application.ini`. This role will determine which nodes will be eligable to run `conductr-elasticsearch` and are to be configured accordingly.
+`conductr-elasticsearch` is using the the role `elasticsearch`. Make sure that the ConductR Agent nodes which should run Elasticsearch have this role assigned in `conductr-agent.ini`. This role will determine which nodes will be eligible to run `conductr-elasticsearch` and are to be configured accordingly.
 
 Firstly for each node that will run Elasticsearch you must enable access to `/var/log` and `/var/lib`:
 
 ```bash
 sudo mkdir -p /var/lib/elasticsearch /var/log/elasticsearch
-sudo chown conductr:conductr /var/lib/elasticsearch
-sudo chown conductr:conductr /var/log/elasticsearch
+sudo chown conductr-agent:conductr-agent /var/lib/elasticsearch
+sudo chown conductr-agent:conductr-agent /var/log/elasticsearch
 ```
 
 To load and run Elasticsearch use the control API of ConductR, e.g. by using the CLI:
@@ -44,15 +44,28 @@ To change the settings create a new bundle configuration by modiying the `bundle
 
 You can configure ConductR to use an alternate Elasticsearch cluster for events and logging. Here are some considerations for you if you should choose this path.
 
-Firstly you must tell ConductR where your customized Elasticsearch instance is within its `application.ini`, and also turn off ConductR service locating it given the fixed location:
+Firstly you must tell ConductR Core where your customized Elasticsearch instance is, and also turn off ConductR service locating it given the fixed location:
 
-```
--Dcontrail.syslog.server.host=<some-ip>
--Dcontrail.syslog.server.port=<some-port>
--Dcontrail.syslog.server.service-locator.enabled=off
+```bash
+echo \
+  -Dcontrail.syslog.server.host=<some-ip> \
+  -Dcontrail.syslog.server.port=<some-port> \
+  -Dcontrail.syslog.server.service-locator.enabled=off | \
+  sudo tee -a /usr/share/conductr/conf/conductr.ini
+sudo /etc/init.d/conductr restart
 ```
 
-The same also goes for conductr-haproxy's `application.ini`.
+similarly for ConductR Agent:
+
+```bash
+echo \
+  -Dcontrail.syslog.server.host=<some-ip> \
+  -Dcontrail.syslog.server.port=<some-port> \
+  -Dcontrail.syslog.server.service-locator.enabled=off | \
+  sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+sudo /etc/init.d/conductr-agent restart
+```
+
 
 The Elasticsearch bundle that we provide has been configured to support back-pressure when receiving event and logging data from ConductR. By default Elasticsearch will accept bulk index requests regardless of whether it will process them. This means that under certain load conditions, Elasticsearch could lose data being sent to it. To counter this, here is the configuration we use for Elasticsearch (we have chosen a sharding factor of 5, substitute yours accordingly):
 
@@ -158,23 +171,33 @@ To select only the log messages from ConductR itself, filter again by bundle nam
 
 ConductR logs via the syslog protocol using TCP destined conventionally on port 514. Debian distributions such as Ubuntu come with the [RSYSLOG](http://www.rsyslog.com/) logging service and so its configuration is shown next. Other distributions may require installing RSYSLOG.
 
-To configure ConductR for RSYSLOG:
+To configure ConductR Core for RSYSLOG:
 
-``` bash
+```bash
 echo \
   -Dcontrail.syslog.server.host=127.0.0.1 \
   -Dcontrail.syslog.server.port=514 \
   -Dcontrail.syslog.server.elasticsearch.enabled=off \
   -Dcontrail.syslog.server.service-locator.enabled=off | \
-  sudo tee -a /usr/share/conductr/conf/application.ini
+  sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo /etc/init.d/conductr restart
 ```
 
-The same also goes for conductr-haproxy's `application.ini` and service.
+and ConductR Agent:
+
+```bash
+echo \
+  -Dcontrail.syslog.server.host=127.0.0.1 \
+  -Dcontrail.syslog.server.port=514 \
+  -Dcontrail.syslog.server.elasticsearch.enabled=off \
+  -Dcontrail.syslog.server.service-locator.enabled=off | \
+  sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+sudo /etc/init.d/conductr-agent restart
+```
 
 ...and to configure RSYSLOG:
 
-``` bash
+```bash
 [172.17.0.1]$ echo '$ModLoad imtcp' | sudo tee -a /etc/rsyslog.d/conductr.conf
 [172.17.0.1]$ echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
 [172.17.0.1]$ sudo service rsyslog restart
@@ -188,19 +211,29 @@ A popular cloud service is [Papertrail](https://papertrailapp.com/). Papertrail 
 
 **Important**: ConductR logs over TCP so make sure that you configure papertrail so that it accepts plain text connections: _Accounts/Log Destinations/Edit Settings/Accept connections via_
 
-Supposing that the address assigned to your at Papertrail is `logs2.papertrailapp.com` and `38564`  you configure ConductR as:
+Supposing that the address assigned to your at Papertrail is `logs2.papertrailapp.com` and `38564`  you configure ConductR Core as:
 
-``` bash
+```bash
 echo \
   -Dcontrail.syslog.server.host=logs2.papertrailapp.com \
   -Dcontrail.syslog.server.port=38564 \
   -Dcontrail.syslog.server.elasticsearch.enabled=off \
   -Dcontrail.syslog.server.service-locator.enabled=off | \
-  sudo tee -a /usr/share/conductr/conf/application.ini
+  sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo /etc/init.d/conductr restart
 ```
 
-The same also goes for conductr-haproxy's `application.ini` and service.
+and ConductR Agent as:
+
+```bash
+echo \
+  -Dcontrail.syslog.server.host=logs2.papertrailapp.com \
+  -Dcontrail.syslog.server.port=38564 \
+  -Dcontrail.syslog.server.elasticsearch.enabled=off \
+  -Dcontrail.syslog.server.service-locator.enabled=off | \
+  sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+sudo /etc/init.d/conductr-agent restart
+```
 
 ## Other solutions
 
@@ -212,31 +245,46 @@ ConductR is compatible with any log aggregator speaking the syslog protocol. The
 
 By default ConductR will log at `info` level.
 
-To view ConductR logs at `debug` level, configure ConductR as:
+To view ConductR Core logs at `debug` level, configure ConductR as:
 
-``` bash
+```bash
 echo \
   -Dakka.loglevel=debug | \
-  sudo tee -a /usr/share/conductr/conf/application.ini
+  sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo /etc/init.d/conductr restart
 ```
 
-The same also goes for conductr-haproxy's `application.ini` and service.
+similarly for the ConductR Agent:
+
+```bash
+echo \
+  -Dakka.loglevel=debug | \
+  sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+sudo /etc/init.d/conductr-agent restart
+```
 
 With this setting only ConductR `debug` level logs will be visible. In other words, `debug` level messages from frameworks and libraries utilized by ConductR will not be visible.
 
-To view all `debug` level log messages, configure ConductR as:
+To view all `debug` level log messages, configure ConductR Core as:
 
-``` bash
+```bash
 echo \
   -Droot.loglevel=debug \
   -Dakka.loglevel=debug | \
-  sudo tee -a /usr/share/conductr/conf/application.ini
+  sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo /etc/init.d/conductr restart
 ```
 
-The same also goes for conductr-haproxy's `application.ini` and service.
+similarly for the ConductR Agent:
+
+```bash
+echo \
+  -Droot.loglevel=debug \
+  -Dakka.loglevel=debug | \
+  sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+sudo /etc/init.d/conductr-agent restart
+```
 
 With this setting debug messages from various frameworks and libraries utilized by ConductR will be visible, e.g. debug messages from Akka.
 
-**Important**: with this setting enabled, the number of log messages generated will be increase drammatically.
+**Important**: with this setting enabled, the number of log messages generated will be increase dramatically.

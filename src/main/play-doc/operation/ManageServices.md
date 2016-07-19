@@ -1,16 +1,23 @@
 # Managing ConductR services
 
-During installation ConductR registers a linux service named `conductr`. The service is started automatically during boot-up.
+During installation ConductR registers a linux service named `conductr` and `conductr-agent` for ConductR Core and ConductR Agent respectively. The service is started automatically during boot-up.
 
-## Service user
+## ConductR Core service user
+
 The `conductr` service runs as the daemon user `conductr` in the user group `conductr`. When the service is started the first time it creates the user and group itself.
 
 The `conductr` user executes the commands in the background without any shell. You can specify additional environment variables in `/etc/default/conductr`. This file will be sourced before the actual service gets started.
 
+## ConductR Agent service user
+
+The `conductr-agent` service runs as the daemon user `conductr-agent` in the user group `conductr-agent`. When the service is started the first time it creates the user and group itself.
+
+The `conductr-agent` user executes the commands in the background without any shell. You can specify additional environment variables in `/etc/default/conductr-agent`. This file will be sourced before the actual service gets started.
+
 
 ## Change service state
 
-In order to start, stop or restart ConductR on one node change the state of the service.
+In order to start, stop or restart ConductR Core on one node change the state of the service.
 
 **sysvinit**
 
@@ -20,26 +27,48 @@ sudo service conductr stop
 sudo service conductr restart
 ```
 
-## Configuring ConductR
+Similarly for ConductR Agent:
 
-The application.ini file, located in /usr/share/conductr/conf, is the primary configuration file for the ConductR service. This file is used to specify ConductR service settings, such as '-Dconductr.ip' used during installation. See the comments section of the application.ini file for more examples.
-
-Akka module configuration can also be set using this file. For example, to assign a ConductR node the roles of `megaIOPS` and `muchMem` instead of the default, `web`, set `akka.cluster.roles` in application.ini:
+**sysvinit**
 
 ```bash
- -Dakka.cluster.roles.0=megaIOPS
- -Dakka.cluster.roles.1=muchMem
+sudo service conductr-agent start
+sudo service conductr-agent stop
+sudo service conductr-agent restart
+```
+
+## Configuring ConductR Core
+
+The configuration file `/usr/share/conductr/conf/conductr.ini` is the primary configuration file for the ConductR Core service. This file is used to specify Core ConductR service settings, such as `-Dconductr.ip` used during installation. See the comments section of the `conductr.ini` file for more examples.
+
+## Configuring ConductR Agent
+
+The configuration file `/usr/share/conductr-agent/conf/conductr-agent.ini` is the primary configuration file for the ConductR Agent service. This file is used to specify ConductR Agent service settings, such as `-Dconductr.ip` used during installation. See the comments section of the `conductr-agent.ini` file for more examples.
+
+Akka module configuration can also be set using this file. For example, to assign a ConductR node the roles of `megaIOPS` and `muchMem` instead of the default, `web`, set `akka.cluster.roles` in `conductr-agent.ini`:
+
+```bash
+echo -Dakka.cluster.roles.0=megaIOPS | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+echo -Dakka.cluster.roles.1=muchMem | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+sudo service conductr-agent restart
 ```
  
-With this setting the node would offer the roles `megaIOPS` and `muchMem`.Only bundles with a `BundleKeys.roles` of `megaIOPS,` `muchMem` or both `megaIOPS` and `muchMem` will be loaded and run on this node.
+With this setting the node would offer the roles `megaIOPS` and `muchMem`. Only bundles with a `BundleKeys.roles` of `megaIOPS,` `muchMem` or both `megaIOPS` and `muchMem` will be loaded and run on this node.
 
-The ConductR service must be restarted for changes to this file to take effect.
+The ConductR Agent service must be restarted for changes to this file to take effect.
 
 ## Roles
 
-Roles allow machines to be targetted for specific purposes. Some machines may have greater IO capabilities than others, some may have more CPU, memory and other resources. Some may also be required to maintain a volume that holds a database.
+Roles allow machines to be targeted for specific purposes. Some machines may have greater IO capabilities than others, some may have more CPU, memory and other resources. Some may also be required to maintain a volume that holds a database.
 
-When getting started with ConductR it is reasonable to have each ConductR service rely on its default role of `web`. You can also use the `-Dconductr.resource-provider.match-offer-roles=off` declaration of `application.ini` to tell ConductR not to consider roles during scheduling. However when moving into a production scenario you should plan and assign roles for your ConductR cluster.
+When getting started with ConductR it is reasonable to have each ConductR service rely on its default role of `web`. You can also use the `-Dconductr.resource-provider.match-offer-roles=off` declaration of `conductr.ini` to tell ConductR not to consider roles during scheduling. However when moving into a production scenario you should plan and assign roles for your ConductR cluster.
+
+```bash
+echo \
+  -Dconductr.resource-provider.match-offer-roles=off | \
+  sudo tee -a /usr/share/conductr/conf/conductr.ini
+sudo /etc/init.d/conductr restart
+```
 
 When a bundle is to be scheduled for loading or scaling, a check is made to first see whether a resource offer's roles intersect with the roles that the bundle requires. If it does then it is eligible. If no resource offers provide the roles required by the bundle, the bundle cannot be loaded or scaled. Bundles will only be loaded to member nodes providing the bundle required roles. If no members of the cluster provide those roles, the bundle will fail to load.
 
@@ -55,14 +84,29 @@ For best resilience, the ConductR service daemons should be monitored and restar
 
 # Upgrading ConductR
 
-A running cluster can be upgraded without downtime either at the node or cluster level. On a per node basis, new updated nodes are introduced to the cluster while the old nodes are removed from the cluster. On a per cluster basis, incoming requests are directed from the old cluster to the new cluster using load balancer membership or DNS changes. Per node upgrades are generally easier, however they cannot be performed across ConductR releases that are marked as not compatible with previous releases.
+A running cluster can be upgraded without downtime either at the node or cluster level.
 
-To perform a per node upgrade, introduce new cluster members to the cluster. The new nodes could be created with updated versions of Conductr, Java, the Linux operating system or any other component installed during provisioning. As old members are removed from the cluster, bundles will be relocated to the new resources. It is critical to allow sufficient time for bundle relocation and replication before removing old members. In addition to ConductR replicating bundles to new nodes, stateful bundles may require additional time to replicate application data. Removing a cluster member before application data has fully replicated can result in application data loss. Elasticsearch bundle provided along with ConductR, for example, requires [verification](#Elasticsearch Verification) to ensure the data is transferred into the new member.
+On a per node basis, new updated nodes are introduced to the cluster while the old nodes are removed from the cluster. The per node update strategy is applicable to both ConductR Core node or ConductR Agent node.
+
+On a per cluster basis, incoming requests are directed from the old cluster to the new cluster using load balancer membership or DNS changes.
+
+## Per node upgrade
+
+Per node upgrades are generally easier, however they cannot be performed across ConductR releases that are marked as not compatible with previous releases.
+
+To perform a per node upgrade for ConductR Core, introduce new cluster members to the cluster. The new nodes could be created with updated versions of ConductR, Java, the Linux operating system or any other component installed during provisioning. As old members are removed from the cluster, bundles will be replicated to the new resources.
+
+To perform a per node upgrade for ConductR Agent, connect the new agent node to an existing cluster. As old agent nodes are removed from the cluster, bundles will be rescheduled for execution on the new agent nodes.
+
+To perform a per node upgrade for ConductR Core and ConductR Agent installed on the same host, connect both the ConductR Core and ConductR agent to an existing cluster. As old host (containing both old ConductR Core and ConductR Agent) are removed from the cluster, bundles will be replicated to the new resources, and bundles will be rescheduled for execution on the new agent nodes.
+
+It is critical to allow sufficient time for bundle relocation and replication before removing old members. In addition to ConductR replicating bundles to new nodes, stateful bundles may require additional time to replicate application data. Removing an agent node before application data has fully replicated can result in application data loss. Elasticsearch bundle provided along with ConductR, for example, requires [verification](#Elasticsearch Verification) to ensure the data is transferred into the new agent node.
 
 Application specific data replication should also be monitored during an upgrade to prevent data loss.
 
+Be certain to ensure that sufficient resources for all roles are provisioned. Stopping the sole agent node providing a role leaves no nodes for bundles requiring that role to relocate to.
 
-Be certain to ensure that sufficient resources for all roles are provisioned. Stopping the sole member providing a role leaves no members for bundles requiring that role to relocate to. With no nodes to replicate to and run on, affected bundles would require re-loading of the bundle after the role was re-provisioned in order to run again.
+## Per cluster upgrade
 
 To perform a per cluster upgrade, build a new cluster in isolation from the current running cluster. Once the new cluster is fully prepared, cut-over traffic using DNS, load balancers, routers, etc. Per cluster upgrades may require more complicated strategies for migrating data storage managed by the cluster.
 

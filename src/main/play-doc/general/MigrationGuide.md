@@ -1,18 +1,31 @@
 # ConductR Migration Guide
 
 
-This document describes what is required to move between version 1.1 to 1.2. Here is a list of major areas to be considered when migrating:
+This document describes what is required to move between version 1.1 to 2.0.
 
-* [Proxying](#Roles_and_toplogy)
+Here is a list of major areas to be considered when migrating:
+
+* [Binary incompatibility](#Binary_incompatibility)
+* [Topology change](#Topology_change)
 * [Proxying](#Proxying)
 
-## Roles and topology
 
-ConductR now requires roles to be specified for each node where ConductR bundles run. Prior to installing ConductR consider a topology that has roles representing a DMZ, gateway services, persistance services (databases) and so forth. You can disable role checking by specifying the following in `application.ini`: 
+## Binary incompatibility
 
-```
--Dconductr.resource-provider.match-offer-roles=off
-```
+_ConductR 1.1 and 2.0 are not binary compatible._
+
+As such, a new cluster of ConductR 2.0 must be built in isolation from the version 1.1 of the cluster. Once the version 2.0 of the cluster is formed successfully and the application data is migrated over, cut-over traffic using DNS, load balancers, routers, etc.
+
+## Topology change
+
+ConductR 2.0 introduces the notion of ConductR Core and ConductR Agent.
+
+ConductR Core holds the state of the cluster, and is responsible for decision making as to which ConductR Agent gets to run which bundles based on the resource available on the agent. The physical bundle files are stored on the ConductR Core's filesystem and replicated across the cluster.
+
+ConductR Agent is responsible for running bundle processes. As such, the bundle roles which are previously specified are now to be specified within ConductR Agent.
+
+The ConductR Core and ConductR Agent is available as 2 different packages. The [[installation instructions|Install]] describes the steps of installing ConductR Core and ConductR Agent on the same host. These steps is also applicable should ConductR Core and ConductR Agent installation on different host is desired.
+
 
 ## Proxying
 
@@ -24,7 +37,7 @@ Prior to 1.2, we recommended that you configure the ELB to poll the /bundles end
 
 ## Syslog
 
-In additional to disabling Elasticsearch via configuration, a service lookup must now also be disabled. ConductR's default behavior is to locate the service endpoint for logging when required. Supposing that you are using RSYSLOG locally then ConductR's `application.ini` should contain the following:
+In additional to disabling Elasticsearch via configuration, a service lookup must now also be disabled. ConductR's default behavior is to locate the service endpoint for logging when required. Supposing that you are using RSYSLOG locally then ConductR Core's `conductr.ini` should contain the following:
 
 ```
   -Dcontrail.syslog.server.host=127.0.0.1
@@ -33,7 +46,7 @@ In additional to disabling Elasticsearch via configuration, a service lookup mus
   -Dcontrail.syslog.server.service-locator.enabled=off
 ```
 
-The same also goes for conductr-haproxy's `application.ini`.
+The same also goes for ConductR Agent's `conductr-agent.ini`.
 
 ## Service endpoint declaration
 
