@@ -7,7 +7,6 @@ Here is a list of major areas to be considered when migrating:
 
 * [Binary incompatibility](#Binary_incompatibility)
 * [Topology change](#Topology_change)
-* [Compulsory bundle roles](#Compulsory_bundle_roles)
 * [Proxying](#Proxying)
 
 
@@ -21,20 +20,12 @@ As such, a new cluster of ConductR 2.0 must be built in isolation from the versi
 
 ConductR 2.0 introduces the notion of ConductR Core and ConductR Agent.
 
-ConductR Core holds the state of the cluster, and is responsible for decision making as to which ConductR Agent gets to run which bundles based on the resource available to the said agent. The physical bundle files are stored on the ConductR Core's filesystem and replicated across the cluster.
+ConductR Core holds the state of the cluster, and is responsible for decision making as to which ConductR Agent gets to run which bundles based on the resource available on the agent. The physical bundle files are stored on the ConductR Core's filesystem and replicated across the cluster.
 
 ConductR Agent is responsible for running bundle processes. As such, the bundle roles which are previously specified are now to be specified within ConductR Agent.
 
 The ConductR Core and ConductR Agent is available as 2 different packages. The [[installation instructions|Install]] describes the steps of installing ConductR Core and ConductR Agent on the same host. These steps is also applicable should ConductR Core and ConductR Agent installation on different host is desired.
 
-
-## Compulsory bundle roles
-
-ConductR now requires roles to be specified for each node where ConductR bundles run. Prior to installing ConductR consider a topology that has roles representing a DMZ, gateway services, persistance services (databases) and so forth. You can disable role checking by specifying the following in ConductR Core's `conductr.ini`:
-
-```
--Dconductr.resource-provider.match-offer-roles=off
-```
 
 ## Proxying
 

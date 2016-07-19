@@ -273,56 +273,32 @@ First, we have the user `conductr-agent` own the HAProxy config file.
 
 After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration.
 
-Provide the following HAProxy reload script in `/usr/bin/reloadHAProxy.sh`. The reload script will determine whether `systemv`, `upstart`, or `systemd` is being used in the underlying operating system, and it will issue HAProxy reload accordingly.
+Create HAProxy reload script in `/usr/bin/reloadHAProxy.sh`.
+
+```bash
+[172.17.0.1]$ sudo touch /usr/bin/reloadHAProxy.sh
+```
+
+Populate the script with the command to reload HAProxy for `systemv` and `upstart`:
 
 ```bash
 #!/usr/bin/env bash
 
-if [[ `systemctl` =~ -\.mount ]]; then
-  INIT=systemd
-elif [[ `/sbin/init --version` =~ upstart ]]; then
-  INIT=upstart
-elif [[ -f /etc/init.d/cron && ! -h /etc/init.d/cron ]]; then
-  INIT=systemv
-else
-  INIT=unknown
-fi
-
-if [[ $INIT = upstart || $INIT = systemv ]]; then
-   /etc/init.d/haproxy reload
-else
-  /bin/systemctl reload  haproxy.service
-fi
+/etc/init.d/haproxy reload
 ```
 
-Alternatively execute the following command to install the reload script in `/usr/bin`.
+For `systemd`:
 
 ```bash
-[172.17.0.1]$ sudo cat >/usr/bin/reloadHAProxy.sh <<'EOL'
 #!/usr/bin/env bash
 
-if [[ `systemctl` =~ -\.mount ]]; then
-  INIT=systemd
-elif [[ `/sbin/init --version` =~ upstart ]]; then
-  INIT=upstart
-elif [[ -f /etc/init.d/cron && ! -h /etc/init.d/cron ]]; then
-  INIT=systemv
-else
-  INIT=unknown
-fi
-
-if [[ $INIT = upstart || $INIT = systemv ]]; then
-   /etc/init.d/haproxy reload
-else
-  /bin/systemctl reload  haproxy.service
-fi
-EOL
+/bin/systemctl reload haproxy.service
 ```
 
-We will limit the bundle's sudo privileges to running a single script in `/usr/bin` for that purpose. Grant permissions to the `conductr-agent` user to write and run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
+We will limit the bundle's sudo privileges to running `/usr/bin/reloadHAProxy.sh`. Grant permissions to the `conductr-agent` user to run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
 
 ```bash
-[172.17.0.1]$ sudo chmod 0770 /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ sudo chmod 0550 /usr/bin/reloadHAProxy.sh
 [172.17.0.1]$ sudo chown conductr-agent:conductr-agent /usr/bin/reloadHAProxy.sh
 [172.17.0.1]$ echo "conductr-agent ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
 ```
@@ -577,30 +553,30 @@ First, we have the user `conductr-agent` own the HAProxy config file.
 [172.17.0.1]$ sudo chown conductr-agent:conductr-agent /etc/haproxy/haproxy.cfg
 ```
 
+#### Installing HAProxy reload script
+
 After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration.
 
-Provide the following HAProxy reload script in `/usr/bin/reloadHAProxy.sh`. The reload script will determine whether `systemv`, `upstart`, or `systemd` is being used in the underlying operating system, and it will issue HAProxy reload accordingly.
+Create HAProxy reload script in `/usr/bin/reloadHAProxy.sh`.
 
 ```bash
-[172.17.0.1]$ sudo cat >/usr/bin/reloadHAProxy.sh <<'EOL'
+[172.17.0.1]$ sudo touch /usr/bin/reloadHAProxy.sh
+```
+
+Populate the script with the command to reload HAProxy for `systemv` and `upstart`:
+
+```bash
 #!/usr/bin/env bash
 
-if [[ `systemctl` =~ -\.mount ]]; then
-  INIT=systemd
-elif [[ `/sbin/init --version` =~ upstart ]]; then
-  INIT=upstart
-elif [[ -f /etc/init.d/cron && ! -h /etc/init.d/cron ]]; then
-  INIT=systemv
-else
-  INIT=unknown
-fi
+/etc/init.d/haproxy reload
+```
 
-if [[ $INIT = upstart || $INIT = systemv ]]; then
-   /etc/init.d/haproxy reload
-else
-  /bin/systemctl reload  haproxy.service
-fi
-EOL
+For `systemd`:
+
+```bash
+#!/usr/bin/env bash
+
+/bin/systemctl reload haproxy.service
 ```
 
 We will limit the bundle's sudo privileges to running a single script in `/usr/bin` for that purpose. Grant permissions to the `conductr-agent` user to write and run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.

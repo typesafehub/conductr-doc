@@ -348,10 +348,13 @@ conductr {
       agent-download-cache = on
 
       # Resources needed to start a Mesos executor that runs a ConductR agent
+      # The CPU param represents Mesos's interpretation, which is expressed as
+      # a fraction of the total # of CPUs. Here, we use the Mesos convention of
+      # expressing just 0.1/nrOfCpus.
       resources {
-        cpu        = 1.0
-        memory     = 256000000
-        disk-space = 50000000
+        cpu        = 0.1
+        memory     = 268400000
+        disk-space = 1000000000
       }
     }
   }
