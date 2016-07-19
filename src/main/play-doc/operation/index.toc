@@ -1,7 +1,7 @@
 Install:Installation
 CLI:CLI
 DeployingBundlesOps:Deploying bundles
-Logging:Logging
+ConsolidatedLogging:Consolidated Logging
 Monitoring:Lightbend Monitoring
 ManageServices:Managing ConductR services
 ClusterSetupConsiderations:Cluster setup considerations

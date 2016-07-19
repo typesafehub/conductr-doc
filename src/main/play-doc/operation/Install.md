@@ -146,9 +146,9 @@ Once configured, restart the ConductR Agent service.
 The ConductR Agent service runs under the `conductr-agent` user along with the `conductr-agent` group. Its pid file is written to: `/var/run/conductr-agent/running.pid` and its install location is `/usr/share/conductr-agent`.
 
 
-### Installation miscellany
+### Consolidated Logging
 
-Logging will require configuration for each machine where ConductR Core and ConductR Agent is installed. Please refer to the section on [[logging|Logging]] and select the appropriate method for you. ConductR is bundled with an Elasticsearch based solution and is configured for that by default.
+Enabling consolidated logging will require configuration for each machine where ConductR is installed. [[Consolidated logging|ConsolidatedLogging]] section describes the steps required which allow you to select the appropriate logging method for you. ConductR is bundled with an Elasticsearch based solution and is configured for that by default.
 
 By default ConductR's logging is quite sparse. Unless an error or warning occurs then there will be no log output.
 
@@ -528,12 +528,9 @@ The ConductR Core service runs under the `conductr` user along with the `conduct
 
 The ConductR Agent service runs under the `conductr-agent` user along with the `conductr-agent` group. Its pid file is written to: `/var/run/conductr-agent/running.pid` and its install location is `/usr/share/conductr-agent`.
 
-ConductR logs via the syslog protocol using TCP destined locally on port 514. Debian distributions such as Ubuntu come with the [RSYSLOG](http://www.rsyslog.com/) logging service and so its configuration is shown next:
+#### Consolidated Logging
 
-```bash
-echo '$ModLoad imtcp' | sudo tee -a /etc/rsyslog.d/conductr.conf
-echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
-```
+[[Consolidated logging|ConsolidatedLogging]] section describes the steps required which allow you to select the appropriate logging method for you. ConductR is bundled with an Elasticsearch based solution and is configured for that by default.
 
 ### Installing a Proxy
 
@@ -594,8 +591,6 @@ On RHEL and CentOS it may also be neccessary to [disable default requiretty](htt
 ```
 
 #### Optional dependencies
-
-Consolidated logging is discussed further down.
 
 ##### Docker
 
