@@ -102,7 +102,10 @@ Check for the cluster information once again, but now use the host address of th
 
 The ConductR service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
 
-Logging will require configuration for each machine where ConductR is installed. Please refer to the section on [[logging|Logging]] and select the appropriate method for you. ConductR is bundled with an Elasticsearch based solution and is configured for that by default.
+
+### Consolidated Logging
+
+Enabling consolidated logging will require configuration for each machine where ConductR is installed. [[Consolidated logging|ConsolidatedLogging]] section describes the steps required which allow you to select the appropriate logging method for you. ConductR is bundled with an Elasticsearch based solution and is configured for that by default.
 
 By default ConductR's logging is quite sparse. Unless an error or warning occurs then there will be no log output. To increase the verbosity of the logging you can use this command:
 
@@ -395,12 +398,9 @@ ConductR is automatically registered as a service and started.
 
 The ConductR service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
 
-ConductR logs via the syslog protocol using TCP destined locally on port 514. Debian distributions such as Ubuntu come with the [RSYSLOG](http://www.rsyslog.com/) logging service and so its configuration is shown next:
+#### Consolidated Logging
 
-``` bash
-echo '$ModLoad imtcp' | sudo tee -a /etc/rsyslog.d/conductr.conf
-echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
-```
+[[Consolidated logging|ConsolidatedLogging]] section describes the steps required which allow you to select the appropriate logging method for you. ConductR is bundled with an Elasticsearch based solution and is configured for that by default.
 
 ### Installing a Proxy
 
@@ -431,8 +431,6 @@ echo "conductr-haproxy ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo te
 ```
 
 #### Optional dependencies
-
-Consolidated logging is discussed further down.
 
 ##### Docker
 

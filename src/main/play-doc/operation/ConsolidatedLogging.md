@@ -1,4 +1,4 @@
-# Logging
+# Consolidated Logging
 
 When multiple machines are involved in a cluster it quickly becomes difficult to view the log files of distributed applications. ConductR allows the logging output of itself and the bundles that it executes to be directed to a "syslog collector". Syslog is a widely used protocol for Unix based machines and is supported by a number of cloud-based log providers, as well as local operating system support.
 
@@ -39,6 +39,30 @@ The provided Elasticsearch bundle configuration is using these settings:
 - Disk Space: 10 GB
 
 To change the settings create a new bundle configuration by modiying the `bundle.conf` file inside of the bundle configuration zip file. The configuration file is named `elasticsearch-prod-{digest}.zip` and is located in the `extra` folder as well. Afterwards reload the bundle with the new configuration.
+
+### Elasticsearch bundle rolling upgrade
+
+Elasticsearch stores its data within the filesystem. As such, to preserve existing data when managing the deployment, it's important to ensure the data is replicated to the new instance of Elasticsearch.
+
+This can be achieved by following these steps.
+
+* Commission a new ConductR node where the new Elasticsearch instance is going to execute.
+* Start this new node and ensure this node is able to successfully join the existing ConductR cluster.
+* Turn off one of the old instance where Elasticsearch is running.
+* Wait until the new Elasticsearch instance joins the cluster successfully and the data replicated.
+  * Access the Elasticsearch cluster health endpoint: `http://<ip address of new node>:9200/elastic-search/_cluster/health?level=shards&pretty=true`
+  * Note the state of the cluster health (i.e. the `status` field).
+  * It is expected for the cluster health to move from `green` -> `yellow` -> `green` while the new node is joining the cluster. It's important to wait and give sufficient time for the cluster health state to turn green. When the old instance is turned off, there will be a slight delay before the cluster state turns to `yellow`. Similarly, when a new instance joins the cluster there will be a slight delay before the cluster state turns from `yellow` to `green`.
+  * Once the cluster join process is completed, the cluster health will stay at `green`.
+  * The number of node (i.e. `number_of_nodes` field) shows the correct total number of nodes including the newly joined instance.
+  * All shards are assigned (i.e. the value of `unassigned_shards` is `0`) - all shards being assigned indicates the data is now replicated across the Elasticsearch nodes.
+* Repeat with the remaining nodes until every old node has been decommissioned.
+
+Generally, Elasticsearch will be resilient enough in the face of failure as long as there is `(n + 1) / 2` remaining nodes available, where `n` is the total number of nodes. So as an example, in the cluster of 5 nodes, ES should be able to cope with losing two nodes but not three.
+
+It's important to note the rolling upgrade of the Elasticsearch bundle is only possible between ConductR versions which are binary compatible.
+
+For migrating between binary incompatible ConductR versions, the Elasticsearch data needs to be moved to the new cluster to preserve existing data. The simplest way to do this is to copy the contents of the `/var/lib/elasticsearch` from the old nodes to the new nodes. Alternatively, Elasticsearch provides [backup and restore](https://www.elastic.co/guide/en/elasticsearch/reference/1.5/modules-snapshots.html) facility to move data between 2 different clusters.
 
 ### Customized Elasticsearch
 
