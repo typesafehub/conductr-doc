@@ -4,6 +4,7 @@ Choose on of the following installation guides to get started:
 
 * [Linux Installation](#Linux-Installation)
 * [EC2 Installation](#EC2-Installation)
+* [DC/OS Installation](#DC/OS-Installation)
 
 
 # Linux Installation
@@ -732,3 +733,91 @@ That's it! You now have a cluster of three ConductR nodes ready to start running
 Add all cluster instances to the load balancer. Your cluster will be reachable by the DNS name specified in the load balancer description. You can add this as a CNAME to your DNS zone file to make the cluster reachable using a hostname in your domain.
 
 ConductR comes with a `visualizer` sample application. Head over to the next section [[CLI|CLI]] to learn how to deploy visualizer application to your fresh ConductR cluster.
+
+# DC/OS Installation
+
+The following guide will outline the steps to deploy and run ConductR as a framework within DC/OS.
+
+## Prerequisite
+
+* An existing, working DC/OS 1.7 cluster. The installation and setup of DC/OS cluster is outside of the scope of this guide.
+* A working installation of Marathon in the DC/OS cluster is required to deploy ConductR into the DC/OS cluster.
+* A working installation of DC/OS CLI tools successfully authenticated against the DC/OS cluster.
+* A working bastion host with access to the DC/OS cluster's network is required to securely load and run ConductR bundles.
+
+
+## Bastion host setup
+
+Install the [[ConductR CLI|CLI]] in the bastion host to securely load and run ConductR bundles.
+
+
+## Deploy ConductR into DC/OS cluster
+
+Obtain the ConductR's application definition JSON from the [[download page|https://www.lightbend.com/product/conductr/download]].
+
+Post the JSON to Marathon. This can be done using json mode of the 'create application' dialog. Refer to Marathon's documentation for deployment steps given the application definition JSON.
+
+By default ConductR will be deployed with a single instance.
+
+Wait until the ConductR instance's health to marked as healthy before proceeding.
+
+If more instances is required, scale up to the desired number of instances, and ensure each of the ConductR instance's health to marked as healthy before proceeding. Each ConductR instance will attempt to register itself with a separate framework id, and hence it is expected to have multiple ConductRs appearing in the list of application. These ConductR instances will attempt to form a cluster of its own as part of the startup.
+
+## Deploying bundles
+
+[[ConductR CLI|CLI]] requires the host or ip address of one of the ConductR node in order to communicate
+
+Obtain the host or ip address of one of the ConductR Core nodes that's currently running in the DCOS cluster using the `dcos task` command.
+
+```bash
+$ dcos task
+NAME                    HOST       USER  STATE  ID
+ConductR                10.0.3.76  root    R    conductr.6e9251af-4e28-11e6-8edd-4219f69bc956
+```
+
+In the example above ConductR has been deployed to `10.0.3.76` - this is the ip address to be obtained. If ConductR has been deployed to multiple nodes, the host address from any these nodes can be selected.
+
+SSH to the bastion host. Once logged in, export the `CONDUCTR_IP` environment variable with the obtained address.
+
+You are now ready to [[deploy bundles|DeployingBundlesOps]] into ConductR.
+
+## Verifying if bundle has been started successfully
+
+Use the command `conduct info` from the bastion host to verify successful startup of the bundle.
+
+```bash
+$ conduct info
+ID       NAME        #REP  #STR  #RUN
+6e68f05  visualizer     1     0     1
+```
+
+In the example above, a bundle called `visualizer` has been started successfully.
+
+This can also be confirmed by executing the `dcos task` command which will display the bundle running as a task from the context of DC/OS. The `visualizer-1` task belongs to the currently running `visualizer` bundle having `1` as the `compatibilityVersion`.
+
+```bash
+$ dcos task
+NAME           HOST       USER  STATE  ID
+visualizer-1   10.0.3.75  root    R    6e68f055d1f5715ad3ff19172fa5efaf_0f6e119c-9288-425a-89e3-36379dcaccda
+```
+
+The `compatibilityVersion` further explained in the to [bundle configuration](BundleConfiguration).
+
+
+## Accessing services provided by the bundle
+
+_This section is only relevant to the ConductR 2.0 alpha version. It will be removed once proxying solution provided by ConductR is available on DC/OS._
+
+ConductR's automatic gateway proxying solution is not included in the the alpha DC/OS release.
+
+### Accessing services from outside cluster
+
+The services exposed by the bundles are not easily accessible from outside of the ConductR cluster until the consolidation work is completed.
+
+However, the services is still accessible once the host address and the port where the services is running is known.
+
+Use the Control API to [query bundle state](ControlAPI#Query-bundle-state). Each bundle that has been started will have `bundleExecutions` field populated with the respective `host` where the bundle is running and `bindPort` where the service is exposed.
+
+### Accessing services from within cluster
+
+The services exposed by the bundles can be resolved by [performing a service lookup](ResolvingServices) against any of the ConductR node.
