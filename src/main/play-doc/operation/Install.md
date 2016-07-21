@@ -753,7 +753,9 @@ Install the [[ConductR CLI|CLI]] in the bastion host to securely load and run Co
 
 ## Deploy ConductR into DC/OS cluster
 
-Obtain the ConductR's application definition JSON from the [[download page|https://www.lightbend.com/product/conductr/download]].
+Obtain the ConductR's application definition JSON.
+
+> In order to obtain the JSON required for installations of ConductR on DC/OS then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
 
 Post the JSON to Marathon. This can be done using json mode of the 'create application' dialog. Refer to Marathon's documentation for deployment steps given the application definition JSON.
 
