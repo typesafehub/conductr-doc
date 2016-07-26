@@ -158,12 +158,7 @@ conductr {
   mode = "standalone"
 
   # The directory where bundles and their configuration are written to.
-  storage-dir = ${java.io.tmpdir}/bundles
-
-  # The directory where bundles record their pids for the purposes of being reaped if they're still
-  # hanging around when ConductR restarts (perhaps due to ConductR having been rudely killed via
-  # SIGKILL).
-  bundle-pidfile-dir = ${java.io.tmpdir}/bundles/pids
+  storage-dir = ${java.io.tmpdir}/conductr/bundles
 
   # The amount of time Typesafe ConductR expects to wait on achieving a read quorum. 10 seconds should
   # cover large clusters, but you may need to increase this if read timeouts appear
@@ -764,12 +759,12 @@ conductr.agent {
   mode = "standalone"
 
   # The directory where bundles and their configuration are written to.
-  storage-dir = ${java.io.tmpdir}/bundles
+  storage-dir = ${java.io.tmpdir}/conductr-agent/bundles
 
   # The directory where bundles record their pids for the purposes of being reaped if they're still
   # hanging around when ConductR restarts (perhaps due to ConductR having been rudely killed via
   # SIGKILL).
-  bundle-pidfile-dir = ${java.io.tmpdir}/bundles/pids
+  bundle-pidfile-dir = ${java.io.tmpdir}/conductr-agent/bundles/pids
 
   # The address and port of the ConductR Core's `remote.netty.tcp.hostname` and `remote.netty.tcp.port` respectively.
   # This is used by the ConductR agent's Akka cluster client to form the initial contact so connection to
