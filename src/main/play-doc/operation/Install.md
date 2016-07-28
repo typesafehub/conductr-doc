@@ -229,7 +229,7 @@ Install optional dependencies if required. Each ConductR Agent node requires sam
 
 ## Installing a Proxy
 
-_Perform each step in this section on all nodes: `172.17.0.1`, `172.17.0.2` and `172.17.0.3`. For full resilience a proxy should be installed for each machine that ConductR is installed on._
+_Perform each step in this section on all nodes: `172.17.0.1`, `172.17.0.2` and `172.17.0.3`. For full resilience a proxy should be installed for each machine that ConductR Agent is installed on._
 
 Proxying application endpoints is required when running more than one instance of ConductR; which should be always for production style scenarios. Proxying endpoints permits connectivity from both external callers and for bundle components to communicate with other bundle components. This also allows an external caller to contact an application that is running on any ConductR node by contacting any proxy instance.
 
@@ -265,7 +265,7 @@ First, we have the user `conductr-agent` own the HAProxy config file.
 
 After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration.
 
-Prepare the reload script in `/usr/bin/reloadHAProxy.sh`. ConductR-HAProxy to install its reload script in this location upon startup.
+Prepare the reload script in `/usr/bin/reloadHAProxy.sh`. ConductR-HAProxy will install its reload script in this location upon startup.
 
 We will limit the bundle's sudo privileges to running `/usr/bin/reloadHAProxy.sh`. Grant permissions to the `conductr-agent` user to run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
 
@@ -281,8 +281,6 @@ On RHEL and CentOS it may also be neccessary to [disable default requiretty](htt
 ```bash
 [172.17.0.1]$ echo 'Defaults: conductr-agent  !requiretty' | sudo tee -a /etc/sudoers
 ```
-
-We are now ready to run the bundle.
 
 ## Loading and Running ConductR-HAProxy Bundle
 
@@ -527,7 +525,7 @@ First, we have the user `conductr-agent` own the HAProxy config file.
 
 After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration.
 
-Prepare the reload script in `/usr/bin/reloadHAProxy.sh`. ConductR-HAProxy to install its reload script in this location upon startup.
+Prepare the reload script in `/usr/bin/reloadHAProxy.sh`. ConductR-HAProxy will install its reload script in this location upon startup.
 
 We will limit the bundle's sudo privileges to running a single script in `/usr/bin` for that purpose. Grant permissions to the `conductr-agent` user to write and run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
 
@@ -711,9 +709,66 @@ Wait until the ConductR instance's health to marked as healthy before proceeding
 
 If more instances is required, scale up to the desired number of instances, and ensure each of the ConductR instance's health to marked as healthy before proceeding. Each ConductR instance will attempt to register itself with a separate framework id, and hence it is expected to have multiple ConductRs appearing in the list of application. These ConductR instances will attempt to form a cluster of its own as part of the startup.
 
+## Installing a Proxy
+
+_Perform each step in this section on all public slave nodes. For full resilience a proxy should be installed for each public slave machine. The public slave machines are machines assigned with `slave_public` role._
+
+Proxying application endpoints is required when running more than one instance of ConductR; which should be always for production style scenarios. Proxying endpoints permits connectivity from both external callers and for bundle components to communicate with other bundle components. This also allows an external caller to contact an application that is running on any ConductR node by contacting any proxy instance.
+
+We will be using `HAProxy`. Install HAProxy version 1.5 or newer.
+
+```bash
+[172.17.0.1]$ sudo apt-get -y install haproxy
+```
+or
+```bash
+[172.17.0.1]$ sudo yum install haproxy
+```
+
+On Red Hat Enterprise Linux (RHEL) 6, haproxy is in the RHEL Server Load Balancer (v6 for 64-bit x86_64) rhel-lb-for-rhel-6-server-rpms channel. You'll need to add this channel to your server.
+
+On some Debian distributions you may need to add a dedicated Personal Package Archive (PPA) in order to install HAProxy 1.5 via the package manager. For example:
+
+```bash
+[172.17.0.1]$ sudo add-apt-repository -y ppa:vbernat/haproxy-1.5
+[172.17.0.1]$ sudo apt-get update
+[172.17.0.1]$ sudo apt-get -y install haproxy
+```
+
+ConductR provides a ConductR-HAProxy bundle that listens for bundle events from ConductR and updates the local HAProxy configuration file accordingly. We must specifically allow the bundle to use `sudo` to reload HAProxy.
+
+First, we have the user `conductr-agent` own the HAProxy config file.
+
+```bash
+[172.17.0.1]$ sudo chown conductr-agent:conductr-agent /etc/haproxy/haproxy.cfg
+```
+
+Prepare the reload script in `/usr/bin/reloadHAProxy.sh`. ConductR-HAProxy will install its reload script in this location upon startup.
+
+### Preparing HAProxy reload script
+
+After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration.
+
+Prepare the reload script in `/usr/bin/reloadHAProxy.sh`. ConductR-HAProxy will install its reload script in this location upon startup.
+
+We will limit the bundle's sudo privileges to running `/usr/bin/reloadHAProxy.sh`. Grant permissions to the `conductr-agent` user to run the `reloadHAPRoxy.sh` command. An addition to `/etc/sudoers` allows for using `sudo` without password for the `reloadHAProxy.sh` script. If a more specific reload sequence is required, a custom reload script can be specified using the CONDUCTR_RELOADHAPROXY_SCRIPT environment variable in a configuration bundle.
+
+```bash
+[172.17.0.1]$ sudo touch /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ sudo chmod 0550 /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ sudo chown conductr-agent:conductr-agent /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ echo "conductr-agent ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
+```
+
+On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the `conductr-agent` user in `sudoers`.
+
+```bash
+[172.17.0.1]$ echo 'Defaults: conductr-agent  !requiretty' | sudo tee -a /etc/sudoers
+```
+
 ## Deploying bundles
 
-[[ConductR CLI|CLI]] requires the host or ip address of one of the ConductR node in order to communicate
+[[ConductR CLI|CLI]] requires the host or ip address of one of the ConductR node to deploy and run bundles.
 
 Obtain the host or ip address of one of the ConductR Core nodes that's currently running in the DCOS cluster using the `dcos task` command.
 
@@ -728,6 +783,28 @@ In the example above ConductR has been deployed to `10.0.3.76` - this is the ip 
 SSH to the bastion host. Once logged in, export the `CONDUCTR_IP` environment variable with the obtained address.
 
 You are now ready to [[deploy bundles|DeployingBundlesOps]] into ConductR.
+
+
+## Loading and Running ConductR-HAProxy Bundle
+
+ConductR-HAProxy bundle will expose services provided by the bundle so it can be accessed from outside cluster. ConductR-HAProxy will ensure the HAProxy configuration is kept update based on the bundles which are running.
+
+First we need to obtain the `.tgz` ConductR installations package.
+
+> In order to obtain the installations of ConductR then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
+
+Once the ConductR `.tgz` is obtained, extract ConductR HAProxy bundle from the package. The ConductR HAProxy bundle can be found within the ConductR package under  `conductr-{version}/extra/conductr-haproxy-{version}-{digest}.zip`.
+
+Upload the ConductR HAProxy bundle to the bastion host, e.g. the `/tmp` directory.
+
+SSH to the bastion host. Once logged in, export the `CONDUCTR_IP` environment variable with the host or ip address of one of the ConductR Core that's currently running.
+
+Load and run the ConductR-HAProxy bundle as follows. Scale up the ConductR-HAProxy to 3 instances as a starting point.
+
+```bash
+conduct load file:/tmp/conductr-haproxy-{version}-{digest}.zip
+conduct run conductr-haproxy --scale 3
+```
 
 ## Verifying if bundle has been started successfully
 
@@ -749,23 +826,4 @@ NAME           HOST       USER  STATE  ID
 visualizer-1   10.0.3.75  root    R    6e68f055d1f5715ad3ff19172fa5efaf_0f6e119c-9288-425a-89e3-36379dcaccda
 ```
 
-The `compatibilityVersion` further explained in the to [bundle configuration](BundleConfiguration).
-
-
-## Accessing services provided by the bundle
-
-_This section is only relevant to the ConductR 2.0 alpha version. It will be removed once proxying solution provided by ConductR is available on DC/OS._
-
-ConductR's automatic gateway proxying solution is not included in the the alpha DC/OS release.
-
-### Accessing services from outside cluster
-
-The services exposed by the bundles are not easily accessible from outside of the ConductR cluster until the consolidation work is completed.
-
-However, the services is still accessible once the host address and the port where the services is running is known.
-
-Use the Control API to [query bundle state](ControlAPI#Query-bundle-state). Each bundle that has been started will have `bundleExecutions` field populated with the respective `host` where the bundle is running and `bindPort` where the service is exposed.
-
-### Accessing services from within cluster
-
-The services exposed by the bundles can be resolved by [performing a service lookup](ResolvingServices) against any of the ConductR node.
+The `compatibilityVersion` is explained in the to [bundle configuration](BundleConfiguration).
