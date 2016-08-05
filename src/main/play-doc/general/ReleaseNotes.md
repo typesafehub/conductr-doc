@@ -1,5 +1,12 @@
 # ConductR release notes
 
+### 1.1.8.rc.2 August 5th, 2016 * * * Debian and Developer Sandbox Only - no RPM * * *
+
+1. Role matching is now disabled by default as this is what we have found people to prefer; thinking about roles upfront can be tedious.
+2. Fixes a potential issue where the launching of processes could become blocked and even result in taking several minutes.
+3. The reporting of scaling requests failing has been particularly improved in terms of formatting.
+4. The reporting of all ConductR events has been improved in terms of formatting. All console written logs additionally now contain mapped data context information (meta data regarding a log event).
+
 ### 1.1.8.rc.1 June 30, 2016 * * * Developer Sandbox Only * * *
 
 1. There was a proxy configuration issue with the developer sandbox that could result in a race condition when the Docker container was restarted; as is the case with the sbt-conductr `install` command. The problem would sometimes manifest itself with `conduct logs` returning a `502` error. This issue does *not* affect production releases i.e. RPM and Debian releases.
