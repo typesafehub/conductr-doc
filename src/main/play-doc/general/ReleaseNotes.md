@@ -1,5 +1,15 @@
 # ConductR release notes
 
+### 1.1.8.rc.4 August 16th, 2016 * * * Debian and Developer Sandbox Only - no RPM * * *
+
+1. Exit codes of 143 signify that a bundle has been terminated - which is correct in that ConductR terminates them when a stop request is received. However these non-zero exit codes caused an error indicator to appear when performing a `conduct info`. Given that 143 is not technically an error (SIGTERM is a graceful shutdown condition), this code is now interpreted in the same was as an exit code of 0.
+2. Bundle logs are now also directed to ConductR's file system based logs. This can help to debug ConductR by the ConductR team in particular.
+3. PID files were removed prematurely upon a bundle stop request having been received. This could result in orphaned bundle processes that could not be subsequently terminated when ConductR restarted. Further to the change made to correct this, the process handling of bundles has been improved. A side effect of this latter change is that stopping bundles is now much faster.
+
+### 1.1.8.rc.3 August 11th, 2016 * * * Debian and Developer Sandbox Only - no RPM * * *
+
+1. Now handles failures in launching bundles much faster than before. Prior to this release up to 10 minutes (by default) could be spent waiting for confirmation on the success of a launch. Changes to this release propogate failures immediately thus allow the internal scaling mechanism to move on to the next bundle of the same system (if there is one).
+
 ### 1.1.8.rc.2 August 5th, 2016 * * * Debian and Developer Sandbox Only - no RPM * * *
 
 1. Role matching is now disabled by default as this is what we have found people to prefer; thinking about roles upfront can be tedious.
