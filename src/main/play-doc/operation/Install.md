@@ -692,7 +692,11 @@ The following guide will outline the steps to deploy and run ConductR as a frame
 
 ## Bastion host setup
 
-Install the [[ConductR CLI|CLI]] in the bastion host to securely load and run ConductR bundles.
+The bastion host is a secured system of your choosing for the purpose of loading and running ConductR bundles. It is on the bastion host that we will install and run the [[ConductR CLI|CLI]]. Therefore the bastion host needs access to the ConductR Control API on port 9005 for the cluster nodes.
+
+On AWS EC2, these requirements can be satisfied with a new custom security group in the cluster VPC. The node security groups only need accept Control API access from the bastion security group. The bastion nodes should only be accessible via SSH or similar limited, secure means.
+
+If the bastion cannot access bundle artifacts from your own builds, you will need to copy your bundles to the bastion host in order to deploy your application bundles using the [[ConductR CLI|CLI]].
 
 
 ## Deploy ConductR into DC/OS cluster
