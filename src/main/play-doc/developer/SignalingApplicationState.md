@@ -39,3 +39,9 @@ StatusService.signalStartedOrExit()
 ```
 
 After reading the following sections, you may also wish to refer to [the reference documentation for conductr-bundle-lib](https://github.com/typesafehub/conductr-bundle-lib#typesafe-conductr-bundle-library).
+
+## Application Exit Codes
+
+ConductR uses your application's exit code to determine whether it should be restarted in order to reform the cluster. Following POSIX conventions, applications with non-zero exit codes are considered failed and will be restarted, while applications exiting with exit code 0 will be viewed as having exited normally, and thus ConductR will take no action.
+
+This is particularly important for Akka applications using [Split Brain Resolver](http://doc.akka.io/docs/akka/rp-15v09p01/scala/split-brain-resolver.html) with the [registerOnMemberRemoved](http://doc.akka.io/docs/akka/rp-15v09p01/scala/split-brain-resolver.html#Strategies) callback to shut down the ActorSystem after a split brain downing decision has been made. A non-zero return code must be issued to ensure that ConductR is instructed to recover the cluster to its previous state.
