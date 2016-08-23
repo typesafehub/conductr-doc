@@ -4,6 +4,42 @@ When multiple machines are involved in a cluster it quickly becomes difficult to
 
 The syslog collector can send the log messages to any kind of logging solution. The ConductR distribution includes Elasticsearch and Kibana as an opt-in logging infrastructure. How to configure Elasticsearch and Kibana or other popular logging solutions are described in the next sections.
 
+## Logging Structure
+
+Before discussing the types of logging available to you, it will be useful to understand the nature of ConductR logs. There are 3 types of logs:
+
+1. bundle events;
+2. bundle logs; and
+3. ConductR's own logs.
+
+All of these types of logs will be sent to the one log collector. They are distiguished given [Syslog's definition of structured data](https://tools.ietf.org/html/rfc5424) and ConductR's usage of it. 
+
+The following sub-sections describe each log type and how they are distinguished.
+
+### Bundle Events
+
+Bundle events describe what has happened to a bundle in terms of whether it has loaded, been replicated to a node, scaled up or down, whether resources cannot be found to scale and so forth. The following structured data items determine that a log message represents a bundle event:
+
+* data.mdc.bundleId:`$bundleId`* OR data.mdc.bundleId:`$bundleName`
+* data.mdc.tag:conductr*
+
+Note that `$bundleName` is used for some ConductR events where there is no bundle identiier available e.g. when loading a bundle.
+
+### Bundle Logs
+
+Bundle logs provide the stdout and stderr output of your bundle and are identified in a similar manner to events, only there will be no "conductr" tag:
+
+* data.mdc.bundleId:`$bundleId`*
+* missing data.mdc.tag:conductr*
+
+Note also that the severity level of this log message will indicate `INFO` for stdout and `ERROR` for stderr.
+
+### ConductR's Logs
+
+ConductR's logs are always identified given the absence of a bundle identifier tag.
+
+* missing (data.mdc.bundleId:`$bundleId`* AND data.mdc.bundleId:`$bundleName`*)
+
 ## Setting up Elasticsearch
 
 Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be found in the `extra` folder inside the ConductR installation folder. Also a default configuration for a typical production environment has been provided.
