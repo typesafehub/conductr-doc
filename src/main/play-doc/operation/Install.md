@@ -306,12 +306,12 @@ frontend monitor
 Run the HAProxy Docker container.
 
 ```
-[172.17.0.1]$ docker run -d --name haproxy -p 10.0.7.118:9000:9000 -p 10.0.7.118:9999:9999 -p 10.0.7.118:65535:65535 -v /etc/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg haproxy:1.5
+[172.17.0.1]$ docker run -d --name haproxy -p 10.0.7.118:9000:9000 -p 10.0.7.118:9999:9999 -p 10.0.7.118:65535:65535 -v /etc/haproxy:/usr/local/etc/haproxy:ro haproxy:1.5
 ```
 
 The container has `haproxy` as its name.
 
-The proxy configuration located at `/etc/haproxy/haproxy.cfg` is mounted within the container on `/usr/local/etc/haproxy/haproxy.cfg`.
+The proxy configuration located at `/etc/haproxy/haproxy.cfg`. The directory `/etc/haproxy` is mounted within the container on `/usr/local/etc/haproxy`. This will allow updates to `/etc/haproxy/haproxy.cfg` to be visible within the container.
 
 The container exposes the port `9000`, `9999`, and `65535` to expose default port for ConductR HTTP-based endpoints, Visualizer bundle, and HAProxy test endpoint. Additional ports for your endpoints can be exposed through the `-p` option as required.
 
@@ -1064,12 +1064,12 @@ frontend monitor
 Run the HAProxy Docker container.
 
 ```
-[172.17.0.1]$ docker run -d --name haproxy -p 10.0.7.118:9000:9000 -p 10.0.7.118:9999:9999 -p 10.0.7.118:65535:65535 -v /etc/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg haproxy:1.5
+[172.17.0.1]$ docker run -d --name haproxy -p 10.0.7.118:9000:9000 -p 10.0.7.118:9999:9999 -p 10.0.7.118:65535:65535 -v /etc/haproxy:/usr/local/etc/haproxy:ro haproxy:1.5
 ```
 
 The container has `haproxy` as its name.
 
-The proxy configuration located at `/etc/haproxy/haproxy.cfg` is mounted within the container on `/usr/local/etc/haproxy/haproxy.cfg`.
+The proxy configuration located at `/etc/haproxy/haproxy.cfg`. The directory `/etc/haproxy` is mounted within the container on `/usr/local/etc/haproxy`. This will allow updates to `/etc/haproxy/haproxy.cfg` to be visible within the container.
 
 The container exposes the port `9000`, `9999`, and `65535` to expose default port for ConductR HTTP-based endpoints, Visualizer bundle, and HAProxy test endpoint. Additional ports for your endpoints can be exposed through the `-p` option as required.
 
