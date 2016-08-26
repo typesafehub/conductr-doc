@@ -44,4 +44,26 @@ After reading the following sections, you may also wish to refer to [the referen
 
 ConductR uses your application's exit code to determine whether it should be restarted in order to reform the cluster. Following POSIX conventions, applications with non-zero exit codes are considered failed and will be restarted, while applications exiting with exit code 0 will be viewed as having exited normally, and thus ConductR will take no action.
 
-This is particularly important for Akka applications using [Split Brain Resolver](http://doc.akka.io/docs/akka/rp-15v09p01/scala/split-brain-resolver.html) with the [registerOnMemberRemoved](http://doc.akka.io/docs/akka/rp-15v09p01/scala/split-brain-resolver.html#Strategies) callback to shut down the ActorSystem after a split brain downing decision has been made. A non-zero return code must be issued to ensure that ConductR is instructed to recover the cluster to its previous state.
+This is particularly important for Akka applications using [Split Brain Resolver](http://doc.akka.io/docs/akka/rp-current/scala/split-brain-resolver.html) with the `registerOnMemberRemoved` callback to shut down the ActorSystem after a split brain downing decision has been made. A non-zero return code must be issued to ensure that ConductR is instructed to recover the cluster to its previous state.
+
+This is how to shut down the ActorSystem and exit the JVM such that the application will be restarted by ConductR after being downed by Split Brain Resolver:
+```scala
+Cluster(system).registerOnMemberRemoved {
+  // exit JVM with a non-zero exit code when ActorSystem has been terminated 
+  system.registerOnTermination(System.exit(-1))
+  // shut down ActorSystem
+  system.terminate()
+
+  // In case ActorSystem shutdown takes longer than 10 seconds,
+  // exit the JVM forcefully.
+  // We must spawn a separate thread to not block current thread,
+  // since that would have blocked the shutdown of the ActorSystem.
+  new Thread {
+    override def run(): Unit = {
+      if (Try(Await.ready(system.whenTerminated, 10.seconds)).isFailure)
+        System.exit(-1)
+    }
+  }.start()
+}
+```
+
