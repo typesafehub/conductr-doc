@@ -1,25 +1,22 @@
 # ConductR release notes
 
-### 1.1.8.rc.4 August 16th, 2016 * * * Debian and Developer Sandbox Only - no RPM * * *
+### 1.1.8 August 29th, 2016
 
 1. Exit codes of 143 signify that a bundle has been terminated - which is correct in that ConductR terminates them when a stop request is received. However these non-zero exit codes caused an error indicator to appear when performing a `conduct info`. Given that 143 is not technically an error (SIGTERM is a graceful shutdown condition), this code is now interpreted in the same was as an exit code of 0.
 2. Bundle logs are now also directed to ConductR's file system based logs. This can help to debug ConductR by the ConductR team in particular.
 3. PID files were removed prematurely upon a bundle stop request having been received. This could result in orphaned bundle processes that could not be subsequently terminated when ConductR restarted. Further to the change made to correct this, the process handling of bundles has been improved. A side effect of this latter change is that stopping bundles is now much faster.
-
-### 1.1.8.rc.3 August 11th, 2016 * * * Debian and Developer Sandbox Only - no RPM * * *
-
-1. Now handles failures in launching bundles much faster than before. Prior to this release up to 10 minutes (by default) could be spent waiting for confirmation on the success of a launch. Changes to this release propogate failures immediately thus allow the internal scaling mechanism to move on to the next bundle of the same system (if there is one).
-
-### 1.1.8.rc.2 August 5th, 2016 * * * Debian and Developer Sandbox Only - no RPM * * *
-
-1. Role matching is now disabled by default as this is what we have found people to prefer; thinking about roles upfront can be tedious.
-2. Fixes a potential issue where the launching of processes could become blocked and even result in taking several minutes.
-3. The reporting of scaling requests failing has been particularly improved in terms of formatting.
-4. The reporting of all ConductR events has been improved in terms of formatting. All console written logs additionally now contain mapped data context information (meta data regarding a log event).
-
-### 1.1.8.rc.1 June 30, 2016 * * * Developer Sandbox Only * * *
-
-1. There was a proxy configuration issue with the developer sandbox that could result in a race condition when the Docker container was restarted; as is the case with the sbt-conductr `install` command. The problem would sometimes manifest itself with `conduct logs` returning a `502` error. This issue does *not* affect production releases i.e. RPM and Debian releases.
+4. Now handles failures in launching bundles much faster than before. Prior to this release up to 10 minutes (by default) could be spent waiting for confirmation on the success of a launch. Changes to this release propogate failures immediately thus allow the internal scaling mechanism to move on to the next bundle of the same system (if there is one).
+5. Role matching is now disabled by default as this is what we have found people to prefer; thinking about roles upfront can be tedious.
+6. Fixes a potential issue where the launching of processes could become blocked and even result in taking several minutes.
+7. The reporting of scaling requests failing has been particularly improved in terms of formatting.
+8. The reporting of all ConductR events has been improved in terms of formatting. All console written logs additionally now contain mapped data context information (meta data regarding a log event).
+9. There was a proxy configuration issue with the developer sandbox that could result in a race condition when the Docker container was restarted; as is the case with the sbt-conductr `install` command. The problem would sometimes manifest itself with `conduct logs` returning a `502` error. This issue does *not* affect production releases i.e. RPM and Debian releases.
+10. Prior to this release docker build errors during bundle startup were suppressed. This was due to an old issue where Docker used to write incorrectly to stderr. Docker now only writes its errors to stderr thus making it usable and capture problems that otherwise hide themselves (for example if docker authentication is failing).
+11. Improved bundle loading resiliency for the developer sandbox.
+12. Bundle configuration parsing issues are now improved by citing the parsing error when loading a bundle.
+13. Due to a race condition it was possible for `conduct info` to show bundles having errors even though they have loaded and run correctly.
+14. Grafana is now the basis of the monitoring feature instead of Takipi.
+15. Prevents a benign error from being reported in conductr-haproxy after about 8MB of events have been received from ConductR.
 
 ### 1.1.7 June 15, 2016
 
