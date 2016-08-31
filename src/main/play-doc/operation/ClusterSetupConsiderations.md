@@ -25,3 +25,13 @@ The ability to deploy and manage bundles thus requires the ability to access the
 For EC2 deployments, the bastion host will be placed in a different security group from the nodes. We'll call this SG-Ops. SG-Ops must be in the same VPC as SG-Nodes. SG-Ops should only allow select public port access. Most commonly only SSH port 22 will be opened. The SG-Nodes security group can then be further restricted to allow access from the bastion SG-Ops and the load balancer SG-ELB, with no direct public access.
 
 The bastion host can be also be used as the controller host for installation and maintenance. Deployment bundles can be uploaded to the bastion host from build servers to provide a final gated 'one command' deployment step to a continuous deployment pipeline.
+
+# Managing Ports and Paths
+
+It is generally preferred to expose as few ports as required into the cluster from the public network. Ports should be limited to `80` and `443` in general. Most all cluster bundles are thus differentiated on the internet by host name or path. Exceptions to this include internal service ports, e.g. `5444`.  These ports might be used for services only to be used internally, with an internal facing load balancer, that is not exposed to the internet.
+
+We'll also generally use few edge routers. Management of the deployment, from TLS certificates, to DNS and other domain specific functions can provide compelling reason to deploy over multiple edge routers. For example, an ELB for `domain1` and another ELB for `domain2`.
+
+Differentiation of bundle location by path is particularly useful in larger systems wishing to expose fewer hostnames. Developers should note the ability to [preserve paths](CreatingBundles#Preserving-paths-at-the-proxy) at the proxy when applications require such.
+
+Use the `conduct services` command from the [[ConductR CLI|CLI]] to see what host name or port and path currently deployed bundles provide.
