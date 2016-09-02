@@ -721,6 +721,10 @@ Wait until the ConductR instance's health to marked as healthy before proceeding
 
 If more instances are required, scale the application to the desired total and ensure that all of the instances are healthy before proceeding.
 
+### Executor Port Reservation
+
+Upon startup ConductR will launch its agent process on each of the Mesos slave nodes. ConductR Agent process will reserve port `2552` for Akka remoting and port range `10000-10999` for exposing endpoints of the bundle deployed within ConductR.
+
 ## Installing a Proxy
 
 _Perform each step in this section on all public nodes. For full resilience a proxy should be installed for each public node machine. The public node machines are machines assigned with `slave_public` role._
@@ -896,6 +900,10 @@ By default ConductR will be deployed with a single instance.
 Wait until the ConductR instance's health to marked as healthy before proceeding.
 
 If more instances are required, scale the application to the desired total and ensure that all of the instances are healthy before proceeding.
+
+### Executor Port Reservation
+
+Upon startup ConductR will launch its agent process on each of the Mesos slave nodes. ConductR Agent process will reserve port `2552` for Akka remoting and port range `10000-10999` for exposing endpoints of the bundle deployed within ConductR.
 
 ## Installing a Proxy
 
