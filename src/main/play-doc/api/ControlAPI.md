@@ -26,7 +26,7 @@ curl \
 ### Request
 
 ```
-POST /bundles
+POST /v2/bundles
 ```
 
 The following fields are provided as multipart/form-data fields:

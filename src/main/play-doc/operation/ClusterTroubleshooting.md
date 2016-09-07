@@ -28,7 +28,7 @@ sudo service conductr start
 *Ensure the ConductR Core process has been started successfully on this node.* This is achieved by issuing the following command where `NODE_IP_ADDRESS_OR_HOST` is the ip address or hostname of the node:
 
 ```bash
-curl http://${NODE_IP_ADDRESS_OR_HOST}:9005/members
+curl http://${NODE_IP_ADDRESS_OR_HOST}:9005/v2/members
 ```
 
 * When the node has been started successfully, the endpoint will return the following json structure with `members` field in the payload populated with at least one entry:
