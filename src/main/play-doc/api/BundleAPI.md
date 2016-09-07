@@ -183,13 +183,13 @@ When your application or service has performed its initialization and is satisfi
 ### Request
 
 ```
-PUT {CONDUCTR_STATUS}/bundles/{bundle-id}?isStarted=true
+PUT {CONDUCTR_STATUS}/v2/bundles/{bundle-id}?isStarted=true
 ```
 
 Field            | Description
 -----------------|------------
-SERVICE\_LOCATOR | The environment variable value of the same name. This environment variable translates to an http address e.g. `http://10.0.1.22:9008` given that ConductR is running on `10.0.1.22` with a service locator port bound to 9008.
-service-name     | The name of the service required and expressed as a path e.g. `/customers`. Only the first portion of a path is considered e.g. `/customers/123` means that only `/customers` will be looked up. This approach permits most HTTP clients to be used with very little code change when compared to not using the service locator.
+CONDUCTR\_STATUS | The environment variable value of the same name. This environment variable translates to an http address e.g. `http://10.0.1.22:9008` given that ConductR is running on `10.0.1.22` with a service locator port bound to 9008.
+bundle-id        | The id of the bundle to report.
 
 ### Responses
 

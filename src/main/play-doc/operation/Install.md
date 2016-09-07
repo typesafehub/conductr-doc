@@ -71,7 +71,7 @@ or
 ConductR Core is automatically registered as a service and started. ConductR provides cluster and application information as well as its control interface via a REST API exposed as part of the ConductR Core.
 
 ```bash
-[172.17.0.1]$ curl -s 127.0.0.1:9005/members | python3 -m json.tool
+[172.17.0.1]$ curl -s 127.0.0.1:9005/v2/members | python3 -m json.tool
 ```
 
 A typical response contains the current members of the cluster (shown here as just one), the address of the node that the queried control server is running on and a list of unreachable nodes (shown here as empty).
@@ -104,7 +104,7 @@ The IP addresses in the response indicate that ConductR Core is listening to the
 Check for the cluster information once again, but now use the host address of the machine.
 
 ```bash
-[172.17.0.1]$ curl -s $(hostname):9005/members | python3 -m json.tool
+[172.17.0.1]$ curl -s $(hostname):9005/v2/members | python3 -m json.tool
 ```
 
 The ConductR Core service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
@@ -203,7 +203,7 @@ then
 You should now see a new node in the cluster members list by using the following query:
 
 ```bash
-[172.17.0.2]$ curl -s 172.17.0.2:9005/members | python3 -m json.tool
+[172.17.0.2]$ curl -s 172.17.0.2:9005/v2/members | python3 -m json.tool
 ```
 
 ### Installing ConductR Agent on the remaining machines
@@ -590,7 +590,7 @@ sudo service conductr restart
 ConductR provides cluster and application information as well as its control interface via a REST API.
 
  ```bash
-curl -s $(hostname -i):9005/members | python3 -m json.tool
+curl -s $(hostname -i):9005/v2/members | python3 -m json.tool
 ```
 
 A typical response contains the current members of the cluster (shown here is a three node cluster), the address of the node that the queried control server is running on and a list of unreachable nodes (shown here as empty).
