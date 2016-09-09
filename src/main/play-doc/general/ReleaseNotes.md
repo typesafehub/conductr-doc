@@ -1,5 +1,10 @@
 # ConductR release notes
 
+### 1.1.9 September 9th, 2016
+
+1. Improve sandbox logging. The sandbox logs have been improved such that they are not confused with the logging associated with the bootstrap's initialisation.
+2. Improve Grafana dashboards for monitoring feature in sandbox. Fix elasticsearch datasource configuration. JVM metrics include application filter, and memory pool stats are fixed. Default dashboard time range is now 15 minutes, rather than 1 hour.
+
 ### 1.1.8 August 29th, 2016
 
 1. Exit codes of 143 signify that a bundle has been terminated - which is correct in that ConductR terminates them when a stop request is received. However these non-zero exit codes caused an error indicator to appear when performing a `conduct info`. Given that 143 is not technically an error (SIGTERM is a graceful shutdown condition), this code is now interpreted in the same was as an exit code of 0.
