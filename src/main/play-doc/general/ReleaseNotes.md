@@ -18,7 +18,7 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 6. Various strengthening around the Mesos scheduler.
 7. Removed bogus duplicate ACL checking as part of conductr-haproxy.
 8. Bug fixes with the conductr-elasticsearch bundle
-9. When running the Visualizer is now available from the DC/OS UI via hovering over the ConductR service name of the services UI.
+9. When running the Visualizer is now available from the DC/OS UI via hovering over the ConductR service name of the services UI, or by selecting the service and clicking on the "open service" button
 
 ## 2.0.0-beta.1 September 2nd, 2016
 
