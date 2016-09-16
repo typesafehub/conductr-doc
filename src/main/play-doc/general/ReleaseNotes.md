@@ -8,6 +8,17 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 
 > Note: failure to size your bundle's memory as being large enough will cause the Linux OOM killer to terminate all bundles being managed by a conductr-agent on a given host. This is a [known issue with Mesos](https://issues.apache.org/jira/browse/MESOS-3333#). Unfortunately the problem is also difficult to diagnose. Please ensure that your app has plenty of resident memory declared. Think generally in terms of 128MiB increments when going beyond 384MiB.
 
+## 2.0.0-beta.2 September 16th, 2016
+
+1. The sandbox logs have been improved such that they are not confused with the logging associated with the bootstrap's initialization.
+2. fixes a problematic startup sequence for the sandbox where the "feature" bundles could miss being scaled up due to an agent not being available initially.
+3. ConductR Agent ports are now reserved on Mesos hosts.
+4. ConductR Agents are now periodically reconciled with ConductR Core's view of the world, and bundles are handled in the case of reconciliation failure.
+5. V1 of the ConductR control protocol has now been removed (now only V2 is supported - you will want to update your CLI and sbt-conductr versions)
+6. Various strengthening around the Mesos scheduler.
+7. Removed bogus duplicate ACL checking as part of conductr-haproxy.
+8. Bug fixes with the conductr-elasticsearch bundle
+
 ## 2.0.0-beta.1 September 2nd, 2016
 
 1. The ConductR Agent is presently using Akka cluster client in order to communicate with ConductR core. Akka cluster client leverages Akka remoting and therefore also requires a bind to port 2552 on the agent's host. We will be moving away from Akka cluster client for our agent's use case.
