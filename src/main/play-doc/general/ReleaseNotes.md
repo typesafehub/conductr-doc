@@ -8,7 +8,7 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 
 > Note: failure to size your bundle's memory as being large enough will cause the Linux OOM killer to terminate all bundles being managed by a conductr-agent on a given host. This is a [known issue with Mesos](https://issues.apache.org/jira/browse/MESOS-3333#). Unfortunately the problem is also difficult to diagnose. Please ensure that your app has plenty of resident memory declared. Think generally in terms of 128MiB increments when going beyond 384MiB.
 
-## 2.0.0-beta.2 September 17th, 2016
+## 2.0.0-beta.2 September 21st, 2016
 
 1. The sandbox logs have been improved such that they are not confused with the logging associated with the bootstrap's initialization.
 2. fixes a problematic startup sequence for the sandbox where the "feature" bundles could miss being scaled up due to an agent not being available initially.
@@ -17,8 +17,9 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 5. V1 of the ConductR control protocol has now been removed (now only V2 is supported - you will want to update your CLI and sbt-conductr versions)
 6. Various strengthening around the Mesos scheduler.
 7. Removed bogus duplicate ACL checking as part of conductr-haproxy.
-8. Bug fixes with the conductr-elasticsearch bundle
-9. When running the Visualizer is now available from the DC/OS UI via hovering over the ConductR service name of the services UI, or by selecting the service and clicking on the "open service" button
+8. Bug fixes with the conductr-elasticsearch bundle.
+9. When running the Visualizer is now available from the DC/OS UI via hovering over the ConductR service name of the services UI, or by selecting the service and clicking on the "open service" button. Note that the Visualizer has not yet been fully updated in order to render "agents" ("executors" in Mesos parlence). This prevents bundles from being properly represented. The next release will attend to this issue.
+10. Note that Mesos reconciliation is not yet implemented. This will be attended to in the next release.
 
 ## 2.0.0-beta.1 September 2nd, 2016
 
