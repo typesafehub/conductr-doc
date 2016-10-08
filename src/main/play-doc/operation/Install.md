@@ -279,7 +279,7 @@ We will limit the bundle's sudo privileges to running `/usr/bin/reloadHAProxy.sh
 
 ```bash
 [172.17.0.1]$ sudo touch /usr/bin/reloadHAProxy.sh
-[172.17.0.1]$ sudo chmod 0550 /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ sudo chmod 0770 /usr/bin/reloadHAProxy.sh
 [172.17.0.1]$ sudo chown conductr-agent:conductr-agent /usr/bin/reloadHAProxy.sh
 [172.17.0.1]$ echo "conductr-agent ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
 ```
@@ -694,7 +694,7 @@ This guide presumes RHEL/CentOS or Debian nodes. Those using [Mesosphere's AWS C
 
 ## Prerequisite
 
-* An existing, working DC/OS 1.7 cluster. The installation and setup of DC/OS cluster is outside of the scope of this guide.
+* An existing, working DC/OS 1.8 cluster. The installation and setup of DC/OS cluster is outside of the scope of this guide.
 * A working installation of Marathon in the DC/OS cluster is required to deploy ConductR into the DC/OS cluster.
 * A working installation of DC/OS CLI tools successfully authenticated against the DC/OS cluster.
 * A working bastion host with access to the DC/OS cluster's network is required to securely load and run ConductR bundles.
@@ -771,7 +771,7 @@ We will limit the bundle's sudo privileges to running `/usr/bin/reloadHAProxy.sh
 
 ```bash
 [172.17.0.1]$ sudo touch /usr/bin/reloadHAProxy.sh
-[172.17.0.1]$ sudo chmod 0550 /usr/bin/reloadHAProxy.sh
+[172.17.0.1]$ sudo chmod 0770 /usr/bin/reloadHAProxy.sh
 [172.17.0.1]$ sudo chown {executor-user}:{executor-user} /usr/bin/reloadHAProxy.sh
 [172.17.0.1]$ echo "{executor-user} ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
 ```
@@ -864,7 +864,7 @@ Test service endpoints from the public nodes to ensure connectivity. The `/etc/h
 
 Now that we have configured ConductR-HAProxy to run on the public nodes, we'll want to configure them as a public service. If the public nodes have public IP addresses, the addresses can be listed in DNS directly. For better resiliency, use multiple public proxy nodes.
 
-If we do not want to have multiple "A" records, we can use a load balancer for the service CNAME address. In doing such, we will create a new a load balancer instance for the ConductR services as this allows the load balancer single health check to use ConductR-HAProxy's health endpoint, not marathon-lb's.
+If we do not want to have multiple "A" records, we can use a load balancer, such as EC2's ELB, for the service CNAME address. In doing such, we will create a new a load balancer instance for the ConductR services as this allows the load balancer's health check to use ConductR-HAProxy's health endpoint, HTTP:9009/status. This endpoint will return a 200 when ConductR's proxy is operating correctly. In the example of AWS ELB, we create a new ELB using the same (or similar custom) subnet and security group as the public nodes with internet access. Add listeners to map public ports such as 80 and 443 on the public CNAME to serviced ports on the public proxy nodes and ensure security group rules allow the ELB to access the public nodes on the service ports.
 
 # DC/OS CloudFormation Installation
 
@@ -872,7 +872,7 @@ The following guide will outline the steps to deploy and run ConductR as a frame
 
 ## Prerequisite
 
-* An existing, working DC/OS 1.7 cluster built using CloudFormation template provided by Mesosphere. The installation and setup of DC/OS cluster is outside of the scope of this guide.
+* An existing, working DC/OS 1.8 cluster built using CloudFormation template provided by Mesosphere. The installation and setup of DC/OS cluster is outside of the scope of this guide.
 * A working installation of Marathon in the DC/OS cluster is required to deploy ConductR into the DC/OS cluster.
 * A working installation of DC/OS CLI tools successfully authenticated against the DC/OS cluster.
 * A working bastion host with access to the DC/OS cluster's network is required to securely load and run ConductR bundles.
@@ -1004,7 +1004,7 @@ We will use `/etc/haproxy/reloadHAProxy.sh.` ConductR-HAProxy will install the r
 
 ```bash
 $ sudo touch /etc/haproxy/reloadHAProxy.sh
-$ sudo chmod 0550 /etc/haproxy/reloadHAProxy.sh
+$ sudo chmod 0770 /etc/haproxy/reloadHAProxy.sh
 ```
 
 ## Deploying bundles
@@ -1216,4 +1216,4 @@ Test service endpoints from the public nodes to ensure connectivity. The `/etc/h
 
 Now that we have configured ConductR-HAProxy to run on the public nodes, we'll want to configure them as a public service. If the public nodes have public IP addresses, the addresses can be listed in DNS directly. For better resiliency, use multiple public proxy nodes.
 
-If we do not want to have multiple "A" records, we can use a load balancer, such as EC2's ELB, for the service CNAME address. In doing such, we will create a new a load balancer instance for the ConductR services as this allows the load balancer single health check to use ConductR-HAProxy's health endpoint, not marathon-lb's.  In the example of AWS ELB, we create a new ELB using the same (or similar custom) subnet and security group as the public nodes with internet access. Add listeners to map public ports on the CNAME to serviced ports on the public proxy nodes.
+If we do not want to have multiple "A" records, we can use a load balancer, such as EC2's ELB, for the service CNAME address. In doing such, we will create a new a load balancer instance for the ConductR services as this allows the load balancer's health check to use ConductR-HAProxy's health endpoint, HTTP:9009/status. This endpoint will return a 200 when ConductR's proxy is operating correctly. In the example of AWS ELB, we create a new ELB using the same (or similar custom) subnet and security group as the public nodes with internet access. Add listeners to map public ports such as 80 and 443 on the public CNAME to serviced ports on the public proxy nodes and ensure security group rules allow the ELB to access the public nodes on the service ports.
