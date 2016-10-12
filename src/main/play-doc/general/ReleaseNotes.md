@@ -1,6 +1,6 @@
 # ConductR release notes
 
-### 1.1.10-RC1 October 8th, 2016
+### 1.1.10 October 12th, 2016
 
 1. Various monitor dashboard improvements.
 2. There was a problem using the ConductR roles functionality from within the developer sandbox.
@@ -8,6 +8,7 @@
 4. Unreachable/reachable member states can now be observed via the /members/events endpoint.
 5. The Visualizer has been updated to render unreachable/reachable member states.
 6. A sporadic failure could occur when loading a bundle.
+7. A bundle could start and then stop quickly due to a race condition between the sources of detection of each.
 
 ### 1.1.9 September 9th, 2016
 
