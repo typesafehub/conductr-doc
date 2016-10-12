@@ -8,6 +8,22 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 
 > Note: failure to size your bundle's memory as being large enough will cause the Linux OOM killer to terminate all bundles being managed by a conductr-agent on a given host. This is a [known issue with Mesos](https://issues.apache.org/jira/browse/MESOS-3333#). Unfortunately the problem is also difficult to diagnose. Please ensure that your app has plenty of resident memory declared. Think generally in terms of 128MiB increments when going beyond 384MiB.
 
+## 2.0.0-beta.3 October 12th, 2016
+
+1. Sandbox roles were broken.
+2. New /agents and /agents/events endpoints are available on the control protocol for gathering information on the agents in the spirit of /members and /members/events respectively.
+3. Mesos reconciliation is now available both upon ConductR's bundle execution state changing, and for when a Mesos master re-connects.
+4. Resiliency improvements around Agent monitoring from within ConductR's core.
+5. Upgraded to Mesos 1.0.1 from a client connectivity perspective. Various updates also made in support of DC/OS 1.8.
+6. The Visualizer has been improved to represent agent information.
+7. The Visualizer is now available as the web ui of the ConductR service from within the DC/OS UI.
+8. The control protocol is now available via the DC/OS admin gateway.
+9. Completely refreshed ConductR's dependencies including the Akka 2.4.10 and its corresponding Akka http release (the latter having some significant performance improvements).
+10. The /members/events endpoint now emits events representing the Akka cluster Reachable and Unreachable states.
+11. A major fix to the handling of multipart form data when loading a bundle has been made. Prior to this bundle load operations could fail sporadically.
+12. A problem was fixed whereby a bundle could start and then quickly stop. This was due to a race condition that could occur intermitently.
+13. A ConductR agent (Mesos executor) now requests 1.9 CPU allocations in order to improve performance.
+
 ## 2.0.0-beta.2 September 21st, 2016
 
 1. The sandbox logs have been improved such that they are not confused with the logging associated with the bootstrap's initialization.
