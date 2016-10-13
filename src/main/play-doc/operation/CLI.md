@@ -92,13 +92,13 @@ The configuration is now ready to be loaded along with a bundle. Configuration i
 
 ## Accessing services provided by bundles
 
-Access to services in ConductR is proxied for high availability and load balancing. To list all the currently running services in the ConductR execute the `conduct services` command.
+Access to services in ConductR is proxied for high availability and load balancing. To list all the currently running services in the ConductR available via lookup execute the `conduct services` command. Running tasks without named endpoints are not listed.
 
 ```bash
 conduct services --ip 172.17.0.1
 ```
 
-You should see that there is one service called `9000/visualizer` provided by the Visualizer bundle.
+You will NOT the service called `9000/visualizer` provided by the Visualizer bundle listed unless it includes a service name declared in its endpoint. Not all versions include a service name without a configuration bundle re-declaring the endpoint.
 
 ```bash
 SERVICE       BUNDLE ID       BUNDLE NAME       STATUS

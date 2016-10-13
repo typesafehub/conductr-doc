@@ -34,4 +34,4 @@ We'll also generally use few edge routers. Management of the deployment, from TL
 
 Differentiation of bundle location by path is particularly useful in larger systems wishing to expose fewer hostnames. Developers should note the ability to [preserve paths](CreatingBundles#Preserving-paths-at-the-proxy) at the proxy when applications require such.
 
-Use the `conduct services` command from the [[ConductR CLI|CLI]] to see what host name or port and path currently deployed bundles provide.
+Use the `conduct services` command from the [[ConductR CLI|CLI]] to see what host name or port and path currently deployed bundles provide. Note that bundles without named endpoints are not listed by `conduct services`.
