@@ -8,6 +8,12 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 
 > Note: failure to size your bundle's memory as being large enough will cause the Linux OOM killer to terminate all bundles being managed by a conductr-agent on a given host. This is a [known issue with Mesos](https://issues.apache.org/jira/browse/MESOS-3333#). Unfortunately the problem is also difficult to diagnose. Please ensure that your app has plenty of resident memory declared. Think generally in terms of 128MiB increments when going beyond 384MiB.
 
+## 2.0.0-beta.4 October 14th, 2016
+
+1. Improvements to Mesos reconciliation.
+2. Service names are now optional for bundles (a service doesn't always require being located).
+3. A drammatic improvement in performance has been made given that ConductR's executor is no longer consider when accepting resource offers. This should lead to being able to run more bundles within a Mesos system and seeing that offers are accepted quickly.
+
 ## 2.0.0-beta.3 October 12th, 2016
 
 1. Sandbox roles were broken.
