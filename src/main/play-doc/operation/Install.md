@@ -11,13 +11,11 @@ Choose on of the following installation guides to get started:
 
 > In order to obtain the Debian or RPM installations of ConductR then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
 
--
-
 > This is a tutorial for installing ConductR on linux in production mode. It shows how this is done for a small cluster of 3 machines. If you are looking for a non-production Linux installation (for example, a QA environment that is close to production), be sure to read about [how to setup for non-production](ClusterSetupConsiderations#Setting-up-for-non-production) after reading the remainder of this page.
 
 ## Prerequisites
 
-* x86/64 bit Debian or Rpm based Linux system (recommended: Ubuntu 14.04 LTS or RHEL/CentOS 7)
+* x86/64 bit Debian or Rpm based Linux system (recommended: Ubuntu 16.04 LTS or RHEL/CentOS 7)
 * Oracle Java Runtime Environment 8 (JRE 8)
 * Python 3.4
 * Debian or Rpm package of ConductR Core
@@ -335,23 +333,24 @@ ConductR has been designed to be "always on". If you wish to use ConductR as a t
 
 * Amazon Web Services(AWS) account with EC2 admin rights
 * Debian package of ConductR
+* Debian package of ConductR Agent
 
 Prior to using the Ansible playbooks to create your cluster, you will needs the following:
 
 * Access Key and Secret values for your AWS account.
-* Ansible installed on a controller host.
+* Ansible installed on a controller host. This host can also be used as a [bastion host](https://en.wikipedia.org/wiki/Bastion_host).
 * An AWS Key Pair (PEM file) on the Ansible controller host.
-* A copy of the ConductR deb installation package on the Ansible controller host.
+* A copy of the ConductR and ConductR Agent deb installation packages on the Ansible controller host.
 * A copy of the [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) repository on the Ansible controller host.
 * Ability to accept Oracle's Java License.
 
 ## Ansible Instructions
 
-The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays and playbooks provision [Lightbend ConductR](https://conductr.lightbend.com) cluster nodes in AWS EC2 using [Ansible](http://www.ansible.com).
+The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays and playbooks provision [Lightbend ConductR](https://conductr.lightbend.com) cluster nodes in AWS EC2 using [Ansible](http://www.ansible.com). The branchs of The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays and playbooks provision [Lightbend ConductR](https://conductr.lightbend.com) cluster nodes in AWS EC2 using [Ansible](http://www.ansible.com). The branches of track that of ConductR. As such the 2.0.x branch of ConductR-Ansible would be used to build ConductR 2.0.x clusters.
 
 Use create-network-ec2.yml to setup a new Virtual Private Cloud (VPC) and create your cluster in the new VPC. You only need to provide your access keys and what region to execute in. The playbook outputs a vars file for use with the build-cluster-ec.yml.
 
-The playbook build-cluster-ec2.yml launches three instances across two availability zones. ConductR Core and ConductR Agent is installed on all instances and configured to form a cluster. The nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
+The playbook build-cluster-ec2.yml launches three instances across three availability zones. ConductR Core and ConductR Agent is installed on all instances and configured to form a cluster. The nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
 
 ### Prepare controller host
 
@@ -410,7 +409,7 @@ ansible-playbook create-network-ec2.yml -e "EC2_REGION=eu-west-1"
 
 The create network playbook produces a vars file in the `vars` folder named `{{EC2_REGION}}_vars.yml` where {{EC2_REGION}} is the region used. You **must** add the name of your key pair to `{{EC2_REGION}}_vars.yml` in order to use it with the build cluster script. Change the "Key Pair Name" of `KEYPAIR: "Key Pair Name"` to that of the key pair name, which may be different than the file name and generally does not end in the .pem file extension.
 
-If you chose to execute in a region other than us-east-1, you will also need to change the AMI value for `IMAGE` in your vars file to that of an Ubuntu image in that region. The AMI listed is the Ubuntu 14.04 LTS HVM EBS boot image published by Canonical for us-east-1. Other recent versions and types of Ubuntu instances are expected to work. The [Ubuntu AMI Locator](http://cloud-images.ubuntu.com/locator/ec2/) can help you find AMIs for alternative regions and instance types.
+If you chose to execute in a region other than us-east-1, you will also need to change the AMI value for `IMAGE` in your vars file to that of an Ubuntu image in that region. The AMI listed is the Ubuntu 16.04 LTS HVM EBS boot image published by Canonical for us-east-1. Other recent versions and types of Ubuntu instances are expected to work. The [Ubuntu AMI Locator](http://cloud-images.ubuntu.com/locator/ec2/) can help you find AMIs for alternative regions and instance types.
 
 Re-running the create network playbook in the same EC2 region refreshes the network to the playbook configuration and does not create multiple VPCs.
 
@@ -473,7 +472,7 @@ Create an external facing load balancer from the EC2 control panel. You will nee
 
 ### Preparing the AMI
 
-Launch a single instance of the desired base AMI to use as our image master. We'll use the Ubuntu 14.04 LTS HVM EBS-SSD boot image in US-East-1, ami-76b2a71e. If you choose another base image, use an EBS boot image as they are much easy to image unless you know what your doing there. Be certain to assign a public ip address in instance details to make it easy to ssh into.
+Launch a single instance of the desired base AMI to use as our image master. We'll use the Ubuntu 16.04 LTS HVM EBS-SSD boot image in US-East-1, e.g. ami-fd6e3bea. If you choose another base image, use an EBS boot image as they are much easy to image unless you know what your doing there. Be certain to assign a public ip address in instance details to make it easy to ssh into.
 
 Access the console of the image instance with root access. For Ubuntu AMIs this is done as the user ubuntu using the PEM file specified at launch. The user ubuntu has sudo access. Other images will use different users. Check with the image provider for the correct user name to use.
 
