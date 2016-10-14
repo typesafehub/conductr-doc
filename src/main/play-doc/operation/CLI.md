@@ -92,17 +92,17 @@ The configuration is now ready to be loaded along with a bundle. Configuration i
 
 ## Accessing services provided by bundles
 
-Access to services in ConductR is proxied for high availability and load balancing. To list all the currently running services in the ConductR execute the `conduct services` command.
+Access to services in ConductR is proxied for high availability and load balancing. To list all the currently running services in the ConductR available via lookup execute the `conduct services` command. Running tasks without named endpoints are not listed.
 
 ```bash
 conduct services --ip 172.17.0.1
 ```
 
-You should see that there is one service called `9000/visualizer` provided by the Visualizer bundle.
+You should see that there is one service called `visualizer` provided by the Visualizer bundle. Only executing bundles with service names will be listed.
 
 ```bash
-SERVICE       BUNDLE ID       BUNDLE NAME       STATUS
-http://:9999  23391d4-3cc322b visualizer        Running
+SERVICE NAME  BUNDLE ID  BUNDLE NAME       STATUS
+visualizer    23391d4    visualizer        Running
 ```
 
 To access Visualizer point your browser to any ConductR node and add the name of the service to the URL, e.g. `http://172.17.0.1:9999`. Alternatively, if you can only access ConductR nodes using SSH, create a SSH tunnel that tunnels local port from your machine to the Visualizer service `ssh -L 8080:172.17.0.1:9999 172.17.0.1` (don't forget to substitute the `172.17.0.1`) and then access Visualizer by pointing your browser to `http://localhost:9999`.
