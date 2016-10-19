@@ -295,8 +295,8 @@ ConductR-HAProxy bundle must be installed on all nodes where HAProxy is installe
 Append the `haproxy` role to the default `web` role as follows:
 
 ```bash
-[172.17.0.1]$ echo -Dakka.cluster.roles.0=web | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-[172.17.0.1]$ echo -Dakka.cluster.roles.1=haproxy | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo -Dconductr.agent.roles.0=web | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo -Dconductr.agent.roles.1=haproxy | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 [172.17.0.1]$ sudo service conductr-agent restart
 ```
 
@@ -661,8 +661,8 @@ ConductR-HAProxy bundle must be installed on all nodes where HAProxy is installe
 Append the `haproxy` role to the default `web` role as follows:
 
 ```bash
-echo -Dakka.cluster.roles.0=web | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-echo -Dakka.cluster.roles.1=haproxy | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+echo -Dconductr.agent.roles.0=web | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+echo -Dconductr.agent.roles.1=haproxy | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 sudo service conductr-agent restart
 ```
 
