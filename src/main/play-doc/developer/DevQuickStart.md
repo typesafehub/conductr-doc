@@ -30,7 +30,7 @@ The conductr-cli is used to communicate with the ConductR cluster.
 
 ## Adding sbt-conductr plugin
 
-[sbt-conductr](https://github.com/typesafehub/sbt-conductr) is a sbt plugin that provides commands in sbt to: 
+[sbt-conductr](https://github.com/typesafehub/sbt-conductr) is a sbt plugin that provides commands in sbt to:
 
 * Produce a ConductR bundle
 * Start and stop a local ConductR cluster
@@ -39,7 +39,7 @@ The conductr-cli is used to communicate with the ConductR cluster.
 To use `sbt-conductr` for your project add the plugin to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.7")
+addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.13")
 ```
 
 ## Signaling application state
@@ -70,7 +70,7 @@ From within sbt:
 install
 ```
 
-The above will introspect your project and any sub projects, generate "bundles" and their configuration, restart the sandbox to ensure a clean state and then load and run your application. You can then access your application at http://docker-host-ip:9000. 
+The above will introspect your project and any sub projects, generate "bundles" and their configuration, restart the sandbox to ensure a clean state and then load and run your application. You can then access your application at http://docker-host-ip:9000.
 
 > Bundles and their configuration are tamperproof given a digest hash incorporated into their filename. ConductR will verify this hash against the one supplied in the filename when loading a bundle. With bundles and configuration then, you can roll releases forward and backward with a high degree of confidence.
 
