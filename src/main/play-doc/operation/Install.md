@@ -162,10 +162,10 @@ Similarly for ConductR Agent:
 
 #### Docker
 
-ConductR supports running applications and services within Docker. If you plan on running Docker based bundles, you will need to install [Docker](https://docs.docker.com/) according to [the official documentation](https://docs.docker.com/installation/ubuntulinux/). Once Docker is installed then add ConductR's user/group to the `docker` group so that it has [the correct permissions in order to access Docker](http://docs.docker.com/installation/ubuntulinux/#giving-non-root-access):
+ConductR supports running applications and services within Docker. If you plan on running Docker based bundles, you will need to install [Docker](https://docs.docker.com/) according to [the official documentation](https://docs.docker.com/installation/ubuntulinux/). Once Docker is installed then add the ConductR-Agent daemon user/group to the `docker` group so that it has [the correct permissions in order to access Docker](http://docs.docker.com/installation/ubuntulinux/#giving-non-root-access):
 
 ```bash
-[172.17.0.1]$ sudo usermod -a -G docker conductr
+[172.17.0.1]$ sudo usermod -a -G docker conductr-agent
 ```
 
 ## Installing ConductR on the remaining machines
@@ -553,10 +553,10 @@ On RHEL and CentOS it may also be neccessary to [disable default requiretty](htt
 
 ##### Docker
 
-ConductR supports running applications and services within Docker. If you plan on running Docker based bundles, you will need to install [Docker](https://docs.docker.com/) according to [the official documentation](https://docs.docker.com/installation/ubuntulinux/). Once Docker is installed then add ConductR's user/group to the `docker` group so that it has [the correct permissions in order to access Docker](http://docs.docker.com/installation/ubuntulinux/#giving-non-root-access):
+ConductR supports running applications and services within Docker. If you plan on running Docker based bundles, you will need to install [Docker](https://docs.docker.com/) according to [the official documentation](https://docs.docker.com/installation/ubuntulinux/). Once Docker is installed then add the ConductR-Agent daemon user/group to the `docker` group so that it has [the correct permissions in order to access Docker](http://docs.docker.com/installation/ubuntulinux/#giving-non-root-access):
 
 ```bash
-sudo usermod -a -G docker conductr
+sudo usermod -a -G docker conductr-agent
 ```
 
 ### Create the AMI
