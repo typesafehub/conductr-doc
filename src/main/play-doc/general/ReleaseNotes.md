@@ -1,5 +1,10 @@
 # ConductR release notes
 
+### 1.1.11 October 31st, 2016
+
+1. The Grafana bundle is no longer distributed with ConductR as it is available now as a separate download.
+2. There was a regression since 1.1.8 where scaling down a bundle would cause its target scale to be set to 0.
+
 ### 1.1.10 October 12th, 2016
 
 1. Various monitor dashboard improvements.
