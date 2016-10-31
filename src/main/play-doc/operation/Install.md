@@ -42,9 +42,14 @@ echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
 
 This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
 
+> It is *very* important that you use an IP address when configuring or reaching ConductR. DNS provides a layer of indirection that you will not want. You should always be mindful of the specific network interface that you bind a service to, including ConductR - if only for reasons of security. Along those lines, binding to 0.0.0.0 (any network interface) should always be avoided.
+
 ``` bash
 sudo hostname $(hostname -i)
+echo $(hostname)
 ```
+
+> If the result of `echo $(hostname)` above is not an IP address then you will probably need to use `ifconfig` in order to list the network interfaces that you have and then choose one.
 
 The tutorial also assumes that you have obtained the `conductr_%PLAY_VERSION%_all.deb` Debian or `conductr_%PLAY_VERSION%-1.noarch.rpm` Rpm package.
 
