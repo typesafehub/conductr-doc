@@ -50,7 +50,7 @@ subcommands:
                         help for subcommands
     version             print version
     info                print bundle information
-    services            print service information
+    service-names       print service locator information
     load                load a bundle
     run                 run a bundle
     stop                stop a abundle
@@ -90,22 +90,9 @@ shazar ./visualizer-poll-interval.sh
 
 The configuration is now ready to be loaded along with a bundle. Configuration is always provided as the second param to the `conduct load` command.
 
-## Accessing services provided by bundles
+## Accessing the Visualizer
 
-Access to services in ConductR is proxied for high availability and load balancing. To list all the currently running services in the ConductR available via lookup execute the `conduct services` command. Running tasks without named endpoints are not listed.
-
-```bash
-conduct services --ip 172.17.0.1
-```
-
-You will NOT the service called `9000/visualizer` provided by the Visualizer bundle listed unless it includes a service name declared in its endpoint. Not all versions include a service name without a configuration bundle re-declaring the endpoint.
-
-```bash
-SERVICE       BUNDLE ID       BUNDLE NAME       STATUS
-http://:9999  23391d4-3cc322b visualizer        Running
-```
-
-To access Visualizer point your browser to any ConductR node and add the name of the service to the URL, e.g. `http://172.17.0.1:9999`. Alternatively, if you can only access ConductR nodes using SSH, create a SSH tunnel that tunnels local port from your machine to the Visualizer service `ssh -L 8080:172.17.0.1:9999 172.17.0.1` (don't forget to substitute the `172.17.0.1`) and then access Visualizer by pointing your browser to `http://localhost:9999`.
+Access to services in ConductR is proxied for high availability and load balancing. To access Visualizer point your browser to any ConductR node and use the URL, `http://172.17.0.1:9999`. Alternatively, if you can only access ConductR nodes using SSH, create a SSH tunnel that tunnels local port from your machine to the Visualizer service `ssh -L 8080:172.17.0.1:9999 172.17.0.1` (don't forget to substitute the `172.17.0.1`) and then access Visualizer by pointing your browser to `http://localhost:9999`.
 
 Visualizer shows ConductR nodes as small blue circles with IP addresses next to them. Green circles denote bundles, and spinning circle means that a bundle is running. You should see one instance of bundle running. Try starting Visualizer on more nodes by executing:
 
