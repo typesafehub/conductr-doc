@@ -5,7 +5,6 @@ Choose on of the following installation guides to get started:
 * [Linux Installation](#Linux-Installation)
 * [EC2 Installation](#EC2-Installation)
 * [DC/OS Installation](#DC/OS-Installation)
-* [DC/OS CloudFormation Installation](#DC/OS-CloudFormation-Installation)
 
 # Linux Installation
 
@@ -691,24 +690,13 @@ ConductR comes with a `visualizer` sample application. Head over to the next sec
 
 # DC/OS Installation
 
-The following guide will outline the steps to deploy and run ConductR as a framework within DC/OS.
-
-This guide presumes RHEL/CentOS or Debian nodes. Those using [Mesosphere's AWS CloudFormation templates](https://dcos.io/docs/1.7/administration/installing/cloud/aws/) should refer to the [DC/OS CloudFormation Installation](#DC/OS-CloudFormation-Installation) section for EC2 specific instructions.
+The following guide will outline the steps to deploy and run ConductR as a framework within [DC/OS](https://dcos.io/).
 
 ## Prerequisite
 
-* An existing, working DC/OS 1.8 cluster. The installation and setup of DC/OS cluster is outside of the scope of this guide.
+* An existing, working DC/OS 1.8 cluster. The [installation and setup of DC/OS](https://dcos.io/install/) cluster is outside of the scope of this guide.
 * A working installation of Marathon in the DC/OS cluster is required to deploy ConductR into the DC/OS cluster.
 * A working installation of DC/OS CLI tools successfully authenticated against the DC/OS cluster.
-* A working bastion host with access to the DC/OS cluster's network is required to securely load and run ConductR bundles.
-
-
-## Bastion host setup
-
-The bastion host is a secured system of your choosing for the purpose of loading and running ConductR bundles. It is on the bastion host that we will install and run the [[ConductR CLI|CLI]]. Therefore the bastion host needs access to the ConductR Control API on port 9005 for the cluster nodes.
-
-If the bastion cannot access bundle artifacts from your own builds, you will need to copy your bundles to the bastion host in order to deploy your application bundles using the [[ConductR CLI|CLI]].
-
 
 ## Deploy ConductR into DC/OS cluster
 
@@ -724,11 +712,28 @@ Wait until the ConductR instance's health to marked as healthy before proceeding
 
 If more instances are required, scale the application to the desired total and ensure that all of the instances are healthy before proceeding.
 
-### Executor Port Reservation
+Upon startup ConductR will launch its agent process on each of the Mesos slave nodes.
 
-Upon startup ConductR will launch its agent process on each of the Mesos slave nodes. ConductR Agent process will reserve port `2552` for Akka remoting and port range `10000-10999` for exposing endpoints of the bundle deployed within ConductR.
+## Integrate with the DC/OS CLI
 
-## Installing a Proxy
+These instructions for managing ConductR require the [[CLI|CLI]] to be installed.
+
+First, prepare the DC/OS CLI:
+
+```
+$ conduct setup-dcos
+```
+
+You can now use `dcos conduct <conduct-subcommand>` to connect with your DC/OS cluster. For example, you should be able to query ConductR:
+
+```
+$ dcos conduct info
+ID                 NAME                           #REP  #STR  #RUN
+```
+
+## Installing a Proxy on Ubuntu
+
+> Skip the next section and scroll down to ["Installing a Proxy on CoreOS"](#Installing_a_Proxy_on_CoreOS) when using CloudFormation.
 
 _Perform each step in this section on all public nodes. For full resilience a proxy should be installed for each public node machine. The public node machines are machines assigned with `slave_public` role._
 
@@ -785,130 +790,9 @@ On RHEL and CentOS it may also be neccessary to [disable default requiretty](htt
 $ echo 'Defaults: {executor-user}  !requiretty' | sudo tee -a /etc/sudoers
 ```
 
-## Deploying bundles
+Skip the next section and scroll down to ["Loading and Running ConductR-HAProxy Bundle"](#Loading_and_Running_ConductR-HAProxy_Bundle).
 
-[[ConductR CLI|CLI]] requires the host or ip address of one of the ConductR node to deploy and run bundles.
-
-Obtain the host or ip address of one of the ConductR Core nodes that's currently running in the DCOS cluster using the `dcos task` command.
-
-```bash
-$ dcos task
-NAME                    HOST       USER  STATE  ID
-ConductR                10.0.3.76  root    R    conductr.6e9251af-4e28-11e6-8edd-4219f69bc956
-```
-
-In the example above ConductR has been deployed to `10.0.3.76` - this is the ip address to be used. If ConductR has been deployed to multiple nodes, the host address from any these nodes can be selected.
-
-This next section utilizes the bastion host with ConductR Control port access to the nodes.
-
-SSH to the bastion host. Once logged in, export the `CONDUCTR_IP` environment variable with the address obtained from `dcos task`.
-
-You are now ready to [[deploy bundles|DeployingBundlesOps]] into ConductR. The first bundle we want to deploy is ConductR-HAProxy.
-
-## Loading and Running ConductR-HAProxy Bundle
-
-The ConductR-HAProxy bundle will automatically update HAProxy to expose bundle services for access from outside cluster via the public service interface. ConductR-HAProxy will ensure the HAProxy configuration is kept up to date based on the bundles which are running in the cluster.
-
-### Obtaining ConductR-HAProxy Bundle
-
-First we need to obtain the `.tgz` ConductR installations package.
-
-> In order to obtain the installations of ConductR then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
-
-Once the ConductR `.tgz` is obtained, extract the ConductR-HAProxy bundle from the package in a working directory, we'll use `workdir`. The ConductR HAProxy bundle can be found within the ConductR package under  `conductr-{version}/extra/conductr-haproxy-{version}-{digest}.zip`.
-
-
-### Use CLI to load and run ConductR-HAProxy bundle
-
-Upload the ConductR-HAProxy bundle to the bastion host and use the [[CLI|CLI]] to load the ConductR-HAProxy bundle.
-
-```bash
-$ conduct load file://conductr-haproxy-{version}-{digest}.zip
-```
-
-Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
-
-```bash
-$ conduct run conductr-haproxy --scale 3
-```
-
-## Verifying bundle startup
-
-Use the command `conduct info` from the bastion host to verify successful startup of the bundle.
-
-```bash
-$ conduct info
-ID       NAME        #REP  #STR  #RUN
-6e68f05  visualizer     1     0     1
-```
-
-In the example above, a bundle called `visualizer` has been started successfully.
-
-This can also be confirmed by executing the `dcos task` command which will display the bundle running as a task from the context of DC/OS. The `visualizer-1` task belongs to the currently running `visualizer` bundle having `1` as the `compatibilityVersion`.
-
-```bash
-$ dcos task
-NAME           HOST       USER  STATE  ID
-visualizer-1   10.0.3.75  root    R    6e68f055d1f5715ad3ff19172fa5efaf_0f6e119c-9288-425a-89e3-36379dcaccda
-```
-
-The `compatibilityVersion` is explained in the to [bundle configuration](BundleConfiguration).
-
-The bundle can now be scaled to run multiple instances.
-
-```bash
-$ conduct run --scale=3 visual
-```
-
-Test service endpoints from the public nodes to ensure connectivity. The `/etc/haproxy/haproxy.cfg` file on the public nodes contains the frontend and backend configurations for services exposed by bundles. Test the front end bind port and path using `curl` and the public node ip address to ensure proxying is working correctly.
-
-
-## Configuring the service gateway
-
-Now that we have configured ConductR-HAProxy to run on the public nodes, we'll want to configure them as a public service. If the public nodes have public IP addresses, the addresses can be listed in DNS directly. For better resiliency, use multiple public proxy nodes.
-
-If we do not want to have multiple "A" records, we can use a load balancer, such as EC2's ELB, for the service CNAME address. In doing such, we will create a new a load balancer instance for the ConductR services as this allows the load balancer's health check to use ConductR-HAProxy's health endpoint, HTTP:9009/status. This endpoint will return a 200 when ConductR's proxy is operating correctly. In the example of AWS ELB, we create a new ELB using the same (or similar custom) subnet and security group as the public nodes with internet access. Add listeners to map public ports such as 80 and 443 on the public CNAME to serviced ports on the public proxy nodes and ensure security group rules allow the ELB to access the public nodes on the service ports.
-
-# DC/OS CloudFormation Installation
-
-The following guide will outline the steps to deploy and run ConductR as a framework within DC/OS which has been built using [Mesosphere's AWS CloudFormation template](https://dcos.io/docs/1.7/administration/installing/cloud/aws/).
-
-## Prerequisite
-
-* An existing, working DC/OS 1.8 cluster built using CloudFormation template provided by Mesosphere. The installation and setup of DC/OS cluster is outside of the scope of this guide.
-* A working installation of Marathon in the DC/OS cluster is required to deploy ConductR into the DC/OS cluster.
-* A working installation of DC/OS CLI tools successfully authenticated against the DC/OS cluster.
-* A working bastion host with access to the DC/OS cluster's network is required to securely load and run ConductR bundles.
-
-
-## Bastion host setup
-
-The bastion host is a secured system of your choosing for the purpose of loading and running ConductR bundles. It is on the bastion host that we will install and run the [[ConductR CLI|CLI]]. Therefore the bastion host needs access to the ConductR Control API on port 9005 for the cluster nodes.
-
-These requirements can be satisfied with a new custom security group in the cluster VPC. The public and private node security groups must accept Control API access on port 9005 from the bastion security group with the bastion security group also accepting the [ephermal return port](http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_ACLs.html#VPC_ACLs_Ephemeral_Ports) from the the nodes. The bastion node needs internet access and should only be accessible via SSH or similar limited, secure means from '0.0.0.0/0'. The bastion can be placed in the public nodes subnet using a custom security group and a public ip.
-
-If the bastion cannot access bundle artifacts from your own builds, you will need to copy your bundles to the bastion host in order to deploy your application bundles using the [[ConductR CLI|CLI]].
-
-
-## Deploy ConductR into DC/OS cluster
-
-Obtain the ConductR's application definition JSON.
-
-> In order to obtain the JSON required for installations of ConductR on DC/OS then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
-
-Post the JSON to Marathon. This can be done using json mode of the 'create application' dialog. Refer to Marathon's documentation for deployment steps given the application definition JSON.
-
-By default ConductR will be deployed with a single instance.
-
-Wait until the ConductR instance's health to marked as healthy before proceeding.
-
-If more instances are required, scale the application to the desired total and ensure that all of the instances are healthy before proceeding.
-
-### Executor Port Reservation
-
-Upon startup ConductR will launch its agent process on each of the Mesos slave nodes. ConductR Agent process will reserve port `2552` for Akka remoting and port range `10000-10999` for exposing endpoints of the bundle deployed within ConductR.
-
-## Installing a Proxy
+## Installing a Proxy on CoreOS
 
 _Perform each step in this section on all public nodes. For full resilience a proxy should be installed for each public node machine. The public node machines are machines assigned with `slave_public` role._
 
@@ -946,7 +830,7 @@ frontend monitor
   monitor-uri /test
 ```
 
-#### Running the HAProxy Docker container
+### Running the HAProxy Docker container
 
 Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
 
@@ -1010,43 +894,11 @@ $ sudo touch /etc/haproxy/reloadHAProxy.sh
 $ sudo chmod 0770 /etc/haproxy/reloadHAProxy.sh
 ```
 
-## Deploying bundles
-
-[[ConductR CLI|CLI]] requires the host or ip address of one of the ConductR node to deploy and run bundles.
-
-Obtain the host or ip address of one of the ConductR Core nodes that's currently running in the DCOS cluster using the `dcos task` command.
-
-```bash
-$ dcos task
-NAME                    HOST       USER  STATE  ID
-ConductR                10.0.3.76  root    R    conductr.6e9251af-4e28-11e6-8edd-4219f69bc956
-```
-
-In the example above ConductR has been deployed to `10.0.3.76` - this is the ip address to be used. If ConductR has been deployed to multiple nodes, the host address from any these nodes can be selected.
-
-This next section utilizes the bastion host with ConductR Control port access to the nodes.
-
-SSH to the bastion host. Once logged in, export the `CONDUCTR_IP` environment variable with the address obtained from `dcos task`.
-
-You are now ready to [[deploy bundles|DeployingBundlesOps]] into ConductR. The first bundle we want to deploy is ConductR-HAProxy.
-
-## Loading and Running ConductR-HAProxy Bundle
-
-The ConductR-HAProxy bundle will automatically update HAProxy to expose bundle services for access from outside cluster via the public service interface. ConductR-HAProxy will ensure the HAProxy configuration is kept up to date based on the bundles which are running in the cluster.
-
-### Obtaining ConductR-HAProxy Bundle
-
-First we need to obtain the `.tgz` ConductR installations package.
-
-> In order to obtain the installations of ConductR then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
-
-Once the ConductR `.tgz` is obtained, extract the ConductR-HAProxy bundle from the package in a working directory, we'll use `workdir`. The ConductR HAProxy bundle can be found within the ConductR package under  `conductr-{version}/extra/conductr-haproxy-{version}-{digest}.zip`.
-
 ### Customizing ConductR-HAProxy Bundle
 
 _These steps are necessary since we're using Docker-based HAProxy with a non-default HAProxy script reload location._
 
-On the bastion host, create a directory in the working directory where the custom HAProxy configuration will be staged, e.g.
+Create a directory on your local host in the working directory where the custom HAProxy configuration will be staged, e.g.
 
 ```bash
 $ mkdir -p workdir/custom-haproxy-conf
@@ -1170,19 +1022,38 @@ Created digested ZIP archive at workdir/custom-haproxy-conf-ffd0dcf76f4d565424a8
 
 The generated file `custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip` is the configuration override that needs to be loaded alongside ConductR HAProxy bundle. Note that the hash value will vary and your generated filename will be different.
 
+## Loading and Running ConductR-HAProxy Bundle
+
+The ConductR-HAProxy bundle will automatically update HAProxy to expose bundle services for access from outside cluster via the public service interface. ConductR-HAProxy will ensure the HAProxy configuration is kept up to date based on the bundles which are running in the cluster.
+
+### Obtaining ConductR-HAProxy Bundle
+
+First we need to obtain the `.tgz` ConductR installations package.
+
+> In order to obtain the installations of ConductR then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
+
+Once the ConductR `.tgz` is obtained, extract the ConductR-HAProxy bundle from the package in a working directory, we'll use `workdir`. The ConductR HAProxy bundle can be found within the ConductR package under  `conductr-{version}/extra/conductr-haproxy-{version}-{digest}.zip`.
 
 ### Use CLI to load and run ConductR-HAProxy bundle
 
-Load the ConductR-HAProxy bundle with its customized configuration and run as follows.
+Upload the ConductR-HAProxy bundle to the bastion host and use the [[CLI|CLI]] to load the ConductR-HAProxy bundle.
+
+For Linux (not bundle configuration):
 
 ```bash
-$ conduct load file:workdir/conductr-haproxy-{version}-{digest}.zip {path-to-customized-config-zip}
+$ dcos conduct load file://conductr-haproxy-{version}-{digest}.zip
+```
+
+For CoreOS (where we generated configuration - substitute the `ffd0dcf` hash as per the one you generated):
+
+```
+$ dcos conduct load file://conductr-haproxy-{version}-{digest}.zip custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
 ```
 
 Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
 
 ```bash
-$ conduct run conductr-haproxy --scale 3
+$ dcos conduct run conductr-haproxy --scale 3
 ```
 
 ## Verifying bundle startup
@@ -1190,7 +1061,7 @@ $ conduct run conductr-haproxy --scale 3
 Use the command `conduct info` from the bastion host to verify successful startup of the bundle.
 
 ```bash
-$ conduct info
+$ dcos conduct info
 ID       NAME        #REP  #STR  #RUN
 6e68f05  visualizer     1     0     1
 ```
@@ -1207,13 +1078,13 @@ visualizer-1   10.0.3.75  root    R    6e68f055d1f5715ad3ff19172fa5efaf_0f6e119c
 
 The `compatibilityVersion` is explained in the to [bundle configuration](BundleConfiguration).
 
-The bundle can now be scaled to run multiple instances
+The bundle can now be scaled to run multiple instances.
+
 ```bash
-$ conduct run --scale=3 visual
+$ dcos conduct run --scale=3 visual
 ```
 
-Test service endpoints from the public nodes to ensure connectivity. The `/etc/haproxy/haproxy.cfg` file on the public nodes contains the frontend and backend configurations for services exposed by bundles. Test the front end bind port and path using `curl` and the public node ip address to ensure proxing is working correctly.
-
+Test service endpoints from the public nodes to ensure connectivity. The `/etc/haproxy/haproxy.cfg` file on the public nodes contains the frontend and backend configurations for services exposed by bundles. Test the front end bind port and path using `curl` and the public node ip address to ensure proxying is working correctly.
 
 ## Configuring the service gateway
 
