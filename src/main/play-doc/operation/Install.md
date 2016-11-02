@@ -464,8 +464,8 @@ SG-Nodes Inbound Rules
 | :------ | :----- | :---------- | :--------- |
 | Custom  |TCP     | 9009        | SG-ELB     |
 | Custom  |TCP     | 9999        | SG-ELB     |
-| Custom  |TCP     | 9004        | SG-Nodes   |
-| Custom  |TCP     | 9006        | SG-Nodes   |
+| Custom  |TCP     | 2552        | SG-Nodes   |
+| Custom  |TCP     | 9004-9008   | SG-Nodes   |
 | Custom  |TCP     | 10000-10999 | SG-Nodes   |
 | SSH     |TCP     | 22          | 0.0.0.0/0  |		
 
