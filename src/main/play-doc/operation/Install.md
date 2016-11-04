@@ -695,12 +695,12 @@ The following guide will outline the steps to deploy and run ConductR as a frame
 ## Prerequisite
 
 * An existing, working DC/OS 1.8 cluster. The [installation and setup of DC/OS](https://dcos.io/install/) cluster is outside of the scope of this guide.
-* A working installation of Marathon in the DC/OS cluster is required to deploy ConductR into the DC/OS cluster.
 * A working installation of DC/OS CLI tools successfully authenticated against the DC/OS cluster.
+* For consolidated logging, ElasticSearch must be running in the cluster. Installing from Universe will satisfy this requirement.
 
 ## Deploy ConductR into DC/OS cluster
 
-Obtain the ConductR's application definition JSON.
+Obtain the ConductR's application definition JSON and the ConductR-HAProxy bundle.
 
 > In order to obtain the JSON required for installations of ConductR on DC/OS then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
 
