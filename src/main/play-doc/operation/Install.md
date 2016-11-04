@@ -704,15 +704,13 @@ Obtain the ConductR's application definition JSON.
 
 > In order to obtain the JSON required for installations of ConductR on DC/OS then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
 
-Post the JSON to Marathon. This can be done using json mode of the 'create application' dialog. Refer to Marathon's documentation for deployment steps given the application definition JSON.
+In `Services`, post the JSON file to deploy the ConductR Service. This can be done using json mode of the 'Deploy New Service' dialog. Refer to DC/OS documentation for deployment steps given the application definition JSON.
 
-By default ConductR will be deployed with a single instance.
+By default ConductR will be deployed with a single core scheduler instance. Upon startup ConductR will launch its agent executor process on each of the available Mesos slave nodes.
 
 Wait until the ConductR instance's health to marked as healthy before proceeding.
 
-If more instances are required, scale the application to the desired total and ensure that all of the instances are healthy before proceeding.
-
-Upon startup ConductR will launch its agent process on each of the Mesos slave nodes.
+If more instances are required, scale ConductR to the desired total schedulers using the `Instances` within `Edit Service` not the `Scale` dialog. Ensure that all of the instances are healthy before proceeding. Multiple core schedulers are recommended for resilience however schedulers are not required on all nodes.
 
 ## Integrate with the DC/OS CLI
 
