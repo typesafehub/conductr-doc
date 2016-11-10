@@ -65,7 +65,11 @@ pip3 install --user --upgrade conductr-cli
 
 ## Packaging configuration
 
-In addition to consuming services provided by ConductR, the CLI also provides a quick way of packaging custom configuration to a bundle. We will go through most of the CLI features by deploying the Visualizer bundle to ConductR that comes together with the ConductR installation. The Visualizer can be found in the `/usr/share/conductr/samples` directory.
+In addition to consuming services provided by ConductR, the CLI also provides a quick way of packaging custom configuration to a bundle. We will go through most of the CLI features by deploying the Visualizer bundle to ConductR that comes together with the ConductR installation. The Visualizer can be loaded from the [bundles repo](https://bintray.com/typesafe/bundle) using the `load` command.
+
+```bash
+conduct load visualizer
+```
 
 Visualizer is a sample Play Framework application that queries ConductR API endpoints and visualizes the ConductR cluster together with deployed and running bundles.
 
