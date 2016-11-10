@@ -310,10 +310,10 @@ _Execute the step in this section only on the `172.17.0.1` machine. We could als
 
 These instructions for loading and running the ConductR-HAProxy bundle require the [[CLI|CLI]] to be installed. Continue with the next step once [[ConductR CLI|CLI]] is installed.
 
-Load the ConductR-HAProxy bundle.
+Load the ConductR-HAProxy bundle from the [bundles repo](https://bintray.com/typesafe/bundle).
 
 ```bash
-[172.17.0.1]$ conduct load file:/usr/share/conductr/extra/conductr-haproxy-{version}-{digest}.zip
+[172.17.0.1]$ conduct load conductr-haproxy
 ```
 
 Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
@@ -675,10 +675,10 @@ _Execute this step once for the entire cluster. This step would need to be repea
 
 These instructions for loading and running the ConductR-HAProxy bundle require the [[CLI|CLI]] to be installed. Continue with the next step once [[ConductR CLI|CLI]] is installed.
 
-Load and run the ConductR-HAProxy bundle as follows. Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
+Load and run the ConductR-HAProxy bundle from the [bundles repo](https://bintray.com/typesafe/bundle) as follows. Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
 
 ```bash
-conduct load file:/usr/share/conductr/extra/conductr-haproxy-{version}-{digest}.zip
+conduct load conductr-haproxy
 conduct run conductr-haproxy --scale 3
 ```
 
@@ -700,7 +700,7 @@ The following guide will outline the steps to deploy and run ConductR as a frame
 
 ## Deploy ConductR into DC/OS cluster
 
-Obtain the ConductR's application definition JSON and the ConductR-HAProxy bundle.
+Obtain the ConductR's application definition JSON.
 
 > In order to obtain the JSON required for installations of ConductR on DC/OS then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
 
@@ -1024,28 +1024,20 @@ The generated file `custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239
 
 The ConductR-HAProxy bundle will automatically update HAProxy to expose bundle services for access from outside cluster via the public service interface. ConductR-HAProxy will ensure the HAProxy configuration is kept up to date based on the bundles which are running in the cluster.
 
-### Obtaining ConductR-HAProxy Bundle
-
-First we need to obtain the `.tgz` ConductR installations package.
-
-> In order to obtain the installations of ConductR then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
-
-Once the ConductR `.tgz` is obtained, extract the ConductR-HAProxy bundle from the package in a working directory, we'll use `workdir`. The ConductR HAProxy bundle can be found within the ConductR package under  `conductr-{version}/extra/conductr-haproxy-{version}-{digest}.zip`.
-
 ### Use CLI to load and run ConductR-HAProxy bundle
 
-Upload the ConductR-HAProxy bundle to the bastion host and use the [[CLI|CLI]] to load the ConductR-HAProxy bundle.
+Upload the ConductR-HAProxy bundle to the bastion host and use the [[CLI|CLI]] to load the ConductR-HAProxy bundle from the [bundles repo](https://bintray.com/typesafe/bundle).
 
 For Linux (not bundle configuration):
 
 ```bash
-$ dcos conduct load file://conductr-haproxy-{version}-{digest}.zip
+$ dcos conduct load conductr-haproxy
 ```
 
 For CoreOS (where we generated configuration - substitute the `ffd0dcf` hash as per the one you generated):
 
 ```
-$ dcos conduct load file://conductr-haproxy-{version}-{digest}.zip custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
+$ dcos conduct load conductr-haproxy custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
 ```
 
 Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
