@@ -116,7 +116,7 @@ conductr {
   # SIGKILL).
   bundle-pidfile-dir = ${java.io.tmpdir}/bundle-pids
 
-  # The amount of time Typesafe ConductR expects to wait on achieving a read quorum. 10 seconds should
+  # The amount of time Lightbend ConductR expects to wait on achieving a read quorum. 10 seconds should
   # cover large clusters, but you may need to increase this if read timeouts appear
   # frequently in your log files.
   read-quorum-timeout = 10 seconds
@@ -166,8 +166,8 @@ conductr {
     # The amount of time to wait on obtaining state events publisher.
     state-events-timeout = 2 seconds
 
-    # The amount of time to wait on uploading a bundle into Typesafe ConductR. This timeout will vary depending
-    # on how long it takes for clients of Typesafe ConductR to upload bundles i.e. the WAN will dictate this
+    # The amount of time to wait on uploading a bundle into Lightbend ConductR. This timeout will vary depending
+    # on how long it takes for clients of Lightbend ConductR to upload bundles i.e. the WAN will dictate this
     # parameter. If you find that clients e.g. the CLI, are reporting timeouts then try increasing
     # this parameter.
     load-scheduler-timeout = 1 minute
