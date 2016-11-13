@@ -528,4 +528,3 @@ A typical response contains the current members of the cluster (shown here is a 
 That's it! You now have a cluster of three ConductR nodes ready to start running applications. Add all cluster instances to the load balancer. Your cluster will be reachable by the DNS name specified in the load balancer description. You can add this as a CNAME to your DNS zone file to make the cluster reachable using a hostname from your domain.
 
 ConductR comes with a `visualizer` sample application. Head over to the next section [[CLI|CLI]] to learn how to deploy visualizer application to your fresh ConductR cluster.
-
