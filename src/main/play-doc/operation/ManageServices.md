@@ -100,7 +100,7 @@ To perform a per node upgrade for ConductR Agent, connect the new agent node to 
 
 To perform a per node upgrade for ConductR Core and ConductR Agent installed on the same host, connect both the ConductR Core and ConductR agent to an existing cluster. As old hosts (containing both old ConductR Core and ConductR Agent) are removed from the cluster, bundles will be replicated to the new resources, and bundles will be rescheduled for execution on the new agent nodes.
 
-It is critical to allow sufficient time for bundle relocation and replication before removing old members. In addition to ConductR replicating bundles to new nodes, stateful bundles may require additional time to replicate application data. Removing an agent node before application data has fully replicated can result in application data loss. Elasticsearch bundle provided along with ConductR, for example, requires [verification](#Elasticsearch Verification) to ensure the data is transferred into the new agent node.
+It is critical to allow sufficient time for bundle relocation and replication before removing old members. In addition to ConductR replicating bundles to new nodes, stateful bundles may require additional time to replicate application data. Removing an agent node before application data has fully replicated can result in application data loss. Elasticsearch bundle provided along with ConductR, for example, requires [verification](#Elasticsearch-Verification) to ensure the data is transferred into the new agent node.
 
 Application specific data replication should also be monitored during an upgrade to prevent data loss.
 

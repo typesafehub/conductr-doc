@@ -731,7 +731,7 @@ ID                 NAME                           #REP  #STR  #RUN
 
 ## Installing a Proxy on Ubuntu
 
-> Skip the next section and scroll down to ["Installing a Proxy on CoreOS"](#Installing_a_Proxy_on_CoreOS) when using CloudFormation.
+> Skip the next section and scroll down to ["Installing a Proxy on CoreOS"](#Installing-a-Proxy-on-CoreOS) when using CloudFormation.
 
 _Perform each step in this section on all public nodes. For full resilience a proxy should be installed for each public node machine. The public node machines are machines assigned with `slave_public` role._
 
