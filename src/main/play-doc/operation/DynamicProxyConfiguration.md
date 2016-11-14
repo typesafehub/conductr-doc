@@ -568,7 +568,7 @@ The proxy will only be configured for endpoints from the bundles which are runni
 
 Review the ACL configuration of the endpoints deployed in the ConductR cluster. Use the command `conduct acls http` and `conduct acls tcp` to display request ACLs for HTTP and TCP traffic respectively.
 
-The command will provide a warning message should duplicate endpoints are detected. Refer to [Requirement](#Requirement) section for more details on duplicate endpoints.
+The command will provide a warning message if duplicate endpoints are detected. Refer to [Requirement](#Requirement) section for more details on duplicate endpoints.
 
 ### Check the logs from ConductR HAProxy bundle
 

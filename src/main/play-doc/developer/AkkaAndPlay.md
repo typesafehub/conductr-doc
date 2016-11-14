@@ -125,9 +125,9 @@ In the above, no declaration of `services` is required as akka remoting is an in
 
 As a subscriber to the Lightbend Reactive Platform you can use SBR as an automated downing mechanism. Note that when using SBR you must handle the `MemberRemoved` event if it is received for the current member - SBR will not shutdown your application/service automatically.
 
-We recommend running ConductR's agents on separate machines to your ConductR core services. This will eliminate the potential for contention between the downing strategies of your application/service and that of ConductR's.
+We recommend running ConductR's agents on separate machines to your ConductR core services. This will eliminate the potential for contention between the downing strategies of your application/service and that of ConductR.
 
-If you prefer to run the ConductR agent on the same machine as ConductR core, contending strategies may not be a problem depending on your application/service's availability requirements. Suppose that your application/service chooses "keep oldest" as a strategy, and that the oldest member is in the minority portion of ConductR's cluster. If ConductR's SBR's "keep majority" decides to shutdown your oldest member, it will re-schedule it for execution again, but in the majority side of the cluster. In the case of "keep-oldest" resulting in reducing the number of running instances to one, your system may suffer an outage in terms of the length of time it takes ConductR to reschedule it for execution on the majority side of the cluster (seconds). This problem can be further mitigated by using an SBR timeout for "keep oldest" that is greater than ConductR's. 
+If you prefer to run the ConductR agent on the same machine as ConductR core, contending strategies may not be a problem depending on your application/service's availability requirements. Suppose that your application/service chooses "keep oldest" as a strategy, and that the oldest member is in the minority portion of ConductR's cluster. If ConductR's SBR's "keep majority" decides to shutdown your oldest member, it will re-schedule it for execution again, but in the majority side of the cluster. In the case of "keep-oldest" resulting in reducing the number of running instances to one, your system may suffer an outage in terms of the length of time it takes ConductR to reschedule it for execution on the majority side of the cluster (seconds). This problem can be further mitigated by using an SBR timeout for "keep oldest" that is greater than ConductR's.
 
 A reasonable start point when considering an SBR based strategy to use in conjunction with ConductR in general is to use the following configuration:
 
@@ -196,7 +196,7 @@ The Play flavors of conductr-bundle-lib automatically signal that your applicati
 play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
 ```
 
-`play.modules.enabled` is used correspondly to declare your custom lifecycle module.
+`play.modules.enabled` is used correspondingly to declare your custom lifecycle module.
 
 A common use-case when using Akka clustering with your Play application is to wait until a cluster is ready. In this case your lifecycle module should then subscribe to member up and signal to the `StatusService` within the handler:
 
@@ -287,7 +287,7 @@ import com.typesafe.conductr.bundlelib.akka.{ Env => AkkaEnv }
 import com.typesafe.conductr.bundlelib.play.{ Env => PlayEnv }
 
 object Global extends GlobalSettings {
-  val totalConfiguration = 
+  val totalConfiguration =
     super.configuration ++ Configuration(AkkaEnv.asConfig) ++ Configuration(PlayEnv.asConfig)
 
   override def configuration: Configuration =
@@ -303,7 +303,7 @@ In the case of Play 2.4, the Play flavors of conductr-bundle-lib automatically s
 play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
 ```
 
-`play.modules.enabled` is used correspondly to declare your custom lifecycle module.
+`play.modules.enabled` is used correspondingly to declare your custom lifecycle module.
 
 A common use-case when using Akka clustering with your Play application is to wait until a cluster is ready. In this case your lifecycle module should then subscribe to member up and signal to the `StatusService` within the handler:
 
@@ -339,7 +339,7 @@ The Lagom flavors of conductr-bundle-lib automatically signal that your applicat
 play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
 ```
 
-`play.modules.enabled` is used correspondly to declare your custom lifecycle module.
+`play.modules.enabled` is used correspondingly to declare your custom lifecycle module.
 
 A common use-case when using Akka clustering with your Play application is to wait until a cluster is ready. In this case your lifecycle module should then subscribe to member up and signal to the `StatusService` within the handler:
 
