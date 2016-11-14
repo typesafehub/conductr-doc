@@ -31,7 +31,7 @@ Akka module configuration can also be set using this file. For example, to assig
  -Dakka.cluster.roles.1=muchMem
 ```
  
-With this setting the node would offer the roles `megaIOPS` and `muchMem`.Only bundles with a `BundleKeys.roles` of `megaIOPS,` `muchMem` or both `megaIOPS` and `muchMem` will be loaded and run on this node.
+With this setting the node would offer the roles `megaIOPS` and `muchMem`. Only bundles with a `BundleKeys.roles` of `megaIOPS,` `muchMem` or both `megaIOPS` and `muchMem` will be loaded and run on this node.
 
 The ConductR service must be restarted for changes to this file to take effect.
 
@@ -51,7 +51,7 @@ Larger clusters on the other hand will generally want more specialization and th
 
 ## Service Monitoring
 
-For best resilience, the ConductR service daemons should be monitored and restarted in the event of failure. [sbt-native-packager](https://github.com/sbt/sbt-native-packager) has experimental [systemd support](http://www.scala-sbt.org/sbt-native-packager/archetypes/java_server/customize.html#systemd-support). As systemd support matures, ConductR will made available as a package manged by systemd with restart on failure enabled. Until that time, third party daemon monitors can be utilized to provide restart on failure.
+For best resilience, the ConductR service daemons should be monitored and restarted in the event of failure. [sbt-native-packager](https://github.com/sbt/sbt-native-packager) has experimental [systemd support](http://www.scala-sbt.org/sbt-native-packager/archetypes/java_server/customize.html#systemd-support). As systemd support matures, ConductR will be made available as a package managed by systemd with restart on failure enabled. Until that time, third party daemon monitors can be utilized to provide restart on failure.
 
 # Upgrading ConductR
 
@@ -94,7 +94,7 @@ Once these steps has been performed with successful result, Elasticsearch cluste
 
 ## Recovering from Red Elasticsearch Cluster
 
-Should Elasticsearch cluster endpoint `status` has the `red` value, this means one or more shard has not been allocated to the member of the cluster.
+Should the Elasticsearch cluster endpoint `status` have the `red` value, this means one or more shards have not been allocated to the member of the cluster.
 
 The recovery process involves allocating the unassigned shards to the member of the cluster.
 
@@ -153,4 +153,4 @@ The shard `0` should now be allocated to the node called `Thin Man`. Repeat thes
 
 When allocating shards, ensure the shards are distributed as evenly as possible across all nodes of the Elasticsearch cluster. This will improve the resiliency of the cluster.
 
-Once all the shards has been reallocated, the cluster health endpoint `status` should be back to `green` and the Elasticsearch cluster should be back in a working order.
+Once all the shards have been reallocated, the cluster health endpoint `status` should be back to `green` and the Elasticsearch cluster should be back in a working order.
