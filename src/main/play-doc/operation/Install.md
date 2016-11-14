@@ -40,7 +40,7 @@ echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
 
 ## Installing ConductR on the first machine
 
-ConductR comprises of the ConductR Core and ConductR Agent. ConductR Core is responsible for cluster-wide scaling and replication decision making, as well as hosting the application files or the bundles. ConductR Agent is responsible for executing the application processes. The ConductR Core and the ConductR Agent are ran as separate processes, and hence separate services within the operating system.
+ConductR comprises of the ConductR Core and ConductR Agent. ConductR Core is responsible for cluster-wide scaling and replication decision making, as well as hosting the application files or the bundles. ConductR Agent is responsible for executing the application processes. The ConductR Core and the ConductR Agent are run as separate processes, and hence separate services within the operating system.
 
 This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
 
@@ -349,11 +349,11 @@ Prior to using the Ansible playbooks to create your cluster, you will needs the 
 
 ## Ansible Instructions
 
-The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays and playbooks provision [Lightbend ConductR](https://conductr.lightbend.com) cluster nodes in AWS EC2 using [Ansible](http://www.ansible.com). The branchs of The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays and playbooks provision [Lightbend ConductR](https://conductr.lightbend.com) cluster nodes in AWS EC2 using [Ansible](http://www.ansible.com). The branches of track that of ConductR. As such the 2.0.x branch of ConductR-Ansible would be used to build ConductR 2.0.x clusters.
+The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays and playbooks provision [Lightbend ConductR](https://conductr.lightbend.com) cluster nodes in AWS EC2 using [Ansible](http://www.ansible.com). The branches of the repository track that of ConductR. As such the 2.0.x branch of ConductR-Ansible would be used to build ConductR 2.0.x clusters.
 
 Use create-network-ec2.yml to setup a new Virtual Private Cloud (VPC) and create your cluster in the new VPC. You only need to provide your access keys and what region to execute in. The playbook outputs a vars file for use with the build-cluster-ec.yml.
 
-The playbook build-cluster-ec2.yml launches three instances across three availability zones. ConductR Core and ConductR Agent is installed on all instances and configured to form a cluster. The nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
+The playbook build-cluster-ec2.yml launches three instances across three availability zones. ConductR Core and ConductR Agent are installed on all instances and configured to form a cluster. The nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
 
 ### Prepare controller host
 
@@ -398,7 +398,7 @@ Your controller host is now ready to run plays.
 
 ### Create network
 
-ConductR-Ansible can create and prepare a new VPC for use with ConductR. Running ConductR in it's own VPC isolates the cluster from the rest of your EC2 network. If you have existing services in EC2 that ConductR needs to be able to access on the local network using an EC2 private ip address, you need to use your existing VPC. In all other cases, creating a ConductR VPC is recommended, but is not required if you are comfortabling setting up the network yourself.
+ConductR-Ansible can create and prepare a new VPC for use with ConductR. Running ConductR in its own VPC isolates the cluster from the rest of your EC2 network. If you have existing services in EC2 that ConductR needs to be able to access on the local network using an EC2 private ip address, you need to use your existing VPC. In all other cases, creating a ConductR VPC is recommended, but is not required if you are comfortabling setting up the network yourself.
 
 ```bash
 ansible-playbook create-network-ec2.yml
@@ -430,7 +430,7 @@ ansible-playbook build-cluster-ec2.yml -e "VARS_FILE=vars/{{EC2_REGION}}_vars.ym
 
 If the playbook completes successfully, you will have a three node cluster that can be accessed using the ELB DNS name. ConductR comes with a `visualizer` sample application. The playbook created ELB includes a listener mapping port 80 to Visualizer's port 9999 port mapping.
 
-Head over to the next section [[Managing application|ManagingApplication]] to learn how to deploy visualizer application to your fresh ConductR cluster. You can ssh into one of the cluster nodes using it's public ip address to deploy Visualizer. Use the username from the `REMOTE_USER` (currently "ubuntu") and the PEM file as for the identify file (-i). The ConductR CLI has been installed to all nodes for you. Once deployed, you can view the Visualizer via port 80 using the ELB DNS name in your browser.
+Head over to the next section [[Managing application|ManagingApplication]] to learn how to deploy the visualizer application to your fresh ConductR cluster. You can ssh into one of the cluster nodes using its public ip address to deploy Visualizer. Use the username from the `REMOTE_USER` (currently "ubuntu") and the PEM file as for the identify file (-i). The ConductR CLI has been installed to all nodes for you. Once deployed, you can view the Visualizer via port 80 using the ELB DNS name in your browser.
 
 Re-running this playbook launches a new set of instances. This means it can be re-run to create additional ConductR clusters. For example we might re-run the playbook to create a new cluster using a new version of ConductR to test new features. If we change only the values of `CONDUCTR_PKG`, `CONDUCTR_AGENT_PKG`, and `ELB` in the vars file to a new ConductR version package and new ELB, running the playbook again will create a new cluster using the new version in the same subnets as the previous version.
 
@@ -706,9 +706,9 @@ Obtain the ConductR's application definition JSON.
 
 In `Services`, post the JSON file to deploy the ConductR Service. This can be done using json mode of the 'Deploy New Service' dialog. Refer to DC/OS documentation for deployment steps given the application definition JSON.
 
-By default ConductR will be deployed with a single core scheduler instance. Upon startup ConductR will launch its agent executor process on each of the available Mesos slave nodes.
+By default ConductR will be deployed with a single core scheduler instance. Upon startup ConductR will launch its agent executor process on each of the available Mesos agent nodes.
 
-Wait until the ConductR instance's health to marked as healthy before proceeding.
+Wait until the ConductR instance's health is marked as healthy before proceeding.
 
 If more instances are required, scale ConductR to the desired total schedulers using the `Instances` within `Edit Service` not the `Scale` dialog. Ensure that all of the instances are healthy before proceeding. Multiple core schedulers are recommended for resilience however schedulers are not required on all nodes.
 
@@ -731,7 +731,7 @@ ID                 NAME                           #REP  #STR  #RUN
 
 ## Installing a Proxy on Ubuntu
 
-> Skip the next section and scroll down to ["Installing a Proxy on CoreOS"](#Installing_a_Proxy_on_CoreOS) when using CloudFormation.
+> Skip the next section and scroll down to ["Installing a Proxy on CoreOS"](#Installing-a-Proxy-on-CoreOS) when using CloudFormation.
 
 _Perform each step in this section on all public nodes. For full resilience a proxy should be installed for each public node machine. The public node machines are machines assigned with `slave_public` role._
 

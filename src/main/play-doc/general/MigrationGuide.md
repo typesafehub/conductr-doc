@@ -24,11 +24,11 @@ ConductR Core holds the state of the cluster, and is responsible for decision ma
 
 ConductR Agent is responsible for running bundle processes. As such, the bundle roles which are previously specified are now to be specified within ConductR Agent.
 
-The ConductR Core and ConductR Agent is available as 2 different packages. The [[installation instructions|Install]] describes the steps of installing ConductR Core and ConductR Agent on the same host. These steps is also applicable should ConductR Core and ConductR Agent installation on different host is desired.
+The ConductR Core and ConductR Agent is available as 2 different packages. The [[installation instructions|Install]] describes the steps of installing ConductR Core and ConductR Agent on the same host. These steps are also applicable should ConductR Core and ConductR Agent installation on different hosts be desired.
 
 ## Node Peer Access
 
-This distributed topology enables Agents to be managed by remote Cores. This requires nodes to be able to reach each other on ports 2552, 9005, 9007 and 9008 in addition the 9004 and 9006 ports previously required with 1.1. See also the port table in [[Subnets and Security Groups|Install#Subnets-and-Security-Groups]].
+This distributed topology enables Agents to be managed by remote Cores. This requires nodes to be able to reach each other on ports 2552, 9005, 9007 and 9008 in addition to the 9004 and 9006 ports previously required with 1.1. See also the port table in [[Subnets and Security Groups|Install#Subnets-and-Security-Groups]].
 
 ## Proxying
 
@@ -36,7 +36,7 @@ conductr-haproxy is now provided as a bundle with the "haproxy" role. When runni
 
 ### Amazon's ELB
 
-Prior to 1.2, we recommended that you configure the ELB to poll the /bundles endpoint of the control protocol. Given conductr-haproxy you should now configured the ELB to poll the http://:9009/status. This endpoint will return an HTTP OK status when HAProxy has been correctly configured therefore leading to a more reliable configuration of the ELB. See [the cluster setup considerations document](ClusterSetupConsiderations#Cluster security considerations) for more information.
+Prior to 1.2, we recommended that you configure the ELB to poll the /bundles endpoint of the control protocol. Given conductr-haproxy you should now configured the ELB to poll the http://:9009/status. This endpoint will return an HTTP OK status when HAProxy has been correctly configured therefore leading to a more reliable configuration of the ELB. See [the cluster setup considerations document](ClusterSetupConsiderations#Cluster-security-considerations) for more information.
 
 ## Syslog
 
@@ -45,7 +45,7 @@ In additional to disabling Elasticsearch via configuration, a service lookup mus
 ```
   -Dcontrail.syslog.server.host=127.0.0.1
   -Dcontrail.syslog.server.port=514
-  -Dcontrail.syslog.server.elasticsearch.enabled=off 
+  -Dcontrail.syslog.server.elasticsearch.enabled=off
   -Dcontrail.syslog.server.service-locator.enabled=off
 ```
 

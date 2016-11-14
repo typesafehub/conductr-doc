@@ -19,7 +19,7 @@ Note that the description here is just to provide a feel of how `sbt-conductr` i
 lazy val root = (project in file(".")).enablePlugins(JavaAppPackaging)
 ```
 
-Note that Lagom or Play user can enable one of the following plugins instead:
+Note that Lagom or Play users can enable one of the following plugins instead:
 
 | Project            | Description                                                                         |
 |--------------------|-------------------------------------------------------------------------------------|
@@ -30,7 +30,7 @@ Note that Lagom or Play user can enable one of the following plugins instead:
 | Play Java 2.4+     | `lazy val root = (project in file(".")).enablePlugins(PlayJava)`                    |
 | Play Java 2.3      | `lazy val root = (project in file(".")).enablePlugins(JavaAppPackaging, PlayJava)`  |
 
-You will then need to declare what are known as "scheduling parameters" for ConductR. These parameters effectively describe what resources are used by your application or service and are used to determine which machine they will run on. 
+You will then need to declare what are known as "scheduling parameters" for ConductR. These parameters effectively describe what resources are used by your application or service and are used to determine which machine they will run on.
 
 The Play and Lagom bundle plugins provide [default scheduling parameters](https://github.com/typesafehub/sbt-conductr/blob/master/README.md#scheduling-parameters), i.e. it is not mandatory to declare scheduling parameters for these kind of applications. However, we recommend to define custom settings for each of your application.  
 
@@ -47,7 +47,7 @@ javaOptions in Universal := Seq(
 BundleKeys.nrOfCpus := 0.1
 BundleKeys.memory := 128.MiB
 BundleKeys.diskSpace := 5.MB
-``` 
+```
 
 You'll note that the international standards for supporting [binary prefixes](http://en.wikipedia.org/wiki/Binary_prefix), as in `MiB`, is supported.
 
@@ -67,7 +67,7 @@ i.e. the name of your project (`visualizer`), its version `1.1` and the hash val
 
 Your bundle is now ready for loading into ConductR. What happened there is a few sensible defaults were chosen for you, a `bundle.conf` was generated, and a zip was built containing the output of a Universal build. The plugin then generated a [secure hash](http://en.wikipedia.org/wiki/Secure_Hash_Algorithm) of the zip contents and encoded it in the filename. The secure hash provides a version of your bundle that ConductR is able to verify and thus assure you of its integrity. You can derive a reasonable level of confidence that version xyz of your application or service is always going to be xyz; something that makes you happy if you ever need to reliably rollback to an older version of your software!
 
-Your application or service must be told what interface and port it should bind to when it runs. The Lagom and Play bundle plugins do that automatically. 
+Your application or service must be told what interface and port it should bind to when it runs. The Lagom and Play bundle plugins do that automatically.
 
 ConductR provides a specific ip address for the application to bind. Binding the provided private address enables the application to limit its network exposure to only the required interface. Furthermore, the port that ConductR provides for binding to is guaranteed to not clash with other bundle components on the same machine, and so it is important to use.
 
@@ -109,9 +109,9 @@ Http(system).bind(ip, port) // ... and so forth
 
 ### More on memory
 
-The javaOptions values declare the maximum and minimum heap size for your application respectively. Profiling your application under load will help you determine an optimal heap size. We recommend declaring the BundleKeys.memory value to be approximately twice that of the heap size. BundleKeys.memory represents the resident memory size of your application, which includes the heap, thread stacks, code caches, the code itself and so forth. On Unix, use the top command and observe the resident memory column (RES) with your application under load.
+The `javaOptions` values declare the maximum and minimum heap size for your application respectively. Profiling your application under load will help you determine an optimal heap size. We recommend declaring the `BundleKeys.memory` value to be approximately twice that of the heap size. `BundleKeys.memory` represents the resident memory size of your application, which includes the heap, thread stacks, code caches, the code itself and so forth. On Unix, use the top command and observe the resident memory column (RES) with your application under load.
 
-BundleKeys.memory is used for locating machines with enough resources to run your application, and so it is particularly important to size it before you go to production.
+`BundleKeys.memory` is used for locating machines with enough resources to run your application, and so it is particularly important to size it before you go to production.
 
 ## Docker bundles
 

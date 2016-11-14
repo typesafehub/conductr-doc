@@ -12,7 +12,7 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 
 1. Improvements to Mesos reconciliation.
 2. Service names are now optional for bundles (a service doesn't always require being located).
-3. A drammatic improvement in performance has been made given that ConductR's executor is no longer consider when accepting resource offers. This should lead to being able to run more bundles within a Mesos system and seeing that offers are accepted quickly.
+3. A dramatic improvement in performance has been made given that ConductR's executor is no longer considered when accepting resource offers. This should lead to being able to run more bundles within a Mesos system and seeing that offers are accepted quickly.
 
 ## 2.0.0-beta.3 October 12th, 2016
 
@@ -24,16 +24,16 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 6. The Visualizer has been improved to represent agent information.
 7. The Visualizer is now available as the web ui of the ConductR service from within the DC/OS UI.
 8. The control protocol is now available via the DC/OS admin gateway.
-9. Completely refreshed ConductR's dependencies including the Akka 2.4.10 and its corresponding Akka http release (the latter having some significant performance improvements).
+9. Completely refreshed ConductR's dependencies including the Akka 2.4.10 and its corresponding Akka HTTP release (the latter having some significant performance improvements).
 10. The /members/events endpoint now emits events representing the Akka cluster Reachable and Unreachable states.
 11. A major fix to the handling of multipart form data when loading a bundle has been made. Prior to this bundle load operations could fail sporadically.
-12. A problem was fixed whereby a bundle could start and then quickly stop. This was due to a race condition that could occur intermitently.
+12. A problem was fixed whereby a bundle could start and then quickly stop. This was due to a race condition that could occur intermittently.
 13. A ConductR agent (Mesos executor) now requests 1.9 CPU allocations in order to improve performance.
 
 ## 2.0.0-beta.2 September 21st, 2016
 
 1. The sandbox logs have been improved such that they are not confused with the logging associated with the bootstrap's initialization.
-2. fixes a problematic startup sequence for the sandbox where the "feature" bundles could miss being scaled up due to an agent not being available initially.
+2. Fixes a problematic startup sequence for the sandbox where the "feature" bundles could miss being scaled up due to an agent not being available initially.
 3. ConductR Agent ports are now reserved on Mesos hosts.
 4. ConductR Agents are now periodically reconciled with ConductR Core's view of the world, and bundles are handled in the case of reconciliation failure.
 5. V1 of the ConductR control protocol has now been removed (now only V2 is supported - you will want to update your CLI and sbt-conductr versions)
