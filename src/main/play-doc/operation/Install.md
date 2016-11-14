@@ -706,7 +706,7 @@ Obtain the ConductR's application definition JSON.
 
 In `Services`, post the JSON file to deploy the ConductR Service. This can be done using json mode of the 'Deploy New Service' dialog. Refer to DC/OS documentation for deployment steps given the application definition JSON.
 
-By default ConductR will be deployed with a single core scheduler instance. Upon startup ConductR will launch its agent executor process on each of the available Mesos slave nodes.
+By default ConductR will be deployed with a single core scheduler instance. Upon startup ConductR will launch its agent executor process on each of the available Mesos agent nodes.
 
 Wait until the ConductR instance's health to marked as healthy before proceeding.
 
