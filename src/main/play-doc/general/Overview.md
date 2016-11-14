@@ -32,7 +32,7 @@ Lightbend ConductR fundamentally consists of the _ConductR_ process; an applicat
 
 Many types of client are possible given HTTP/REST/JSON. For developers, an sbt plugin named `sbt-conductr` provides control protocol commands (load, unload, start etc.) for managing the lifecycle of bundles. Similarly for operators, a set of command line tools are provided and can be run on Windows and Unix style environments.
 
-Again for developers, [Typesafe Activator](http://lightbend.com/activator) can also communicate with Lightbend ConductR. Activator communicates with sbt via the sbt-server protocol and so all tasks and settings available to the sbt-conductr plugin will be available to Activator. Therefore Activator can be used to prepare bundles and publish them to the cluster, or on a local machine for testing.
+Again for developers, [Lightbend Activator](http://lightbend.com/activator) can also communicate with Lightbend ConductR. Activator communicates with sbt via the sbt-server protocol and so all tasks and settings available to the sbt-conductr plugin will be available to Activator. Therefore Activator can be used to prepare bundles and publish them to the cluster, or on a local machine for testing.
 
 ### Bundles
 

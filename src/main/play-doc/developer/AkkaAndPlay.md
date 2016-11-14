@@ -194,7 +194,7 @@ The Play flavors of conductr-bundle-lib automatically signal that your applicati
 play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
 ```
 
-`play.modules.enabled` is used correspondly to declare your custom lifecycle module.
+`play.modules.enabled` is used correspondingly to declare your custom lifecycle module.
 
 A common use-case when using Akka clustering with your Play application is to wait until a cluster is ready. In this case your lifecycle module should then subscribe to member up and signal to the `StatusService` within the handler:
 
@@ -285,7 +285,7 @@ import com.typesafe.conductr.bundlelib.akka.{ Env => AkkaEnv }
 import com.typesafe.conductr.bundlelib.play.{ Env => PlayEnv }
 
 object Global extends GlobalSettings {
-  val totalConfiguration = 
+  val totalConfiguration =
     super.configuration ++ Configuration(AkkaEnv.asConfig) ++ Configuration(PlayEnv.asConfig)
 
   override def configuration: Configuration =
@@ -301,7 +301,7 @@ In the case of Play 2.4, the Play flavors of conductr-bundle-lib automatically s
 play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
 ```
 
-`play.modules.enabled` is used correspondly to declare your custom lifecycle module.
+`play.modules.enabled` is used correspondingly to declare your custom lifecycle module.
 
 A common use-case when using Akka clustering with your Play application is to wait until a cluster is ready. In this case your lifecycle module should then subscribe to member up and signal to the `StatusService` within the handler:
 
@@ -337,7 +337,7 @@ The Lagom flavors of conductr-bundle-lib automatically signal that your applicat
 play.modules.disabled += "com.typesafe.conductr.bundlelib.play.api.ConductRLifecycleModule"
 ```
 
-`play.modules.enabled` is used correspondly to declare your custom lifecycle module.
+`play.modules.enabled` is used correspondingly to declare your custom lifecycle module.
 
 A common use-case when using Akka clustering with your Play application is to wait until a cluster is ready. In this case your lifecycle module should then subscribe to member up and signal to the `StatusService` within the handler:
 

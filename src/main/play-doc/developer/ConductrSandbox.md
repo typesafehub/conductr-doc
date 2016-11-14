@@ -1,6 +1,6 @@
 # Managing ConductR sandbox cluster
 
-sbt-conductr is using the ConductR sandbox image to spin up a local ConductR cluster. This is a docker image based on Ubuntu that includes ConductR which makes it simple to use ConductR in a development context. It can be also utilized by Continuous Integration (CI) and other automation to validate bundles within a cluster context. The sandbox is available to freely all developers.
+sbt-conductr is using the ConductR sandbox image to spin up a local ConductR cluster. This is a docker image based on Ubuntu that includes ConductR which makes it simple to use ConductR in a development context. It can be also utilized by Continuous Integration (CI) and other automation to validate bundles within a cluster context. The sandbox is available freely to all developers.
 
 > The docker image contains the full version of ConductR. However, it is not recommended to use this version in production because it is pre-configured for non production scenarios and because this ConductR version is started inside a Docker container.
 
@@ -23,7 +23,7 @@ Given the above you will then have a ConductR process running in the background 
 ### ConductR features
 
 The sandbox contains handy features which can be optionally enabled during startup by specifying the `--feature` option, e.g.:
-    
+
 ```scala
 [my-app] sandbox run <CONDUCTR_VERSION> --feature visualization
 [info] Running ConductR...

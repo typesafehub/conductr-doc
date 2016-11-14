@@ -36,7 +36,7 @@ The following table describes each property:
 Name                 | Description
 ---------------------|-------------
 bind-port			 | Discussed [below](#Endpoints).
-compatibilityVersion | A versioning scheme that will be included in a bundle's name that describes the level of compatibility with bundles that go before it. By default we take the major version component of a version as defined by [http://semver.org/]. However you can make this mean anything that you need it to mean in relation to bundles produced prior to it. We take the notion of a compatibility version from [http://ometer.com/parallel.html].
+compatibilityVersion | A versioning scheme that will be included in a bundle's name that describes the level of compatibility with bundles that go before it. By default we take the major version component of a version as defined by <http://semver.org/>. However you can make this mean anything that you need it to mean in relation to bundles produced prior to it. We take the notion of a compatibility version from <http://ometer.com/parallel.html>.
 components			 | Each bundle has at least one component, and generally just one. A bundle component contains all that is required to run itself in terms of its directory on disk when the bundle is expanded. This section describes the meta data required for each bundle component.
 description			 | A human readable description of the bundle component.
 diskSpace            | The amount of disk space required to host an expanded bundle and configuration.
