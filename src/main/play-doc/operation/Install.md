@@ -856,7 +856,7 @@ CONTAINER ID        IMAGE               COMMAND                CREATED          
 534236e89eac        haproxy:1.5         "/docker-entrypoint.   15 seconds ago      Up 15 seconds       10.0.7.118:80->80/tcp, 10.0.7.118:443->443/tcp, 10.0.7.118:9000->9000/tcp, 10.0.7.118:9999->9999/tcp, 10.0.7.118:65535->65535/tcp   haproxy
 ```
 
-Additional check can be performed by using `curl` command against the HAProxy test endpoint.
+An additional check can be performed by using `curl` command against the HAProxy test endpoint.
 
 ```
 $ curl -v http://$(hostname):65535/test
@@ -879,7 +879,7 @@ Service ready.
 * Closing connection 0
 ```
 
-### Preparing HAProxy reload script
+### Preparing the HAProxy reload script
 
 After updating the HAProxy configuration file, ConductR-HAProxy will signal HAProxy to reload for the updated configuration.
 
@@ -896,16 +896,18 @@ $ sudo chmod 0770 /etc/haproxy/reloadHAProxy.sh
 
 _These steps are necessary since we're using Docker-based HAProxy with a non-default HAProxy script reload location._
 
+> These steps are to be performed on your local machine. First `cd` to a working directory.
+
 Create a directory on your local host in the working directory where the custom HAProxy configuration will be staged, e.g.
 
 ```bash
-$ mkdir -p workdir/custom-haproxy-conf
+$ mkdir custom-haproxy-conf
 ```
 
 Create a file called `runtime-config.sh` within the proxy configuration directory.
 
 ```bash
-$ touch workdir/custom-haproxy-conf/runtime-config.sh
+$ touch custom-haproxy-conf/runtime-config.sh
 ```
 
 Populate the file with the following entry.
@@ -931,10 +933,10 @@ The `runtime-config.sh` configuration script will be sourced as part of the Cond
 Create a file called `haproxy-override.cfg` within the proxy configuration directory, e.g.
 
 ```bash
-$ touch workdir/custom-haproxy-conf/haproxy-override.cfg
+$ touch custom-haproxy-conf/haproxy-override.cfg
 ```
 
-Populate `workdir/custom-haproxy-conf/haproxy-override.cfg` with the following.
+Populate `custom-haproxy-conf/haproxy-override.cfg` with the following.
 
 ```
 defaults
@@ -968,7 +970,7 @@ backend kibana_backend
     {{/eachBackendServer}}
   {{/ifAcl}}
 
-  {{#ifAcl 'visualizer' '1.1' 'visualizer'}}
+  {{#ifAcl 'visualizer' '2' 'visualizer'}}
 # ConductR - Visualizer Bundle HAProxy Configuration
 frontend visualizer_frontend
   bind {{haproxyHost}}:9999
@@ -999,7 +1001,7 @@ frontend dummy
 Create a file called `reloadHAProxy.sh` within the proxy configuration directory, e.g.
 
 ```bash
-$ touch workdir/custom-haproxy-conf/reloadHAProxy.sh
+$ touch custom-haproxy-conf/reloadHAProxy.sh
 ```
 
 Populate the file with the following entry.
@@ -1014,8 +1016,8 @@ docker kill -s HUP haproxy
 Use the CLI to package the configuration override:
 
 ```bash
-$ shazar --output-dir workdir workdir/custom-haproxy-conf
-Created digested ZIP archive at workdir/custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
+$ shazar custom-haproxy-conf
+Created digested ZIP archive at custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
 ```
 
 The generated file `custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip` is the configuration override that needs to be loaded alongside ConductR HAProxy bundle. Note that the hash value will vary and your generated filename will be different.
@@ -1034,7 +1036,9 @@ For Linux (not bundle configuration):
 $ dcos conduct load conductr-haproxy
 ```
 
-For CoreOS (where we generated configuration - substitute the `ffd0dcf` hash as per the one you generated):
+For CoreOS:
+
+> Substitute the `ffd0dcf` hash as per the one you generated!
 
 ```
 $ dcos conduct load conductr-haproxy custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
@@ -1078,6 +1082,6 @@ Test service endpoints from the public nodes to ensure connectivity. The `/etc/h
 
 ## Configuring the service gateway
 
-Now that we have configured ConductR-HAProxy to run on the public nodes, we'll want to configure them as a public service. If the public nodes have public IP addresses, the addresses can be listed in DNS directly. For better resiliency, use multiple public proxy nodes.
+Now that we have configured ConductR-HAProxy to run on the public nodes, we'll want to configure them as a public service. If the public nodes have public IP addresses, the addresses can be listed in DNS directly.
 
-If we do not want to have multiple "A" records, we can use a load balancer, such as EC2's ELB, for the service CNAME address. In doing such, we will create a new a load balancer instance for the ConductR services as this allows the load balancer's health check to use ConductR-HAProxy's health endpoint, HTTP:9009/status. This endpoint will return a 200 when ConductR's proxy is operating correctly. In the example of AWS ELB, we create a new ELB using the same (or similar custom) subnet and security group as the public nodes with internet access. Add listeners to map public ports such as 80 and 443 on the public CNAME to serviced ports on the public proxy nodes and ensure security group rules allow the ELB to access the public nodes on the service ports.
+If we do not want to have multiple "A" records, we can use a load balancer, such as EC2's ELB, for the service CNAME address. In doing such, we will create a new a load balancer instance for the ConductR services as this allows the load balancer's health check to use ConductR-HAProxy's health endpoint, HTTP:9009/status. This endpoint will return a 200 when ConductR's proxy is operating correctly. In the example of AWS ELB, we create a new ELB using the same (or similar custom) subnet and security group as the public nodes with internet access. Add listeners to map public ports such as 80 and 443 on the public CNAME to serviced ports on the public proxy nodes and ensure security group rules allow the ELB to access the public nodes on the service ports. By default conductr-haproxy will serve http on port 9000 and so you will typically want to serve port 9000 from either 80 or 443 (the latter being preferred given security).
