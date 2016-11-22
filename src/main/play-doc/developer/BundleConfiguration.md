@@ -296,4 +296,12 @@ TARGET="/opt/ourApp/initConfig.cfg"
 cp "${SCRIPT_DIR}"/someFile.cfg ${TARGET}
 ```
 
+If you needed to copy somewhere within the associated bundle component you could, for example:
+
+```
+TARGET="../$BUNDLE_ID/my-component/conf"
+```
+
+...where `my-component/conf` is the configuration folder of the associated bundle with a component named `my-component`.
+
 > `runtime-config.sh` is the name preferred by ConductR when searching for a script to execute within a configuration bundle. However you can name the configuration script anything that you like. In the case of ambiguity though, for example where you have `a.sh` and `b.sh`, ConductR does not know which is the one to select, and it can select either depending on your JDK. In most cases then, you're better to stick with `runtime-config.sh`
