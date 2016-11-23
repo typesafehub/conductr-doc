@@ -894,133 +894,9 @@ $ sudo chmod 0770 /etc/haproxy/reloadHAProxy.sh
 
 ### Customizing ConductR-HAProxy Bundle
 
-_These steps are necessary since we're using Docker-based HAProxy with a non-default HAProxy script reload location._
+_The use of a configuration bundle is required as that we're using Docker-based HAProxy with a non-default HAProxy script reload location._
 
-> These steps are to be performed on your local machine. First `cd` to a working directory.
-
-Create a directory on your local host in the working directory where the custom HAProxy configuration will be staged, e.g.
-
-```bash
-$ mkdir custom-haproxy-conf
-```
-
-Create a file called `runtime-config.sh` within the proxy configuration directory.
-
-```bash
-$ touch custom-haproxy-conf/runtime-config.sh
-```
-
-Populate the file with the following entry.
-
-```bash
-#!/bin/bash
-
-CONFIG_DIR=$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
-export CONDUCTR_HAPROXY_CONFIG_OVERRIDE="$CONFIG_DIR/haproxy-override.cfg"
-export HAPROXY_BIND_HOST=0.0.0.0
-export HAPROXY_RELOAD_SCRIPT_SOURCE="$CONFIG_DIR/reloadHAProxy.sh"
-export HAPROXY_RELOAD_SCRIPT_LOCATION=/etc/haproxy/reloadHAProxy.sh
-```
-
-The `CONDUCTR_HAPROXY_CONFIG_OVERRIDE` and `HAPROXY_RELOAD_SCRIPT_SOURCE` supplies the customized HAProxy configuration and reload script respectively.
-
-The `HAPROXY_BIND_HOST` configures the HAProxy to be bound to the `0.0.0.0` address within the Docker container. This will allow the same configuration to be used regardless of the Docker IP assigned to the container. This setup should not present any additional attack surface due to the fact that access to the ports within the container must be configured explicity as part of Docker run command.
-
-The `HAPROXY_RELOAD_SCRIPT_LOCATION` points to the customized reload script location on `/etc/haproxy/reloadHAProxy.sh` which we have prepared earlier.
-
-The `runtime-config.sh` configuration script will be sourced as part of the ConductR-HAProxy startup, and these environment variables will provide correct configuration to be used by ConductR-HAProxy on CoreOS environment.
-
-Create a file called `haproxy-override.cfg` within the proxy configuration directory, e.g.
-
-```bash
-$ touch custom-haproxy-conf/haproxy-override.cfg
-```
-
-Populate `custom-haproxy-conf/haproxy-override.cfg` with the following.
-
-```
-defaults
-    log global
-    mode    http
-    option  httplog
-    option  dontlognull
-    timeout connect 5000
-    timeout client  50000
-    timeout server  50000
-
-frontend conductr-haproxy-test
-  bind :65535
-  mode http
-  monitor-uri /test
-
-{{#eachAcls bundles defaultHttpPort=9000}}
-
-  {{#ifAcl 'conductr-kibana' '1' 'kibana'}}
-# ConductR - Kibana Bundle HAProxy Configuration
-frontend kibana_frontend
-  bind {{haproxyHost}}:5601
-  mode http
-  acl kibana_context_root path_beg /
-  use_backend kibana_backend if kibana_context_root
-
-backend kibana_backend
-  mode http
-    {{#eachBackendServer}}
-  server {{serverName}} {{host}}:{{port}} maxconn 1024
-    {{/eachBackendServer}}
-  {{/ifAcl}}
-
-  {{#ifAcl 'visualizer' '2' 'visualizer'}}
-# ConductR - Visualizer Bundle HAProxy Configuration
-frontend visualizer_frontend
-  bind {{haproxyHost}}:9999
-  mode http
-  acl visualizer_context_root path_beg /
-  use_backend visualizer_backend if visualizer_context_root
-
-backend visualizer_backend
-  mode http
-    {{#eachBackendServer}}
-  server {{serverName}} {{host}}:{{port}} maxconn 1024
-    {{/eachBackendServer}}
-  {{/ifAcl}}
-
-{{/eachAcls}}
-
-
-{{#haproxyConf bundles}}
-{{serviceFrontends}}
-{{#unless (serviceFrontends)}}
-frontend dummy
-  bind 127.0.0.1:65535
-{{/unless}}
-{{serviceBackends}}
-{{/haproxyConf}}
-```
-
-Create a file called `reloadHAProxy.sh` within the proxy configuration directory, e.g.
-
-```bash
-$ touch custom-haproxy-conf/reloadHAProxy.sh
-```
-
-Populate the file with the following entry.
-
-```bash
-#!/bin/bash
-
-set -e
-docker kill -s HUP haproxy
-```
-
-Use the CLI to package the configuration override:
-
-```bash
-$ shazar custom-haproxy-conf
-Created digested ZIP archive at custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
-```
-
-The generated file `custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip` is the configuration override that needs to be loaded alongside ConductR HAProxy bundle. Note that the hash value will vary and your generated filename will be different.
+A configuration bundle has been prepared using the above configuration. If you are not using the `/etc/haproxy` configuration for CoreOS public nodes described above, you will need to update the configuration bundle accordingly.
 
 ## Loading and Running ConductR-HAProxy Bundle
 
@@ -1038,10 +914,10 @@ $ dcos conduct load conductr-haproxy
 
 For CoreOS:
 
-> Substitute the `ffd0dcf` hash as per the one you generated!
+Load `conductr-haproxy` with the `conductr-haproxy-coreos` configuration bundles:
 
 ```
-$ dcos conduct load conductr-haproxy custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
+$ dcos conduct load conductr-haproxy conductr-haproxy-coreos
 ```
 
 Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
