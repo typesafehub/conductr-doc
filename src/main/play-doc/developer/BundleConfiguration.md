@@ -262,19 +262,19 @@ Where `webserver-015f73613aa48d397b0dbab6d7f96d687c56d72a275a5ea43d7da44a21c2748
 
 It is also possible to include files in addition to the `runtime-config.sh` and/or `bundle.conf` file(s). To do this, create one or more files or sub folders with files alongside these files. Your runtime-config.sh script is then responsible for copying the additional files to the location that your application or service requires.
 
-The use of the special parameter $0 is recommended in configuration scripts. The script below demonstrates the use of $0 to copy a config file to a target location.
+The script below demonstrates how to copy a config file to a target location.
 
-```
-SCRIPT_DIR="`dirname \"$0\"`"
+```bash
+BUNDLE_CONFIG_DIR="$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )"
 TARGET="/opt/ourApp/initConfig.cfg"
 
-cp "${SCRIPT_DIR}"/someFile.cfg ${TARGET}
+cp "${BUNDLE_CONFIG_DIR}"/someFile.cfg "${TARGET}"
 ```
 
 If you needed to copy somewhere within the associated bundle component you could, for example:
 
 ```
-TARGET="../$BUNDLE_ID/my-component/conf"
+TARGET="my-component/conf"
 ```
 
 ...where `my-component/conf` is the configuration folder of the associated bundle with a component named `my-component`.
