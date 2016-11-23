@@ -42,7 +42,7 @@ ConductR's logs are always identified given the absence of a bundle identifier t
 
 ## Setting up Elasticsearch
 
-Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be accessed from the CLI as `conductr-elasticsearch`. This will resolve to the package in [Typesafe bundles](https://bintray.com/typesafe/bundle/conductr-elasticsearch) on Bintray.  Also a default configuration for a typical production environment has been provided in the [bundle-configuration](https://bintray.com/typesafe/bundle-configuration/elasticsearch-prod) repository.
+Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be found in the `extra` folder inside the ConductR installation folder. Also a default configuration for a typical production environment has been provided.
 
 `conductr-elasticsearch` is using the the role `elasticsearch`. Make sure that the ConductR nodes which should run Elasticsearch have this role assigned in `application.ini`. This role will determine which nodes will be eligable to run `conductr-elasticsearch` and are to be configured accordingly.
 
@@ -57,7 +57,7 @@ sudo chown conductr:conductr /var/log/elasticsearch
 To load and run Elasticsearch use the control API of ConductR, e.g. by using the CLI:
 
 ```bash
-conduct load conductr-elasticsearch elasticsearch-prod
+conduct load file:/usr/share/conductr/extra/conductr-elasticsearch-{version}-{digest}.zip elasticsearch-prod-{digest}.zip
 conduct run conductr-elasticsearch
 ```
 
@@ -156,7 +156,7 @@ More information on configuring Elasticsearch for production can be found in [th
 Kibana is a popular UI to display data stored in Elasticsearch. In the context of ConductR, Kibana can be configured to display, filter and search log messages. It is available as the `conductr-kibana` bundle and can be found in the `extra` folder inside the ConductR installation folder. The version 4.1.2 of Kibana is used. This bundle only works in conjunction with the `conductr-elasticsearch` bundle. To load and run Kibana to ConductR use the control API of ConductR, e.g. by using the CLI:
 
 ```bash
-conduct load conductr-kibana
+conduct load file:/usr/share/conductr/extra/conductr-kibana-{version}-{digest}.zip
 conduct run conductr-kibana
 ```
 
