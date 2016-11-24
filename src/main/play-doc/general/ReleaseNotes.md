@@ -1,5 +1,9 @@
 # ConductR release notes
 
+### 1.1.12 November 24th, 2016
+
+1. A RollingFileAppender is now used to manage ConductR's log files.
+
 ### 1.1.11 October 31st, 2016
 
 1. The Grafana bundle is no longer distributed with ConductR as it is available now as a separate download.
