@@ -118,10 +118,10 @@ To perform a per cluster upgrade, build a new cluster in isolation from the curr
 
 To perform deployment on a running cluster without downtime, Elasticsearch requires the new node to join the Elasticsearch cluster, the primary shard(s) is relocated from the old node to the new node, and Elasticsearch master is re-elected if required. Elasticsearch has the means to perform automatic relocation of primary shard(s) from the old node to the new node.
 
-Firstly, we will use Elasticsearch cluster health endpoint to ensure the cluster is in a good health after the new node joined.
+Firstly, we will use Elasticsearch cluster health endpoint to ensure the cluster is in a good health after the new node joined. Elasticsearch endpoints are exposed via the proxy node via port `9200` under `/elastic-search` path. Replace `10.0.1.250` with the ip address of the proxy node.
 
 ```bash
-curl -XGET 'http://localhost:9200/_cluster/health?pretty=true'
+curl -XGET 'http://10.0.1.250:9200/elastic-search/_cluster/health?pretty=true'
 ```
 
 The fields of interest are `status`, `number_of_nodes`, and `unassigned_shards`. The healthy cluster is indicated by the `status` having `green` value.
@@ -135,7 +135,7 @@ Once this transition has occurred successfully, the `number_of_nodes` should dis
 Next we will use Elasticsearch endpoint to ensure master has been elected. This endpoint will display the name and IP address of the elected master within the Elasticsearch cluster.
 
 ```bash
-curl -XGET 'http://localhost:9200/_cat/master'
+curl -XGET 'http://10.0.1.250:9200/elastic-search/_cat/master'
 ```
 
 Once these steps has been performed with successful result, Elasticsearch cluster should be in a good working order.
@@ -149,7 +149,7 @@ The recovery process involves allocating the unassigned shards to the member of 
 First, we will need to identify which shards are not assigned.
 
 ```bash
-curl -XGET 'http://localhost:9200/_cat/shards'
+curl -XGET 'http://10.0.1.250:9200/elastic-search/_cat/shards'
 ```
 
 Here is an example output which displays unassigned shards.
@@ -179,7 +179,7 @@ We will distribute shard `0`, `2`, and `4` between `Thin Man` and `Sam Wilson` t
 To distribute shard `0` to `Thin Man`, we will invoke the cluster reroute endpoint.
 
 ```bash
-curl -XPOST 'localhost:9200/_cluster/reroute' -d '{
+curl -XPOST '10.0.1.250:9200/elastic-search/_cluster/reroute' -d '{
      "commands" : [ {
            "allocate" : {
                "index" : "conductr",
@@ -194,7 +194,7 @@ curl -XPOST 'localhost:9200/_cluster/reroute' -d '{
 
 Ensure shard is allocated successfully by re-checking the shard allocation.
 ```bash
-curl -XGET 'http://localhost:9200/_cat/shards'
+curl -XGET 'http://10.0.1.250:9200/elastic-search/_cat/shards'
 ```
 
 The shard `0` should now be allocated to the node called `Thin Man`. Repeat these steps for each of the unassigned shards.
