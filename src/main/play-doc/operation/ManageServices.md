@@ -41,31 +41,35 @@ sudo service conductr-agent restart
 
 The configuration file `/usr/share/conductr/conf/conductr.ini` is the primary configuration file for the ConductR Core service. This file is used to specify Core ConductR service settings, such as `-Dconductr.ip` used during installation. See the comments section of the `conductr.ini` file for more examples.
 
+The ConductR Core service must be restarted after changes to the `conductr.ini` to take effect.
+
 ## Configuring ConductR Agent
 
-The configuration file `/usr/share/conductr-agent/conf/conductr-agent.ini` is the primary configuration file for the ConductR Agent service. This file is used to specify ConductR Agent service settings, such as `-Dconductr.ip` used during installation. See the comments section of the `conductr-agent.ini` file for more examples.
+The configuration file `/usr/share/conductr-agent/conf/conductr-agent.ini` is the primary configuration file for the ConductR Agent service. This file is used to specify ConductR Agent service settings, such as `-Dconductr.agent.roles` used during installation. See the comments section of the `conductr-agent.ini` file for more examples.
 
 Akka module configuration can also be set using this file. For example, to assign a ConductR node the roles of `megaIOPS` and `muchMem` instead of the default, `web`, set `akka.cluster.roles` in `conductr-agent.ini`:
 
 ```bash
-echo -Dakka.cluster.roles.0=megaIOPS | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-echo -Dakka.cluster.roles.1=muchMem | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+echo -Dconductr.agent.roles.0=megaIOPS | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+echo -Dconductr.agent.roles.1=muchMem | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 sudo service conductr-agent restart
 ```
 
 With this setting the node would offer the roles `megaIOPS` and `muchMem`. Only bundles with a `BundleKeys.roles` of `megaIOPS,` `muchMem` or both `megaIOPS` and `muchMem` will be loaded and run on this node.
 
-The ConductR Agent service must be restarted for changes to this file to take effect.
+The ConductR Agent service must be restarted after changes to the `conductr-agent.ini` to take effect.
 
 ## Roles
 
 Roles allow machines to be targeted for specific purposes. Some machines may have greater IO capabilities than others, some may have more CPU, memory and other resources. Some may also be required to maintain a volume that holds a database.
 
-When getting started with ConductR it is reasonable to have each ConductR service rely on its default role of `web`. You can also use the `-Dconductr.resource-provider.match-offer-roles=off` declaration of `conductr.ini` to tell ConductR not to consider roles during scheduling. However when moving into a production scenario you should plan and assign roles for your ConductR cluster.
+When getting started with ConductR it is reasonable to start with ConductR not considering roles during scheduling. ConductR has the default settings `-Dconductr.resource-provider.match-offer-roles=off`.
+
+However when moving into a production scenario you should plan and assign roles for your ConductR cluster. The roles can be enabled by modifying the settings `-Dconductr.resource-provider.match-offer-roles=on` as such.
 
 ```bash
 echo \
-  -Dconductr.resource-provider.match-offer-roles=off | \
+  -Dconductr.resource-provider.match-offer-roles=on | \
   sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo /etc/init.d/conductr restart
 ```
