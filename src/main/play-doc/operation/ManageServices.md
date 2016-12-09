@@ -41,31 +41,35 @@ sudo service conductr-agent restart
 
 The configuration file `/usr/share/conductr/conf/conductr.ini` is the primary configuration file for the ConductR Core service. This file is used to specify Core ConductR service settings, such as `-Dconductr.ip` used during installation. See the comments section of the `conductr.ini` file for more examples.
 
+The ConductR Core service must be restarted after changes to the `conductr.ini` to take effect.
+
 ## Configuring ConductR Agent
 
-The configuration file `/usr/share/conductr-agent/conf/conductr-agent.ini` is the primary configuration file for the ConductR Agent service. This file is used to specify ConductR Agent service settings, such as `-Dconductr.ip` used during installation. See the comments section of the `conductr-agent.ini` file for more examples.
+The configuration file `/usr/share/conductr-agent/conf/conductr-agent.ini` is the primary configuration file for the ConductR Agent service. This file is used to specify ConductR Agent service settings, such as `-Dconductr.agent.roles` used during installation. See the comments section of the `conductr-agent.ini` file for more examples.
 
 Akka module configuration can also be set using this file. For example, to assign a ConductR node the roles of `megaIOPS` and `muchMem` instead of the default, `web`, set `akka.cluster.roles` in `conductr-agent.ini`:
 
 ```bash
-echo -Dakka.cluster.roles.0=megaIOPS | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-echo -Dakka.cluster.roles.1=muchMem | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+echo -Dconductr.agent.roles.0=megaIOPS | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+echo -Dconductr.agent.roles.1=muchMem | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 sudo service conductr-agent restart
 ```
 
 With this setting the node would offer the roles `megaIOPS` and `muchMem`. Only bundles with a `BundleKeys.roles` of `megaIOPS,` `muchMem` or both `megaIOPS` and `muchMem` will be loaded and run on this node.
 
-The ConductR Agent service must be restarted for changes to this file to take effect.
+The ConductR Agent service must be restarted after changes to the `conductr-agent.ini` to take effect.
 
 ## Roles
 
 Roles allow machines to be targeted for specific purposes. Some machines may have greater IO capabilities than others, some may have more CPU, memory and other resources. Some may also be required to maintain a volume that holds a database.
 
-When getting started with ConductR it is reasonable to have each ConductR service rely on its default role of `web`. You can also use the `-Dconductr.resource-provider.match-offer-roles=off` declaration of `conductr.ini` to tell ConductR not to consider roles during scheduling. However when moving into a production scenario you should plan and assign roles for your ConductR cluster.
+When getting started with ConductR it is reasonable to start with ConductR not considering roles during scheduling. ConductR has the default settings `-Dconductr.resource-provider.match-offer-roles=off`.
+
+However when moving into a production scenario you should plan and assign roles for your ConductR cluster. The roles can be enabled by modifying the settings `-Dconductr.resource-provider.match-offer-roles=on` as such.
 
 ```bash
 echo \
-  -Dconductr.resource-provider.match-offer-roles=off | \
+  -Dconductr.resource-provider.match-offer-roles=on | \
   sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo /etc/init.d/conductr restart
 ```
@@ -114,10 +118,10 @@ To perform a per cluster upgrade, build a new cluster in isolation from the curr
 
 To perform deployment on a running cluster without downtime, Elasticsearch requires the new node to join the Elasticsearch cluster, the primary shard(s) is relocated from the old node to the new node, and Elasticsearch master is re-elected if required. Elasticsearch has the means to perform automatic relocation of primary shard(s) from the old node to the new node.
 
-Firstly, we will use Elasticsearch cluster health endpoint to ensure the cluster is in a good health after the new node joined.
+Firstly, we will use Elasticsearch cluster health endpoint to ensure the cluster is in a good health after the new node joined. Elasticsearch endpoints are exposed via the proxy node via port `9200` under `/elastic-search` path. Replace `10.0.1.250` with the ip address of the proxy node.
 
 ```bash
-curl -XGET 'http://localhost:9200/_cluster/health?pretty=true'
+curl -XGET 'http://10.0.1.250:9200/elastic-search/_cluster/health?pretty=true'
 ```
 
 The fields of interest are `status`, `number_of_nodes`, and `unassigned_shards`. The healthy cluster is indicated by the `status` having `green` value.
@@ -131,7 +135,7 @@ Once this transition has occurred successfully, the `number_of_nodes` should dis
 Next we will use Elasticsearch endpoint to ensure master has been elected. This endpoint will display the name and IP address of the elected master within the Elasticsearch cluster.
 
 ```bash
-curl -XGET 'http://localhost:9200/_cat/master'
+curl -XGET 'http://10.0.1.250:9200/elastic-search/_cat/master'
 ```
 
 Once these steps has been performed with successful result, Elasticsearch cluster should be in a good working order.
@@ -145,7 +149,7 @@ The recovery process involves allocating the unassigned shards to the member of 
 First, we will need to identify which shards are not assigned.
 
 ```bash
-curl -XGET 'http://localhost:9200/_cat/shards'
+curl -XGET 'http://10.0.1.250:9200/elastic-search/_cat/shards'
 ```
 
 Here is an example output which displays unassigned shards.
@@ -175,7 +179,7 @@ We will distribute shard `0`, `2`, and `4` between `Thin Man` and `Sam Wilson` t
 To distribute shard `0` to `Thin Man`, we will invoke the cluster reroute endpoint.
 
 ```bash
-curl -XPOST 'localhost:9200/_cluster/reroute' -d '{
+curl -XPOST '10.0.1.250:9200/elastic-search/_cluster/reroute' -d '{
      "commands" : [ {
            "allocate" : {
                "index" : "conductr",
@@ -190,7 +194,7 @@ curl -XPOST 'localhost:9200/_cluster/reroute' -d '{
 
 Ensure shard is allocated successfully by re-checking the shard allocation.
 ```bash
-curl -XGET 'http://localhost:9200/_cat/shards'
+curl -XGET 'http://10.0.1.250:9200/elastic-search/_cat/shards'
 ```
 
 The shard `0` should now be allocated to the node called `Thin Man`. Repeat these steps for each of the unassigned shards.
