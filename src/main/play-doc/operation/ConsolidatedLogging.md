@@ -1,6 +1,6 @@
 # Consolidated Logging
 
-When multiple machines are involved in a cluster it quickly becomes difficult to view the log files of distributed applications. ConductR allows the logging output of itself and the bundles that it executes to be directed to a "syslog collector". Syslog is a widely used protocol for Unix based machines and is supported by a number of cloud-based log providers, as well as local operating system support.
+When multiple machines are involved in a cluster, it quickly becomes difficult to view the log files of distributed applications. ConductR allows the logging output of itself and the bundles that it executes to be directed to a "syslog collector". Syslog is a widely used protocol for Unix based machines and is supported by a number of cloud-based log providers, as well as local operating system support.
 
 The syslog collector can send the log messages to any kind of logging solution. The ConductR distribution includes Elasticsearch and Kibana as an opt-in logging infrastructure. How to configure Elasticsearch and Kibana or other popular logging solutions are described in the next sections.
 
@@ -23,7 +23,7 @@ Bundle events describe what has happened to a bundle in terms of whether it has 
 * data.mdc.bundleId:`$bundleId`* OR data.mdc.bundleId:`$bundleName`
 * data.mdc.tag:conductr*
 
-Note that `$bundleName` is used for some ConductR events where there is no bundle identiier available e.g. when loading a bundle.
+Note that `$bundleName` is used for some ConductR events where there is no bundle identifier available e.g. when loading a bundle.
 
 ### Bundle Logs
 
@@ -34,7 +34,7 @@ Bundle logs provide the stdout and stderr output of your bundle and are identifi
 
 Note also that the severity level of this log message will indicate `INFO` for stdout and `ERROR` for stderr.
 
-### ConductR's Logs
+### ConductR Logs
 
 ConductR's logs are always identified given the absence of a bundle identifier tag.
 
@@ -42,11 +42,11 @@ ConductR's logs are always identified given the absence of a bundle identifier t
 
 ## Setting up Elasticsearch
 
-Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be accessed from the CLI as `conductr-elasticsearch`. This will resolve to the package in [Typesafe bundles](https://bintray.com/typesafe/bundle/conductr-elasticsearch) on Bintray.  Also a default configuration for a typical production environment has been provided in the [bundle-configuration](https://bintray.com/typesafe/bundle-configuration/elasticsearch-prod) repository.
+Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be accessed from the CLI as `conductr-elasticsearch`. This will resolve to the package in [Typesafe bundles](https://bintray.com/typesafe/bundle/conductr-elasticsearch) on Bintray.  Also, a default configuration for a typical production environment has been provided in the [bundle-configuration](https://bintray.com/typesafe/bundle-configuration/elasticsearch-prod) repository.
 
 `conductr-elasticsearch` is using the the role `elasticsearch`. Make sure that the ConductR Agent nodes which should run Elasticsearch have this role assigned in `conductr-agent.ini`. This role will determine which nodes will be eligible to run `conductr-elasticsearch` and are to be configured accordingly.
 
-Firstly for each node that will run Elasticsearch you must enable access to `/var/log` and `/var/lib`:
+Firstly, for each node that will run Elasticsearch you must enable access to `/var/log` and `/var/lib`:
 
 ```bash
 sudo mkdir -p /var/lib/elasticsearch /var/log/elasticsearch
@@ -74,7 +74,7 @@ The provided Elasticsearch bundle configuration is using these settings:
 - Number of CPUs: 2
 - Disk Space: 10 GB
 
-To change the settings create a new bundle configuration by modiying the `bundle.conf` file inside of the bundle configuration zip file. The configuration file is named `elasticsearch-prod-{digest}.zip` and is located in the `extra` folder as well. Afterwards reload the bundle with the new configuration.
+To change the settings create a new bundle configuration by modifying the `bundle.conf` file inside of the bundle configuration zip file. Afterward, reload the bundle with the new configuration.
 
 ### Elasticsearch bundle rolling upgrade
 
@@ -85,13 +85,13 @@ This can be achieved by following these steps.
 * Commission a new ConductR node where the new Elasticsearch instance is going to execute.
 * It is assumed the new ConductR node will run both ConductR Core and ConductR Agent process.
 * Start this new node and ensure the ConductR Agent on this node is able to successfully join the existing ConductR cluster.
-* Turn off one of the old instance where Elasticsearch is running.
+* Turn off one of the old instances where Elasticsearch is running.
 * Wait until the new Elasticsearch instance joins the cluster successfully and the data replicated.
   * Access the Elasticsearch cluster health endpoint: `http://<ip address of new node>:9200/elastic-search/_cluster/health?level=shards&pretty=true`
   * Note the state of the cluster health (i.e. the `status` field).
   * It is expected for the cluster health to move from `green` -> `yellow` -> `green` while the new node is joining the cluster. It's important to wait and give sufficient time for the cluster health state to turn green. When the old instance is turned off, there will be a slight delay before the cluster state turns to `yellow`. Similarly, when a new instance joins the cluster there will be a slight delay before the cluster state turns from `yellow` to `green`.
   * Once the cluster join process is completed, the cluster health will stay at `green`.
-  * The number of node (i.e. `number_of_nodes` field) shows the correct total number of nodes including the newly joined instance.
+  * The number of nodes (i.e. `number_of_nodes` field) shows the correct total number of nodes including the newly joined instance.
   * All shards are assigned (i.e. the value of `unassigned_shards` is `0`) - all shards being assigned indicates the data is now replicated across the Elasticsearch nodes.
 * Repeat with the remaining nodes until every old node has been decommissioned.
 
@@ -103,7 +103,7 @@ For migrating between binary incompatible ConductR versions, the Elasticsearch d
 
 ### Customized Elasticsearch
 
-You can configure ConductR to use an alternate Elasticsearch cluster for events and logging. Here are some considerations for you if you should choose this path.
+You can configure ConductR to use another Elasticsearch cluster for events and logging. Here are some considerations for you if you should choose this path.
 
 Firstly you must tell ConductR Core where your customized Elasticsearch instance is, and also turn off ConductR service locating it given the fixed location:
 
@@ -128,7 +128,7 @@ sudo /etc/init.d/conductr-agent restart
 ```
 
 
-The Elasticsearch bundle that we provide has been configured to support back-pressure when receiving event and logging data from ConductR. By default Elasticsearch will accept bulk index requests regardless of whether it will process them. This means that under certain load conditions, Elasticsearch could lose data being sent to it. To counter this, here is the configuration we use for Elasticsearch (we have chosen a sharding factor of 5, substitute yours accordingly):
+The Elasticsearch bundle that we provide has been configured to support back-pressure when receiving event and logging data from ConductR. By default, Elasticsearch will accept bulk index requests regardless of whether it will process them. This means that under certain load conditions, Elasticsearch could lose data being sent to it. To counter this, here is the configuration we use for Elasticsearch (we have chosen a sharding factor of 5, substitute yours accordingly):
 
 ```
 threadpool.bulk.type: fixed
@@ -167,7 +167,7 @@ More information on configuring Elasticsearch for production can be found in [th
 
 ## Setting up Kibana
 
-Kibana is a popular UI to display data stored in Elasticsearch. In the context of ConductR, Kibana can be configured to display, filter and search log messages. It is available as the `conductr-kibana` bundle and can be found in the `extra` folder inside the ConductR installation folder. The version 4.1.2 of Kibana is used. This bundle only works in conjunction with the `conductr-elasticsearch` bundle. To load and run Kibana to ConductR use the control API of ConductR, e.g. by using the CLI:
+Kibana is a popular UI to display data stored in Elasticsearch. In the context of ConductR, Kibana can be configured to display, filter and search log messages. Kibana, configured for ConductR, can be accessed from the CLI as `conductr-kibana` bundle. This will resolve to the package in [Typesafe bundles](https://bintray.com/typesafe/bundle/conductr-elasticsearch) on Bintray. The bundle uses the version 4.1.2 of Kibana. It only works in conjunction with the `conductr-elasticsearch` bundle. To load and run Kibana to ConductR use the control API of ConductR, e.g. by using the CLI:
 
 ```bash
 conduct load conductr-kibana
@@ -182,7 +182,7 @@ Now the Kibana UI can be accessed on the port `5601`, e.g.: http://192.168.59.10
 
 ### Connecting Kibana with Elasticsearch
 
-In order to display the log messages from Elasticsearch in Kibana an `index pattern` need to be created initially. If no index pattern has been created yet, the Kibana UI is redirecting you to the page to configure it. All log messages in Elasticsearch are stored in the index `conductr`. Therefor, create in Kibana the index pattern `conductr`. As the `Time-field name` select `header.timestamp`.
+In order to display the log messages from Elasticsearch in Kibana an `index pattern` need to be created initially. If no index pattern has been created yet, the Kibana UI is redirecting you to the page to configure it. All log messages in Elasticsearch are stored in the index `conductr`. Therefore, create in Kibana the index pattern `conductr`. As the `Time-field name` select `header.timestamp`.
 
 [[images/kibana_index_configuration.png]]
 
@@ -190,11 +190,11 @@ The newly created index pattern is automatically set to the default one. Now, he
 
 [[images/kibana_discover.png]]
 
-By default, the log messages of the last 15 minutes are displayed. If ConductR or the application bundles haven't produced any log messages during this timeframe, no messages will be displayed. In this case you can adjust the timeframe on the top right.
+By default, the log messages of the last 15 minutes are displayed. If ConductR or the application bundles haven't produced any log messages during this timeframe, no messages will be displayed. In this case, you can adjust the timeframe on the top right.
 
 ### Customizing Discover tab
 
-By default, Kibana displays in the `Discover` tab all fields which Elasticsearch has been stored in the index. Some of these fields doesn't contain helpful information to debug log messages. Therefor, we recommend to select only the fields you are intersted in. As a start you can download and import this custom search.
+By default, Kibana displays in the `Discover` tab all fields which Elasticsearch has been stored in the index. Some of these fields don't contain helpful information to debug log messages. Therefore, we recommend selecting only the fields you are interested in. As a start, you can download and import this custom search.
 
 <a href="resources/operation/files/conductr_default_search.json" download="conductr_default_search.json">Download ConductR Default Search</a>
 
@@ -202,7 +202,7 @@ In Kibana, select the `Settings` tab and go to `Objects`. Click on `Import` and 
 
 [[images/kibana_custom_search.png]]
 
-The `Discover` tab has now selected fields in the left field pane. Also these fields are selected as columns in the log message pane.
+The `Discover` tab has now selected fields in the left field pane. Also, these fields are selected as columns in the log message pane.
 
 [[images/kibana_discover_custom.png]]
 
@@ -216,7 +216,7 @@ data.mdc.bundleName | Name of the bundle. The log messages of ConductR itself do
 message             | Log message
 data.mdc.class      | Application class which produced the log message
 header.hostname     | ConductR node
-data.mdc.requestId  | Unqiue log message request id
+data.mdc.requestId  | Unique log message request id
 
 ### Filtering log messages
 
@@ -268,7 +268,7 @@ Viewing `/var/log/syslog` (Ubuntu) or `/var/log/messages` (RHEL) will then show 
 
 ## Setting up Papertrail
 
-A popular cloud service is [Papertrail](https://papertrailapp.com/). Papertrail is a very simple "tail like" service for viewing distributed logs. Once you configure an account with Papertrail, you will be provided with a host and a port. With this information you can configure a static endpoint.
+A popular cloud service is [Papertrail](https://papertrailapp.com/). Papertrail is a very simple "tail like" service for viewing distributed logs. Once you configure an account with Papertrail, you will be provided with a host and port. With this information, you can configure a static endpoint.
 
 **Important**: ConductR logs over TCP so make sure that you configure papertrail so that it accepts plain text connections: _Accounts/Log Destinations/Edit Settings/Accept connections via_
 
@@ -304,7 +304,7 @@ ConductR is compatible with any log aggregator speaking the syslog protocol. The
 
 ## Controlling ConductR log level
 
-By default ConductR will log at `info` level.
+By default, ConductR will log at `info` level.
 
 To view ConductR Core logs at `debug` level, configure ConductR as:
 
@@ -348,4 +348,4 @@ sudo /etc/init.d/conductr-agent restart
 
 With this setting debug messages from various frameworks and libraries utilized by ConductR will be visible, e.g. debug messages from Akka.
 
-**Important**: with this setting enabled, the number of log messages generated will be increase dramatically.
+**Important**: with this setting enabled, the number of log messages generated will increase dramatically.
