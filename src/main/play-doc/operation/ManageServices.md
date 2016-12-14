@@ -51,13 +51,13 @@ Akka module configuration can also be set using this file. For example, to assig
 
 ```bash
 echo -Dconductr.agent.roles.0=megaIOPS | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-echo -Dconductr.agent.roles.1=muchMem | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+echo -Dconductr.agent.roles.1=GPU | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 sudo service conductr-agent restart
 ```
 
-With this setting the node would offer the roles `megaIOPS` and `muchMem`. Only bundles with a `BundleKeys.roles` of `megaIOPS,` `muchMem` or both `megaIOPS` and `muchMem` will be loaded and run on this node.
+With this setting the node would offer the roles `megaIOPS` and `GPU`. Only bundles with a `BundleKeys.roles` of `megaIOPS,` `GPU` or both `megaIOPS` and `GPU` will be loaded and run on this node.
 
-The ConductR Agent service must be restarted after changes to the `conductr-agent.ini` to take effect.
+The ConductR Agent service must be restarted after changes to the `conductr-agent.ini` to take effect. Role matching must also be enabled on the cluster core nodes for bundles to be scheduled by role.
 
 ## Roles
 

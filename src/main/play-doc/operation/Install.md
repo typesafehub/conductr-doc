@@ -668,6 +668,7 @@ echo -Dconductr.agent.roles.0=web | sudo tee -a /usr/share/conductr-agent/conf/c
 echo -Dconductr.agent.roles.1=haproxy | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 sudo service conductr-agent restart
 ```
+Note that role matching is not enforced unless [role matching is enabled](ManageServices#Roles) on the core nodes.
 
 ### Use CLI to load and run ConductR-HAProxy bundle
 
