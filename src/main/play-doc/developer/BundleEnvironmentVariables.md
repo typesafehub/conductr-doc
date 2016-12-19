@@ -33,7 +33,7 @@ In addition the following environment variables are declared for each component 
 Name                 | Description
 ---------------------|------------
 name_PROTOCOL        | The protocol of a bundle component's endpoint.
-name_HOST            | A bundle component's host URL composed as $name_PROTOCOL://$name_HOST_IP:$name_HOST_PORT
+name_HOST            | A bundle component's host URL composed as $name_PROTOCOL://$BUNDLE_HOST_IP:$name_HOST_PORT
 name_HOST_PORT       | The port exposed on a bundle's host.
 name_BIND_IP         | The interface the component should bind to.
 name_BIND_PORT       | The port the component should bind to.
