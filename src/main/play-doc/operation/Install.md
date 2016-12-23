@@ -444,34 +444,140 @@ This tutorial will provide you with all the key configuration details needed to 
 
 Begin by preparing the EC2 network and security environment. This tutorial uses a Virtual Private Cloud (VPC) with a Classless Inter-Domain Routing (CIDR) of `10.0.0.0/16` and example addresses will be based accordingly.
 
-#### Subnets and Security Groups
-For better resilience, deploy nodes across multiple availability zones (AZ). Create three subnets in the VPC. Place each subnet in a different availability zone by specifying an AZ during subnet creation. Our example subnets names indicate their AZ. They are SN-A with a CIDR of `10.0.1.0/24`, SN-B with a CIDR of `10.0.2.0/24` and SN-C with a CIDR of `10.0.3.0/24`. Each subnet will need an internet gateway added to their route table for the destination `0.0.0.0/0`. This required so that our nodes can access the internet. All subnets can use the same route table.
+For better resilience, deploy nodes across multiple availability zones (AZ). In our example we will be deploying across three availability zones.
 
-Create two security groups in the VPC named SG-Nodes and SG-ELB. SG-ELB will be for our load balancer. We'll only expose port 80 and 443 to the world (`0.0.0.0/0`) here. SG-Nodes will be for the nodes. We'll need to open one or more service ports to the load balancer. When adding the inbound rule, enter the identifier for SG-ELB in the source, such as sg-a803cb4a, to allow traffic from the load balancer security group. Our service will be on port 9999 and we'll use 9009 for monitoring. We'll need to allow TCP Port 9999 and 9009 from our load balancer security group SG-ELB in to SG-Nodes, our nodes security group. Nodes will also need to communicate with each other. Add an inbound rule to allow port 9004, 9006 and port range 10000-10999 from the SG-Nodes. Finally, SG-Nodes should also allow ssh on port 22 from Anywhere (`0.0.0.0/0`) so we can also directly access our nodes from the internet.
+#### ELB Security Group
 
-The resultant security groups should now have the following inbound rules:
+Create a security group called SG-ELB to provide access control from the ELB to the ConductR public agent nodes.
 
 SG-ELB Inbound Rules
 
-| Type    | Proto   | Port        | Source     |
-| :------ | :-----  | :---------- | :--------- |
-| HTTP    | TCP     | 80          | 0.0.0.0/0  |
-| HTTPS   | TCP     | 443         | 0.0.0.0/0  |
+| Type    | Proto   | Port        | Source     | Description         |
+| :------ | :-----  | :---------- | :--------- | :------------------ |
+| HTTP    | TCP     | 80          | 0.0.0.0/0  | HTTP Public Access  |
+| HTTPS   | TCP     | 443         | 0.0.0.0/0  | HTTPS Public Access |
 
-SG-Nodes Inbound Rules
+SG-ELB Outbound Rules
 
-| Type	  | Proto  | Port        | Source     |
-| :------ | :----- | :---------- | :--------- |
-| Custom  |TCP     | 9009        | SG-ELB     |
-| Custom  |TCP     | 9999        | SG-ELB     |
-| Custom  |TCP     | 2552        | SG-Nodes   |
-| Custom  |TCP     | 9004-9008   | SG-Nodes   |
-| Custom  |TCP     | 10000-10999 | SG-Nodes   |
-| SSH     |TCP     | 22          | 0.0.0.0/0  |		
+| Type    | Proto   | Port        | Destination | Description                |
+| :------ | :-----  | :---------- | :---------- | :------------------------- |
+| HTTP    | TCP     | 9000        | 0.0.0.0/0   | HTTP application endpoints |
+| HTTP    | TCP     | 9009        | 0.0.0.0/0   | ELB health check           |
+| HTTP    | TCP     | 9999        | 0.0.0.0/0   | Visualizer                 |
+
+#### Bastion Host Subnet and Security Group
+
+Create a subnet in the closest AZ. The bastion host will be hosted in this subnet, and thus only allowing SSH access from the outside world.
+
+The bastion host will require SSH access to all ConductR nodes in the cluster. This subnet will need an internet gateway added to their route table for the destination `0.0.0.0/0`. This required so that our bastion host can access the internet.
+
+In this case the subnet will be called SN-BASTION with a CIDR of `10.0.1.250/255`.
+
+Create a security group called SG-BASTION to provide access control to the bastion host.
+
+SG-BASTION Inbound Rules
+
+| Type    | Proto   | Port        | Source     | Description       |
+| :------ | :-----  | :---------- | :--------- | :---------------- |
+| SSH     | TCP     | 22          | 0.0.0.0/0  | Remote SSH Access |
+
+
+SG-BASTION Outbound Rules
+
+| Type    | Proto   | Port        | Destination      | Description           |
+| :------ | :-----  | :---------- | :--------------- | :-------------------- |
+| SSH     | TCP     | 22          | 0.0.0.0/0        | SSH to ConductR nodes |
+| HTTP    | TCP     | 80          | 0.0.0.0/0        | Internet Access       |
+| HTTPS   | TCP     | 443         | 0.0.0.0/0        | Internet Access       |
+
+
+#### Public Subnets and Security Group
+
+Create a subnet in each AZ. This subnet will be a public subnet, and thus accessible from outside world via ELB. The ConductR public agents will be hosted in this subnet.
+
+Our example subnets names indicate their AZ. In this case the subnet will be called SN-PUBLIC-A with a CIDR of `10.0.1.100/124`, SN-PRIVATE-B with a CIDR of `10.0.2.100/124`, and SN-PRIVATE-C with a CIDR of `10.0.3.100/124`. Each subnet will need an internet gateway added to their route table for the destination `0.0.0.0/0`. This required so that our nodes can access the internet.
+
+Create security group called SG-AGENT-PUBLIC which will provide access control to ConductR public agents.
+
+SG-AGENT-PUBLIC Inbound Rules
+
+| Type    | Proto   | Port        | Source     | Description                      |
+| :------ | :-----  | :---------- | :--------- | :------------------------------- |
+| SSH     | TCP     | 22          | SG-BASTION | Remote SSH Access                |
+| Custom  | TCP     | 2552        | SG-CORE    | Akka Remoting from Core to Agent |
+| HTTP    | TCP     | 9000        | SG-ELB     | HTTP application endpoints       |
+| HTTP    | TCP     | 9009        | SG-ELB     | ELB health check                 |
+| HTTP    | TCP     | 9999        | SG-ELB     | Visualizer                       |
+
+SG-AGENT-PUBLIC Outbound Rules
+
+| Type    | Proto   | Port        | Destination      | Description                      |
+| :------ | :-----  | :---------- | :--------------- | :------------------------------- |
+| HTTP    | TCP     | 80          | 0.0.0.0/0        | Internet Access                  |
+| HTTPS   | TCP     | 443         | 0.0.0.0/0        | Internet Access                  |
+| Custom  | TCP     | 9004        | 0.0.0.0/0        | Akka Remoting from Agent to Core |
+| Custom  | TCP     | 9005        | 0.0.0.0/0        | ConductR Control Protocol        |
+| Custom  | TCP     | 9006        | 0.0.0.0/0        | ConductR Bundle Stream Server    |
+| Custom  | TCP     | 9007        | 0.0.0.0/0        | ConductR Status Server           |
+| Custom  | TCP     | 9008        | 0.0.0.0/0        | ConductR Service Locator         |
+
+
+#### Private Subnets
+
+Create a subnet in each AZ. This subnet will be private, and thus not directly accessible from outside world. The ConductR core and the ConductR private agents will be hosted in this subnet.
+
+Our example subnets names indicate their AZ. In this case the subnet will be called SN-PRIVATE-A with a CIDR of `10.0.1.0/49`, SN-PRIVATE-B with a CIDR of `10.0.2.0/49`, and SN-PRIVATE-C with a CIDR of `10.0.3.0/49`. Each subnet will need an internet gateway added to their route table for the destination `0.0.0.0/0`. This required so that our nodes can access the internet.
+
+Create two security groups in the VPC named SG-AGENT-PRIVATE and SG-CORE.  SG-AGENT-PRIVATE will provide access control to the ConductR private agents, while SG-CORE to the ConductR core nodes.
+
+SG-AGENT-PRIVATE Inbound Rules
+
+| Type    | Proto   | Port        | Source          | Description                                   |
+| :------ | :-----  | :---------- | :-------------- | :-------------------------------------------- |
+| SSH     | TCP     | 22          | SG-BASTION      | Remote SSH Access                             |
+| Custom  | TCP     | 2552        | SG-CORE         | Akka Remoting from Core to Agent              |
+| HTTP    | TCP     | 10000-10999 | SG-AGENT-PUBLIC | Proxy access from ConductR public agent nodes |
+
+SG-AGENT-PRIVATE Outbound Rules
+
+| Type    | Proto   | Port        | Destination      | Description                      |
+| :------ | :-----  | :---------- | :--------------- | :------------------------------- |
+| HTTP    | TCP     | 80          | 0.0.0.0/0        | Internet Access                  |
+| HTTPS   | TCP     | 443         | 0.0.0.0/0        | Internet Access                  |
+| Custom  | TCP     | 9004        | 0.0.0.0/0        | Akka Remoting from Agent to Core |
+| Custom  | TCP     | 9005        | 0.0.0.0/0        | ConductR Control Protocol        |
+| Custom  | TCP     | 9006        | 0.0.0.0/0        | ConductR Bundle Stream Server    |
+| Custom  | TCP     | 9007        | 0.0.0.0/0        | ConductR Status Server           |
+| Custom  | TCP     | 9008        | 0.0.0.0/0        | ConductR Service Locator         |
+
+
+SG-CORE Inbound Rules
+
+| Type    | Proto   | Port        | Source           | Description                      |
+| :------ | :-----  | :---------- | :--------------- | :------------------------------- |
+| SSH     | TCP     | 22          | SG-BASTION       | Remote SSH Access                |
+| Custom  | TCP     | 9004        | SG-AGENT-PRIVATE | Akka Remoting from Agent to Core |
+| Custom  | TCP     | 9004        | SG-AGENT-PUBLIC  | Akka Remoting from Agent to Core |
+| Custom  | TCP     | 9005        | SG-AGENT-PRIVATE | ConductR Control Protocol        |
+| Custom  | TCP     | 9005        | SG-AGENT-PUBLIC  | ConductR Control Protocol        |
+| Custom  | TCP     | 9006        | SG-AGENT-PRIVATE | ConductR Bundle Stream Server    |
+| Custom  | TCP     | 9006        | SG-AGENT-PUBLIC  | ConductR Bundle Stream Server    |
+| Custom  | TCP     | 9007        | SG-AGENT-PRIVATE | ConductR Status Server           |
+| Custom  | TCP     | 9007        | SG-AGENT-PUBLIC  | ConductR Status Server           |
+| Custom  | TCP     | 9008        | SG-AGENT-PRIVATE | ConductR Service Locator         |
+| Custom  | TCP     | 9008        | SG-AGENT-PUBLIC  | ConductR Service Locator         |
+
+SG-CORE Outbound Rules
+
+| Type    | Proto   | Port        | Destination      | Description                      |
+| :------ | :-----  | :---------- | :--------------- | :------------------------------- |
+| HTTP    | TCP     | 80          | 0.0.0.0/0        | Internet Access                  |
+| HTTPS   | TCP     | 443         | 0.0.0.0/0        | Internet Access                  |
+| Custom  | TCP     | 2552        | 0.0.0.0/0        | Akka Remoting from Core to Agent |
 
 #### Load Balancer
 
-Create an external facing load balancer from the EC2 control panel. You will need to create an internet gateway and attach it to your VPC in order to have a public load balancer. We'll add an optional HTTPS protocol listener on port 443 to the default port 80 HTTP listener. For this tutorial we will map both of our listeners to instance port 9999. Add all three subnets to the load balancer and assign the load balancer to the SG-ELB security group. Optionally you can upload an SSL Certificate to use the ELB as your TLS endpoint if you added the HTTPS listener. For health monitoring we'll use ConductR's proxy status endpoint, HTTP:9009/status. This endpoint will return an OK when ConductR's proxy has been configured.
+Create an external facing load balancer from the EC2 control panel. You will need to create an internet gateway and attach it to your VPC in order to have a public load balancer. We'll add an optional HTTPS protocol listener on port 443 to the default port 80 HTTP listener. For this tutorial we will map both of our listeners to instance port 9000 and port 9999. Add all public agent subnets to the load balancer and assign the load balancer to the SG-ELB security group. Optionally you can upload an SSL Certificate to use the ELB as your TLS endpoint if you added the HTTPS listener. For health monitoring we'll use ConductR's proxy status endpoint, HTTP:9009/status. This endpoint will return an OK when ConductR's proxy has been configured.
 
 ### Preparing the AMI
 
