@@ -7,7 +7,18 @@ Once the application is ready for deployment, developers can view ConductR bundl
 
 If you can make changes to the application or service then `sbt-conductr` is what you will typically use to produce a bundle. In fact you can even use sbt-conductr to produce bundles for other applications or services. However you may find yourself crafting a bundle from scratch and for the latter scenario. See the "legacy & third party bundles" section of the [bundles](BundleConfiguration#Legacy-&-third-party-bundles) document for more information on that, and for a deep dive on bundles in general. For now, let's look at bundling a project that you have control of.
 
-## Producing a bundle
+Bundles fall broadly into one of two categories
+
+* those that don't use Docker; and
+* those that do.
+
+Accordingly we use the name "universal" to refer to non-Docker based bundles, and "docker" for when using a Dockerfile. In addition, Docker images can be run from "universal" bundles. The following sections cover each of these scenarios:
+
+* [Producing a universal bundle without Docker](#producing-a-universal-bundle-without-docker)
+* [Producing a universal bundle that runs a Docker image](#producing-a-universal-bundle-that-runs-a-docker-image)
+* [Producing a docker bundle that uses a Dockerfile](#producing-a-docker-bundle-that-uses-a-dockerfile)
+
+## Producing a universal bundle without Docker
 
 With [sbt-conductr](https://github.com/typesafehub/sbt-conductr) you can produce a ConductR bundle for your application. sbt-conductr extends the [sbt-native-packager](https://github.com/sbt/sbt-native-packager#sbt-native-packager). Just as developers might use `sbt dist` or `sbt debian:packageBin` to produce production binaries of an application, the sbt `bundle:dist` task from sbt-conductr is used to produce ConductR application bundles.
 
@@ -113,9 +124,53 @@ The `javaOptions` values declare the maximum and minimum heap size for your appl
 
 `BundleKeys.memory` is used for locating machines with enough resources to run your application, and so it is particularly important to size it before you go to production.
 
-## Docker bundles
+## Producing a universal bundle that runs a Docker image
 
-When wanting to create Docker bundles you leverage the sbt-native-packager's ability to generate a Dockerfile and then let sbt-bundle know about this being the desired target. An example [build.sbt configuration for postgres-bdr](https://github.com/huntc/postgres-bdr/blob/master/build.sbt) is shown below:
+If you'd prefer, or indeed require to run a Docker image directly then you can set up one via sbt. Here is a section of `conductr-kibana`'s build file:
+
+```scala
+import ByteConversions._
+
+name := "conductr-kibana"
+
+mappings in Universal := Seq.empty
+
+BundleKeys.conductrTargetVersion := ConductrVersion.V2
+BundleKeys.compatibilityVersion := "1"
+BundleKeys.nrOfCpus := 0.1
+BundleKeys.memory := 128.MiB
+BundleKeys.minMemoryCheckValue := 128.MiB
+BundleKeys.diskSpace := 25.MB
+BundleKeys.roles := Set("kibana")
+BundleKeys.endpoints := Map(
+  // By default the HAProxy config for this endpoint will be overwritten - refer to haproxy.cfg
+  "kibana" -> Endpoint("http", 5601, "kibana", RequestAcl(Http("^/".r)))
+)
+BundleKeys.startCommand := Seq(
+  "docker",
+  "run",
+  "--name", "$BUNDLE_ID-$BUNDLE_NAME",
+  "--env", "ELASTICSEARCH_URL=$(curl -s -o /dev/null -w %{redirect_url} $SERVICE_LOCATOR/elastic-search)",
+  "--publish", "$BUNDLE_HOST_IP:$KIBANA_HOST_PORT:$KIBANA_BIND_PORT",
+  "--rm",
+  "kibana:4.1"
+)
+BundleKeys.checks := Seq(uri("docker+http://$KIBANA_BIND_IP:$KIBANA_BIND_PORT?retry-count=10&retry-delay=3"))
+```
+
+The `startCommand` and `checks` settings are particulary important when running existing Docker images. The [environment variables](BundleEnvironmentVariables) available to ConductR bundles are also very important. As a convention, we name the Docker container in accordance with its unique identifier and add the bundle's name for human consumption. We also remove a bundle's mappings given that sbt-native-packager populates this setting by default (and these files have no use here).
+
+The kibana image (we're using the [official one](https://hub.docker.com/_/kibana/)) requires that an `ELASTICSEARCH_URL` environment variable be used to declare the location of Elasticsearch. Given that Kibana has no service discovery mechanism then we attempt to locate Elasticsearch prior to starting Kibana. We use ConductR's [service locator HTTP redirect API](BundleAPI#The-Location-Lookup-Service) to locate Elasticsearch. Note that if there is no Elasticsearch service then the bundle will fail, and ConductR will retry to start it indefinitely. Therefore when Elasticsearch does become available then the Kibana bundle will succeed (of course, if Elasticsearch goes away subsequently, and appears at a new URL then Kibana will have a problem - arguably the best way to fix that properly is to introduce service discovery into Kibana itself, but you can stop/start Kibana's bundle as a work-around).
+
+So that Kibana is accessible from the outside world, we `publish` the bundle's host IP/Kibana host port at the proxy, again using the information provided by bundle environment variables. This time, the environment variables are derived from the ACL settings. ACLs are used to declare how to make a service available at a proxy.
+
+Finally, as part of the start command, we ensure that the container is removed once it terminates. This is important otherwise containers will accumulate within Docker and consume disk space.
+
+The `checks` command is used to signal ConductR that Kibana has started successfully. Once the bind IP/port has become available then the start is signalled.
+
+## Producing a docker bundle that uses a Dockerfile
+
+When wanting to create Docker bundles with Dockerfiles you leverage the sbt-native-packager's ability to generate a Dockerfile and then let sbt-conductr know about this being the desired target. An example [build.sbt configuration for postgres-bdr](https://github.com/huntc/postgres-bdr/blob/master/build.sbt) is shown below:
 
 ```scala
 // Docker specifics for the native packager
