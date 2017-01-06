@@ -2,15 +2,15 @@
 
 When multiple machines are involved in a cluster, it quickly becomes difficult to view the log files of distributed applications. ConductR allows the logging output of itself and the bundles that it executes to be directed to a "syslog collector". Syslog is a widely used protocol for Unix based machines and is supported by a number of cloud-based log providers, as well as local operating system support.
 
-The syslog collector can send the log messages to any kind of logging solution. The ConductR distribution includes Elasticsearch and Kibana as an opt-in logging infrastructure. How to configure Elasticsearch and Kibana or other popular logging solutions are described in the next sections.
+The syslog collector can send the log messages to any kind of logging solution. ConductR provides bundles for Elasticsearch and Kibana as an opt-in logging infrastructure. How to configure Elasticsearch and Kibana or other popular logging solutions are described in the next sections.
 
 ## Logging Structure
 
 Before discussing the types of logging available to you, it will be useful to understand the nature of ConductR logs. There are 3 types of logs:
 
-1. bundle events;
-2. bundle logs; and
-3. ConductR's own logs.
+1. Bundle events
+2. Bundle logs
+3. ConductR logs
 
 All of these types of logs will be sent to the one log collector. They are distinguished given [Syslog's definition of structured data](https://tools.ietf.org/html/rfc5424) and ConductR's usage of it.
 
@@ -20,8 +20,8 @@ The following sub-sections describe each log type and how they are distinguished
 
 Bundle events describe what has happened to a bundle in terms of whether it has loaded, been replicated to a node, scaled up or down, whether resources cannot be found to scale and so forth. The following structured data items determine that a log message represents a bundle event:
 
-* data.mdc.bundleId:`$bundleId`* OR data.mdc.bundleId:`$bundleName`
-* data.mdc.tag:conductr*
+* data.mdc.bundleId:`$bundleId` OR data.mdc.bundleId:`$bundleName`
+* data.mdc.tag:conductr
 
 Note that `$bundleName` is used for some ConductR events where there is no bundle identifier available e.g. when loading a bundle.
 
@@ -29,8 +29,8 @@ Note that `$bundleName` is used for some ConductR events where there is no bundl
 
 Bundle logs provide the stdout and stderr output of your bundle and are identified in a similar manner to events, only there will be no "conductr" tag:
 
-* data.mdc.bundleId:`$bundleId`*
-* missing data.mdc.tag:conductr*
+* data.mdc.bundleId:`$bundleId`
+* Missing data.mdc.tag:conductr
 
 Note also that the severity level of this log message will indicate `INFO` for stdout and `ERROR` for stderr.
 
@@ -38,11 +38,19 @@ Note also that the severity level of this log message will indicate `INFO` for s
 
 ConductR's logs are always identified given the absence of a bundle identifier tag.
 
-* missing (data.mdc.bundleId:`$bundleId`* AND data.mdc.bundleId:`$bundleName`*)
+* Missing (data.mdc.bundleId:`$bundleId` AND data.mdc.bundleId:`$bundleName`)
 
 ## Setting up Elasticsearch
 
-Elasticsearch is available either as the `conductr-elasticsearch` bundle or you can [use your own](#Customized-Elasticsearch). The provided bundle can be accessed from the CLI as `conductr-elasticsearch`. This will resolve to the package in [Typesafe bundles](https://bintray.com/typesafe/bundle/conductr-elasticsearch) on Bintray.  Also, a default configuration for a typical production environment has been provided in the [bundle-configuration](https://bintray.com/typesafe/bundle-configuration/elasticsearch-prod) repository.
+The setup of Elasticsearch depends on the ConductR mode or if you want to use an alternate Elasticsearch cluster outside of ConductR. Please choose one of the possible setup options:
+
+* [ConductR standalone](#Elasticsearch-on-Standalone-ConductR-cluster)
+* [ConductR on DC/OS](#Elasticsearch-on-DC/OS-cluster)
+* [External Elasticsearch cluster](#External-Elasticsearch-cluster)
+
+### Elasticsearch on Standalone ConductR cluster
+
+To deploy Elasticsearch to your standalone ConductR cluster, use the `conductr-elasticsearch` bundle. This bundle is hosted in the [Typesafe bundles](https://bintray.com/typesafe/bundle/conductr-elasticsearch) repository on Bintray. The CLI will resolve the bundle from Bintray when specifying the bundle name `conductr-elasticsearch` during `conduct load`. Also, a default configuration for a typical production environment has been provided in the [bundle-configuration](https://bintray.com/typesafe/bundle-configuration/elasticsearch-prod) repository.
 
 `conductr-elasticsearch` is using the the role `elasticsearch`. Make sure that the ConductR Agent nodes which should run Elasticsearch have this role assigned in `conductr-agent.ini`. This role will determine which nodes will be eligible to run `conductr-elasticsearch` and are to be configured accordingly.
 
@@ -67,7 +75,7 @@ With that, the syslog collector streams the log messages to Elasticsearch. Use t
 conduct logs my-bundle
 ```
 
-### Configuration
+#### Configuration
 
 The provided Elasticsearch bundle configuration is using these settings:
 - Memory: 4 GB
@@ -76,7 +84,7 @@ The provided Elasticsearch bundle configuration is using these settings:
 
 To change the settings create a new bundle configuration by modifying the `bundle.conf` file inside of the bundle configuration zip file. Afterward, reload the bundle with the new configuration.
 
-### Elasticsearch bundle rolling upgrade
+#### Elasticsearch bundle rolling upgrade
 
 Elasticsearch stores its data within the filesystem. As such, to preserve existing data when managing the deployment, it's important to ensure the data is replicated to the new instance of Elasticsearch.
 
@@ -101,11 +109,69 @@ It's important to note the rolling upgrade of the Elasticsearch bundle is only p
 
 For migrating between binary incompatible ConductR versions, the Elasticsearch data needs to be moved to the new cluster to preserve existing data. The simplest way to do this is to copy the contents of the `/var/lib/elasticsearch` from the old nodes to the new nodes. Alternatively, Elasticsearch provides [backup and restore](https://www.elastic.co/guide/en/elasticsearch/reference/1.5/modules-snapshots.html) facility to move data between 2 different clusters.
 
-### Customized Elasticsearch
+### Elasticsearch on DC/OS cluster
+
+On DC/OS, it is recommended to use the corresponding DC/OS service instead of running Elasticsearch inside ConductR. Install the Elasticsearch service from the DC/OS universe with the DC/OS CLI:
+
+```bash
+dcos package install elasticsearch
+```
+
+Elasticsearch is started via Marathon. The status of the Elasticsearch cluster can be checked with:
+
+```bash
+dcos marathon task list | awk '{print $5}' | grep elasticsearch | head -n1 | xargs dcos marathon task show
+{
+  "appId": "/elasticsearch",
+  "healthCheckResults": [
+    {
+      "alive": true,
+      "consecutiveFailures": 0,
+      "firstSuccess": "2016-12-14T13:12:03.634Z",
+      "lastFailure": null,
+      "lastFailureCause": null,
+      "lastSuccess": "2016-12-14T14:01:05.342Z",
+      "taskId": "elasticsearch.d2c66494-c1fe-11e6-98b2-4ee48a083375"
+    }
+  ],
+  "host": "10.0.1.77",
+  "id": "elasticsearch.d2c66494-c1fe-11e6-98b2-4ee48a083375",
+  "ipAddresses": [
+    {
+      "ipAddress": "10.0.1.77",
+      "protocol": "IPv4"
+    }
+  ],
+  "ports": [
+    31105
+  ],
+  "servicePorts": [
+    31105
+  ],
+  "slaveId": "9df6d049-6b71-4e7e-bc9b-0b5b5b2ec489-S0",
+  "stagedAt": "2016-12-14T13:11:28.346Z",
+  "startedAt": "2016-12-14T13:11:29.230Z",
+  "state": "TASK_RUNNING",
+  "version": "2016-12-14T13:11:28.319Z"
+}
+```
+
+The Elasticsearch cluster has successfully started if the state is equal to `TASK_RUNNING`.
+
+By default, ConductR automatically writes the log messages and events to the Elasticsearch service. It uses the DNS SRV record of the service to resolve it.
+
+```
+contrail.syslog.server.service-locator.service-name="_client-port._elasticsearch-executor._tcp.elasticsearch.mesos"
+```
+
+In case you modify the name of the Elasticsearch service, please override the above configuration key in the ConductR service configuration accordingly.
+
+
+### External Elasticsearch cluster
 
 You can configure ConductR to use another Elasticsearch cluster for events and logging. Here are some considerations for you if you should choose this path.
 
-Firstly you must tell ConductR Core where your customized Elasticsearch instance is, and also turn off ConductR service locating it given the fixed location:
+Firstly, you must tell ConductR Core where your customized Elasticsearch instance is, and also turn off ConductR service locating it given the fixed location:
 
 ```bash
 echo \
@@ -127,8 +193,7 @@ echo \
 sudo /etc/init.d/conductr-agent restart
 ```
 
-
-The Elasticsearch bundle that we provide has been configured to support back-pressure when receiving event and logging data from ConductR. By default, Elasticsearch will accept bulk index requests regardless of whether it will process them. This means that under certain load conditions, Elasticsearch could lose data being sent to it. To counter this, here is the configuration we use for Elasticsearch (we have chosen a sharding factor of 5, substitute yours accordingly):
+The Elasticsearch bundle that we provide in standalone mode has been configured to support back-pressure when receiving event and logging data from ConductR. By default, Elasticsearch will accept bulk index requests regardless of whether it will process them. This means that under certain load conditions, Elasticsearch could lose data being sent to it. To counter this, here is the configuration we use for Elasticsearch (we have chosen a sharding factor of 5, substitute yours accordingly):
 
 ```
 threadpool.bulk.type: fixed
@@ -167,7 +232,14 @@ More information on configuring Elasticsearch for production can be found in [th
 
 ## Setting up Kibana
 
-Kibana is a popular UI to display data stored in Elasticsearch. In the context of ConductR, Kibana can be configured to display, filter and search log messages. Kibana, configured for ConductR, can be accessed from the CLI as `conductr-kibana` bundle. This will resolve to the package in [Typesafe bundles](https://bintray.com/typesafe/bundle/conductr-elasticsearch) on Bintray. The bundle uses the version 4.1.2 of Kibana. It only works in conjunction with the `conductr-elasticsearch` bundle. To load and run Kibana to ConductR use the control API of ConductR, e.g. by using the CLI:
+Kibana is a popular UI to display data stored in Elasticsearch. In the context of ConductR, Kibana can be configured to display, filter and search log messages. The setup of Kibana depends on the ConductR mode. Please choose one of the possible setup options:
+
+* [ConductR standalone](#Kibana-on-Standalone-ConductR-cluster)
+* [ConductR on DC/OS](#Kibana-on-DC/OS-cluster)
+
+### Kibana on Standalone ConductR cluster
+
+To deploy Kibana onto a ConductR standalone cluster, use the `conductr-kibana` bundle. This bundle is hosted on Bintray in the [Typesafe bundles](https://bintray.com/typesafe/bundle/conductr-kibana) repository and is automatically resolved when using the CLI. The bundle uses the version 4.1.2 of Kibana. It only works in conjunction with the `conductr-elasticsearch` bundle. To load and run Kibana on ConductR use the control API of ConductR, e.g. by using the CLI:
 
 ```bash
 conduct load conductr-kibana
@@ -176,9 +248,58 @@ conduct run conductr-kibana
 
 This bundle doesn't require any additional bundle configuration file. It is using the role `kibana`. Make sure that the ConductR nodes which should run Kibana have this role assigned.
 
-Now the Kibana UI can be accessed on the port `5601`, e.g.: http://192.168.59.103:5601.
+Now the Kibana UI can be accessed on the port `5601`, e.g.: http://127.0.0.1:5601.
 
 [[images/kibana_index_initial.png]]
+
+### Kibana on DC/OS cluster
+
+On DC/OS, it is recommended to use the corresponding DC/OS service instead of running Kibana inside ConductR. Install the Kibana service from the DC/OS universe with the DC/OS CLI:
+
+```bash
+dcos package install kibana
+```
+
+Kibana is started via Marathon. The status of the Kibana cluster can be checked with:
+
+```bash
+dcos marathon task list | awk '{print $5}' | grep kibana | head -n1 | xargs dcos marathon task show
+{
+  "appId": "/kibana",
+  "healthCheckResults": [
+    {
+      "alive": true,
+      "consecutiveFailures": 0,
+      "firstSuccess": "2016-12-14T13:10:56.142Z",
+      "lastFailure": null,
+      "lastFailureCause": null,
+      "lastSuccess": "2016-12-14T14:48:59.980Z",
+      "taskId": "kibana.bc8ab643-c1fe-11e6-98b2-4ee48a083375"
+    }
+  ],
+  "host": "10.0.1.80",
+  "id": "kibana.bc8ab643-c1fe-11e6-98b2-4ee48a083375",
+  "ipAddresses": [
+    {
+      "ipAddress": "10.0.1.80",
+      "protocol": "IPv4"
+    }
+  ],
+  "ports": [
+    5601
+  ],
+  "servicePorts": [
+    5601
+  ],
+  "slaveId": "cb77bbc5-7a93-4eb0-a8d6-150729a210d8-S1",
+  "stagedAt": "2016-12-14T13:10:51.045Z",
+  "startedAt": "2016-12-14T13:10:51.963Z",
+  "state": "TASK_RUNNING",
+  "version": "2016-12-14T13:10:51.016Z"
+}
+```
+
+The Kibana cluster has successfully started if the state is equal to `TASK_RUNNING`. Once running, the Kibana UI is accessible at `http://dcos-host/app/kibana`.
 
 ### Connecting Kibana with Elasticsearch
 
