@@ -1,5 +1,11 @@
 # ConductR release notes
 
+### 1.1.13 January 10th, 2017
+
+1. Improved self-healing in relation to split brain resolution.
+2. Upgraded base Ubuntu image for the sandbox.
+3. Improved internal state housekeeping strategy.
+
 ### 1.1.12 November 24th, 2016
 
 1. A RollingFileAppender is now used to manage ConductR's log files.
