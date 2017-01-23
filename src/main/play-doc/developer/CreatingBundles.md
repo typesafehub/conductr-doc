@@ -144,18 +144,18 @@ BundleKeys.diskSpace := 25.MB
 BundleKeys.roles := Set("kibana")
 BundleKeys.endpoints := Map(
   // By default the HAProxy config for this endpoint will be overwritten - refer to haproxy.cfg
-  "kibana" -> Endpoint("http", 5601, "kibana", RequestAcl(Http("^/".r)))
+  "kibana" -> Endpoint("http", 0, "kibana", RequestAcl(Http("^/".r)))
 )
 BundleKeys.startCommand := Seq(
   "docker",
   "run",
   "--name", "$BUNDLE_ID-$BUNDLE_NAME",
   "--env", "ELASTICSEARCH_URL=$(curl -s -o /dev/null -w %{redirect_url} $SERVICE_LOCATOR/elastic-search)",
-  "--publish", "$BUNDLE_HOST_IP:$KIBANA_HOST_PORT:$KIBANA_BIND_PORT",
+  "--publish", "$BUNDLE_HOST_IP:$KIBANA_HOST_PORT:5601,
   "--rm",
   "kibana:4.1"
 )
-BundleKeys.checks := Seq(uri("docker+http://$KIBANA_BIND_IP:$KIBANA_BIND_PORT?retry-count=10&retry-delay=3"))
+BundleKeys.checks := Seq(uri("docker+http://$KIBANA_HOST_IP:$KIBANA_HOST_PORT?retry-count=10&retry-delay=3"))
 ```
 
 The `startCommand` and `checks` settings are particulary important when running existing Docker images. The [environment variables](BundleEnvironmentVariables) available to ConductR bundles are also very important. As a convention, we name the Docker container in accordance with its unique identifier and add the bundle's name for human consumption. We also remove a bundle's mappings given that sbt-native-packager populates this setting by default (and these files have no use here).
