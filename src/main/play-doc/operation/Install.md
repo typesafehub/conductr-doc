@@ -125,7 +125,9 @@ By default ConductR's logging is quite sparse. Unless an error or warning occurs
 ConductR supports running applications and services within Docker. If you plan on running Docker based bundles, you will need to install [Docker](https://docs.docker.com/) according to [the official documentation](https://docs.docker.com/installation/ubuntulinux/). Once Docker is installed then add ConductR's user/group to the `docker` group so that it has [the correct permissions in order to access Docker](http://docs.docker.com/installation/ubuntulinux/#giving-non-root-access):
 
 ``` bash
+[172.17.0.1]$ sudo groupadd -f docker
 [172.17.0.1]$ sudo usermod -a -G docker conductr
+[172.17.0.1]$ sudo service docker restart
 ```
 
 ## Installing ConductR on the remaining machines
