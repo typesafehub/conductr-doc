@@ -11,16 +11,16 @@
 * [Docker](https://www.docker.com/)
 * [conductr-cli](CLI#New-CLI-installation)
 
-Docker is required so that you can run the ConductR cluster as if it were running on a number of machines in your network. You won't need to understand much about Docker for ConductR other than installing it as described in its "Get Started" section. If you are on Windows or Mac then you will become familiar with `docker-machine` which is a utility that controls a virtual machine for the purposes of running Docker.
+The conductr-cli is used to communicate with the ConductR cluster. The CLI also includes a "developer sandbox" so that you may test your bundles in a production-like environment, but locally on your machine.
 
-The conductr-cli is used to communicate with the ConductR cluster.
+> Note that Windows users will require a Linux based virtual machine to run the developer sandbox.
 
 ## Setup
 
 Add sbt-conductr to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.17")
+addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.20")
 ```
 
 This makes several commands available within sbt. We'll use these commands on the next pages.

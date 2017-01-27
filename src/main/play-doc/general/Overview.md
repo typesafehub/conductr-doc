@@ -12,7 +12,7 @@ The following use-case diagram illustrates the scope of Lightbend ConductR:
 
 [[images/scope.png]]
 
-During the latter part of development of a project, developers will typically package their artifacts and start running them for near-production style scenarios. An example of this is with a Play application development. During the early stages developers will typically run their project from within Activator, making changes to their code having gathered rapid feedback from the browser window. Once most of the project's functionality is written developers will then issue a "stage" command to produce a distribution on the file system that they can run their project from. The project will run differently given things such as CDN resolution, asset fingerprinting, minification; activities that would otherwise degrade the speed required for development mode. As a part of the staging activity build tools permit the staging of a bundle that can be used by Lightbend ConductR ( _Create Bundle_ and _Run Bundle Locally_). This bundle is able to be deployed and run on the developer's machine.
+During the latter part of development of a project, developers will typically package their artifacts and start running them for near-production style scenarios. An example of this is with a Play application development. During the early stages developers will typically run their project from within sbt, making changes to their code having gathered rapid feedback from the browser window. Once most of the project's functionality is written developers will then issue a "stage" command to produce a distribution on the file system that they can run their project from. The project will run differently given things such as CDN resolution, asset fingerprinting, minification; activities that would otherwise degrade the speed required for development mode. As a part of the staging activity build tools permit the staging of a bundle that can be used by Lightbend ConductR ( _Create Bundle_ and _Run Bundle Locally_). This bundle is able to be deployed and run on the developer's machine.
 
 During the course of development the developer will create a configuration that is also used for running a bundle locally ( _Develop Config_). This configuration names a project's component declaring its environmental requirements. These configurations are versioned and provide an audit trail of the changes to a component overall.
 
@@ -26,22 +26,22 @@ The following component diagram illustrates the components of Lightbend ConductR
 
 [[images/arch.png]]
 
-Lightbend ConductR fundamentally consists of the _ConductR_ process; an application that is responsible for deploying components throughout a medium to large networked cluster of machines. We see that a medium sized cluster begins at where more than 3 host machines are involved. ConductR provides a control protocol via HTTP/REST/JSON so that many types of client may communicate with it.
+Lightbend ConductR fundamentally consists of the _ConductR_ core and agent processes. The core is a system service that is responsible for deploying components throughout a medium to large networked cluster of machines. The agent is a system service, isolated from the core, and is the parent process to components that run. We see that a medium sized cluster begins at where more than 3 host machines are involved with each machine hosting a core and an agent process. ConductR provides a control protocol via HTTP/REST/JSON so that many types of client may communicate with it.
 
 ### Clients
 
 Many types of client are possible given HTTP/REST/JSON. For developers, an sbt plugin named `sbt-conductr` provides control protocol commands (load, unload, start etc.) for managing the lifecycle of bundles. Similarly for operators, a set of command line tools are provided and can be run on Windows and Unix style environments.
 
-Again for developers, [Lightbend Activator](http://lightbend.com/activator) can also communicate with Lightbend ConductR. Activator communicates with sbt via the sbt-server protocol and so all tasks and settings available to the sbt-conductr plugin will be available to Activator. Therefore Activator can be used to prepare bundles and publish them to the cluster, or on a local machine for testing.
+Again for developers, sbt can also communicate with Lightbend ConductR. Therefore sbt can be used to prepare bundles and publish them to the cluster, or on a local machine for testing.
 
 ### Bundles
 
-Lightbend ConductR provides an `sbt-bundle` plugin to produce bundles. The plugin is as an extension of the [sbt-native-packager](https://github.com/sbt/sbt-native-packager#sbt-native-packager) plugin. Bundles are `zip` files that are named in accordance with their calculated digest. They contain the following files:
+Lightbend ConductR provides a plugin to produce bundles as part of sbt-conductr. The plugin is as an extension of the [sbt-native-packager](https://github.com/sbt/sbt-native-packager#sbt-native-packager) plugin. Bundles are `zip` files that are named in accordance with their calculated digest. They contain the following files:
 
 * A bundle descriptor file named `bundle.conf`
 * The files relating to the component under a directory named under the component's name/version combination
 
-A bundle descriptor file ( _bundle.conf_) contains the following information:
+A bundle descriptor file ( _bundle.conf_) includes the following information:
 
 * the version of the bundle format
 * the version of the component for human audit purposes
@@ -85,7 +85,7 @@ There are other benefits to proxying given their external facing use cases:
 
 The information required to configure proxy services is made available from Lightbend ConductR. Mapping information is provided for tcp, http, https and udp based endpoints.
 
-Finally, in order to be fully resilient, it is recommend that a proxy is available on each host where ConductR is running. Therefore any proxy should be able to locate any service on any host. ConductR uses an eventually-consistent data approach known as Conflict-free Replicated Data Types (CRDTs) to share this information across all proxies.
+Proxies should generally reside on DMZ style machines, but can also exist alongside ConductR core for smaller clusters. A proxy is always accompanied by a ConductR agent so that it may be updated with execution state.
 
 ### The Control Protocol
 
@@ -99,7 +99,7 @@ The control protocol (CP) is used to convey lifecycle events including:
 
 Bundles describe a component and are identified given a secure digest value derived from their contents in addition to their semantic name. For example a bundle may be named `myapp-1.0.0-389205904d6c7bb83fc676513911226f2be25bf1465616bb9b29587100ab1414.zip` where the `389205904d6c7bb83fc676513911226f2be25bf1465616bb9b29587100ab1414` is the digest of the archive's contents. These secure digests may also be abbreviated and named for easing operator convenience.
 
-The ConductR will only load bundles after re-calculating and then comparing the secure digest from the archive being provided. The main rationale for this is so that the identifier can be assured to be distinct within ConductR, and that this identifier may be interpreted as a version that can be verified by ConductR. The operator may then be certain that the version published by the developer is what is being deployed. There are also other benefits including ConductR's ability to assure the integrity of the file transmitted.
+ConductR will only load bundles after re-calculating and then comparing the secure digest from the archive being provided. The main rationale for this is so that the identifier can be assured to be distinct within ConductR, and that this identifier may be interpreted as a version that can be verified by ConductR. The operator may then be certain that the version published by the developer is what is being deployed. There are also other benefits including ConductR's ability to assure the integrity of the file transmitted.
 
 When loading a bundle, a URI describing a versioned configuration is also provided. This configuration is provided by the operator and extends any existing configuration within a bundle. Thus a single version of a bundle can be loaded with many types of configuration, perhaps one for QA, one for pre-production, one for production and so forth. The configuration associated with a bundle has been provided by a developer and is generally suitable only for development and local testing.
 

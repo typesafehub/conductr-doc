@@ -20,8 +20,8 @@ The following sub-sections describe each log type and how they are distinguished
 
 Bundle events describe what has happened to a bundle in terms of whether it has loaded, been replicated to a node, scaled up or down, whether resources cannot be found to scale and so forth. The following structured data items determine that a log message represents a bundle event:
 
-* data.mdc.bundleId:`$bundleId` OR data.mdc.bundleId:`$bundleName`
-* data.mdc.tag:conductr
+* data.mdc@49285.bundleId:`$bundleId` OR data.mdc@49285.bundleId:`$bundleName`
+* data.mdc@49285.tag:conductr
 
 Note that `$bundleName` is used for some ConductR events where there is no bundle identifier available e.g. when loading a bundle.
 
@@ -248,7 +248,7 @@ conduct run conductr-kibana
 
 This bundle doesn't require any additional bundle configuration file. It is using the role `kibana`. Make sure that the ConductR nodes which should run Kibana have this role assigned.
 
-Now the Kibana UI can be accessed on the port `5601`, e.g.: http://127.0.0.1:5601.
+Now the Kibana UI can be accessed on the port `5601`, e.g.: http://192.168.10.1:5601 (this is the default address on the developer sandbox - substitute the address of your proxy appropriately).
 
 [[images/kibana_index_initial.png]]
 
