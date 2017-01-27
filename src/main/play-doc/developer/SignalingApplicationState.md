@@ -14,11 +14,12 @@ The library comes in multiple flavours:
 - Akka 2.3.x/2.4.x: `akka23-conductr-bundle-lib`
 - Play 2.3.x: `play23-conductr-bundle-lib`
 - Play 2.4.x: `play24-conductr-bundle-lib`
+- Lagom 1.x.x: `lagom1-conductr-bundle-lib`
 
 To use it add one of the libraries as a dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "1.4.7"
+libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "1.4.14"
 ``` 
 
 The Java and Scala / JDK library have no dependencies other than the JDK and as such, a blocking implementation is used for its HTTP calls (the JDK offers no non-blocking APIs for this). Using the Akka or Play library will ensure that the library is consistent with the respective Akka or Play application and that non-blocking implementations are used:

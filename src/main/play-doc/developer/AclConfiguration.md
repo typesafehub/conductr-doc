@@ -1,8 +1,8 @@
 # ACL configuration
 
-ConductR provides a DSL for the application to declare request ACLs for HTTP, TCP, or UDP based endpoints.
+ConductR provides a DSL for the application to declare request Access Control Lists (ACLs) for HTTP, TCP, or UDP based endpoints.
 
-These request ACLs are used as the instructions to expose the HTTP and TCP based endpoints via proxy during deployment time. Operations may choose to use the request ACLs supplied by the developer as-is, or provide their own customised configuration for these endpoints. This is discussed at a greater length in [[Dynamic proxy configuration|DynamicProxyConfiguration]].
+These request ACLs are used as the instructions to expose the HTTP and TCP based endpoints via proxy during deployment time. Operations may choose to use the request ACLs supplied by the developer as-is, or provide their own customized configuration for these endpoints. This is discussed at a greater length in [[Dynamic proxy configuration|DynamicProxyConfiguration]].
 
 The DSL is provided as part of the [sbt-conductr](https://github.com/typesafehub/sbt-conductr) plugin which is required when packaging the application as a bundle.
 

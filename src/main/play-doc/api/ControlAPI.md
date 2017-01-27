@@ -7,6 +7,7 @@ ConductR's control protocol is RESTful and has the following functional scope:
 * [Unload a bundle](#Unload-a-bundle)
 * [Query bundle state](#Query-bundle-state)
 * [Query member state](#Query-member-state)
+* [Query agent state](#Query-agent-state)
 * [Query logs by bundle](#Query-logs-by-bundle)
 * [Query events by bundle](#Query-events-by-bundle)
 
@@ -292,9 +293,31 @@ uniqueAddress       | An object describing the unique address of a member of Con
 
 Other non 2xx status codes should also be treated as a failure.
 
+### Events
+
+A `GET` on the `/bundles/events` endpoint can be used to receive server sent events in relation to the above bundle information changing. The following event types are possible:
+ 
+* `bundleConfigAdded`
+* `bundleConfigRemoved`
+* `bundleErrorOccurred`
+* `bundleExecutionAdded`
+* `bundleExecutionChanged`
+* `bundleExecutionRemoved`
+* `bundleInfoAdded`
+* `bundleInfoRemoved`
+* `bundleInstallationAdded`
+* `bundleInstallationChanged`
+* `bundleInstallationRemoved`
+
+The "data" of the event represents a bundle id.
+
+An `events` parameter may be supplied to as a repeated set of query parameters with the value representing the filtering of specific event types. Partial event type names are permitted e.g.: `GET` `/bundles/events?events=config&events=execution` would filter the emission of `bundleConfigAdded`, `bundleConfigRemoved`, `bundleExecutionAdded`, `bundleExecutionChanged` and `bundleExecutionRemoved`. These filtering parameters are also case insensitive.
+
+Heartbeat events are also emitted so that the connection is kept alive through http proxies. SSE heartbeats are empty lines.
+
 ## Query member state
 
-Retrieve the current state of ConductR cluster members.
+Retrieve the current state of ConductR cluster members (otherwise known as the "core").
 
 ### Request
 
@@ -348,6 +371,72 @@ status              | `Joining`, `Up`, `Leaving`, `Exiting`, `Down` or `Removed`
 #### Failure
 
 Other non 2xx status codes should also be treated as a failure.
+
+### Events
+
+A `GET` on the `/members/events` endpoint can be used to receive server sent events in relation to the above member information changing. The following event types are possible:
+ 
+* `memberUp`
+* `memberReachable`
+* `memberUnreachable`
+* `memberDown`
+
+The "data" of the event represents a node.
+
+Heartbeat events are also emitted so that the connection is kept alive through http proxies. SSE heartbeats are empty lines.
+
+
+## Query agent state
+
+Retrieve the current state of ConductR cluster agents.
+
+### Request
+
+```
+GET /v2/agents
+```
+
+### Responses
+
+#### Success
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+  {
+    "address": "{address}",
+    "roles": {roles},
+    "observedBy": {observed-by}
+  }
+]
+```
+
+##### Fields
+
+Field               | Description
+--------------------|------------
+address             | A uri describing the agent node.
+roles               | An array of strings representing the roles that the ConductR cluster agent is able to handle. Role names are user-supplied with exception to `web`.
+observedBy          | An array of ConductR core members that the agent has connected to. An agent is generally connected to just one core member at a time, but it is possible for there to be zero, or more than one for a short period of time during re-connects.
+
+
+#### Failure
+
+Other non 2xx status codes should also be treated as a failure.
+
+### Events
+
+A `GET` on the `/agents/events` endpoint can be used to receive server sent events in relation to the above agent information changing. The following event types are possible:
+ 
+* `agentAdded`
+* `agentRemoved`
+
+The "data" of the event represents an agent node.
+
+Heartbeat events are also emitted so that the connection is kept alive through http proxies. SSE heartbeats are empty lines.
+
 
 
 ## Query logs by bundle

@@ -24,7 +24,7 @@ ConductR Core holds the state of the cluster, and is responsible for decision ma
 
 ConductR Agent is responsible for running bundle processes. As such, the bundle roles which are previously specified are now to be specified within ConductR Agent.
 
-The ConductR Core and ConductR Agent is available as 2 different packages. The [[installation instructions|Install]] describes the steps of installing ConductR Core and ConductR Agent on the same host. These steps are also applicable should ConductR Core and ConductR Agent installation on different hosts be desired.
+The ConductR Core and ConductR Agent is available as a number of packages. The [[installation instructions|Install]] describes the steps of installing ConductR Core and ConductR Agent on the same host. These steps are also applicable should ConductR Core and ConductR Agent installation on different hosts be desired.
 
 ## Node Peer Access
 

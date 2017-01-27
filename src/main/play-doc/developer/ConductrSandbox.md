@@ -1,36 +1,32 @@
 # Managing ConductR sandbox cluster
 
-sbt-conductr is using the ConductR sandbox image to spin up a local ConductR cluster. This is a docker image based on Ubuntu that includes ConductR which makes it simple to use ConductR in a development context. It can be also utilized by Continuous Integration (CI) and other automation to validate bundles within a cluster context. The sandbox is available freely to all developers.
-
-> The docker image contains the full version of ConductR. However, it is not recommended to use this version in production because it is pre-configured for non production scenarios and because this ConductR version is started inside a Docker container.
+sbt-conductr uses the ConductR sandbox image to spin up a local ConductR cluster. The sandbox makes it simple to use ConductR in a development context. It can be also utilized by Continuous Integration (CI) and other automation to validate bundles within a cluster context. The sandbox is available freely to all developers.
 
 ## Starting ConductR
 
-The `sandbox run` command starts a local ConductR cluster. In order to use this command you need to specify the ConductR version. Note that this version is the version of ConductR itself and not the version of the `sbt-conductr` plugin. Please visit the [ConductR Developer page](https://www.lightbend.com/product/conductr/developer) to pick up the latest ConductR version from the section **Quick Configuration**.
+The `sandbox run` command starts a local ConductR cluster. In order to use this command you need to specify the ConductR version. Note that this version is the version of ConductR itself and not the version of the `sbt-conductr` plugin.
 
 Afterwards, start the sandbox inside the sbt session with:
 
 ```scala
-[my-app] sandbox run <CONDUCTR_VERSION>
+[my-app] sandbox run 2.0.0
 [info] Running ConductR...
 [info] Running container cond-0 exposing 192.168.59.103:9000...
 ```
 
-> The ConductR sandbox will take a few seconds to become available and so any initial command that you send to it may not work immediately.
-
-Given the above you will then have a ConductR process running in the background (there will be an initial download cost for Docker to download the conductr/conductr-dev image from the public Docker registry).
+Given the above you will then have a ConductR process running in the background (there will be an initial download cost  to download the conductr/conductr-dev image from our registry).
 
 ### ConductR features
 
 The sandbox contains handy features which can be optionally enabled during startup by specifying the `--feature` option, e.g.:
 
 ```scala
-[my-app] sandbox run <CONDUCTR_VERSION> --feature visualization
+[my-app] sandbox run 2.0.0 --feature visualization
 [info] Running ConductR...
 [info] Running container cond-0 exposing 192.168.59.103:9000 192.168.59.103:9909...
 ```
 
-The `visualization` feature provides a web interface to visualize the ConductR cluster together with deployed and running bundles. After enabling the feature, access it at http://{docker-host-ip}:9909. Replace `docker-host-ip` with your docker host ip address. For convience, the url of the visualizer app is displayed in the sbt session, e.g. http://192.168.59.103:9909.
+The `visualization` feature provides a web interface to visualize the ConductR cluster together with deployed and running bundles. After enabling the feature, access it at http://{sandbox-host-ip}:9999. Replace `sandbox-host-ip` with your sandbox host ip address; this http://192.168.10.1:9999 by default.
 
 [[images/visualizer_simple.png]]
 

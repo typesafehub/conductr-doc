@@ -4,9 +4,9 @@
 
 Each one of the following properties can be overridden by declaring its path and value in ConductR Core's `conf/conductr.ini`. For example to set ConductR Core's storage directory you'd specify `-Dconductr.storage-dir=/some-other-dir`.
 
-### Akka Configuration
+## ConductR Core Configuration
 
-The following Akka properties are overridden:
+Here is the entire configuration for ConductR Core.
 
 ```
 akka {
@@ -24,22 +24,20 @@ akka {
       unhandled = on
     }
 
+    enable-additional-serialization-bindings = on
+
     serializers {
-      "akka-misc"            = "akka.remote.serialization.MiscMessageSerializer"
-      "conductr-core-proto"  = "com.typesafe.conductr.CoreProtobufSerializer"
-      "conductr-agent-proto" = "com.typesafe.conductr.AgentProtobufSerializer"
+      conductr-core-proto  = "com.typesafe.conductr.CoreProtobufSerializer"
+      conductr-agent-proto = "com.typesafe.conductr.AgentProtobufSerializer"
     }
 
     serialization-bindings {
       "java.io.Serializable"                     = none
-      "akka.actor.ActorIdentity"                 = "akka-misc"
-      "akka.actor.Identify"                      = "akka-misc"
-      "com.typesafe.conductr.CoreRemotableMessage"  = "conductr-core-proto"
-      "com.typesafe.conductr.AgentRemotableMessage" = "conductr-agent-proto"
-    }
+      "java.lang.String"                         = java
+      "akka.dispatch.sysmsg.Watch"               = java
 
-    serialization-identifiers {
-      "akka.remote.serialization.MiscMessageSerializer" = 16
+      "com.typesafe.conductr.CoreRemotableMessage"  = conductr-core-proto
+      "com.typesafe.conductr.AgentRemotableMessage" = conductr-agent-proto
     }
 
     // We use a round-robin-pool actor here given that the default
@@ -59,7 +57,10 @@ akka {
   }
 
   cluster {
-    seed-nodes                  = ["akka.tcp://conductr@"${conductr.ip}":9004"]
+    # INTERNAL: Do not overwrite this seed nodes parameter.
+    # Instead, either use ConductR's --seed option or declare the `conductr.seed-nodes` parameter in your application.conf
+    # For more information check out the `conductr.seed-nodes` documentation
+    seed-nodes                  = []
 
     # The `replicator` role is required for bundle replication purposes, hence core nodes which hosts the bundle
     # files must have this role defined.
@@ -76,31 +77,6 @@ akka {
       # The recommended value for slower networks including cloud environments: http://doc.akka.io/docs/akka/snapshot/scala/cluster-usage.html
       threshold = 12
     }
-
-    client.receptionist {
-      name = "receptionist"
-      role = ""
-      number-of-contacts = 3
-      response-tunnel-receive-timeout = 30s
-      use-dispatcher = ""
-
-      # ConductR receives continuous heartbeat from the ConductR agent using Akka Cluster Client.
-      # If there is no heartbeat received in the time specified, the agent is presumed to be down.
-      # Once the ConductR agent is down, it would mean resources from the ConductR agent (memory, disk space, and
-      # nr of cpus) is considered unavailable.
-      heartbeat-interval = 2s
-
-      # Number of potentially lost/delayed heartbeats that will be
-      # accepted before considering it to be an anomaly.
-      # The ClusterReceptionist is using the akka.remote.DeadlineFailureDetector, which
-      # will trigger if there are no heartbeats within the duration
-      # heartbeat-interval + acceptable-heartbeat-pause, i.e. 15 seconds with
-      # the default settings.
-      acceptable-heartbeat-pause = 13s
-
-      # Failure detection checking interval for checking all ClusterClients
-      failure-detection-interval = 2s
-    }
   }
 
   extensions = [
@@ -111,6 +87,15 @@ akka {
   http {
     parsing.max-content-length   = 200m
     server.remote-address-header = on
+  }
+
+  # We fallback on DNS SRV records if we cannot resolve services within ConductR
+  io.dns {
+    resolver = async-dns
+    async-dns {
+      resolve-srv = true
+      resolv-conf = on
+    }
   }
 
   remote {
@@ -124,26 +109,20 @@ akka {
   }
 
   diagnostics.checker {
-    confirmed-typos = [
-      "akka.cluster.client.receptionist.heartbeat-interval",
-      "akka.cluster.client.receptionist.failure-detection-interval",
-      "akka.cluster.client.receptionist.acceptable-heartbeat-pause",
-      "akka.actor.serialization-identifiers.\"akka.remote.serialization.MiscMessageSerializer\""
-    ]
-
     confirmed-power-user-settings = [
-      "akka.cluster.failure-detector.threshold"
+      "akka.cluster.failure-detector.threshold",
+      "akka.io.dns.resolver",
+      "akka.io.dns.async-dns.resolv-conf",
+      "akka.io.dns.async-dns.resolve-srv"
     ]
   }
 }
-```
 
-## ConductR Core Configuration
-
-Here is the entire configuration for ConductR Core.
-
-```
+# Lightbend ConductR configuration.
 conductr {
+  # The name of the ConductR cluster, i.e. the Akka system name
+  system-name = "conductr"
+
   # The IP address used by default for all services, e.g. control server, bundle stream server, etc.
   # Defaults to the loopback IP address and can be set via the CONDUCTR_IP environment variable.
   ip = "127.0.0.1"
@@ -152,13 +131,24 @@ conductr {
   # The mode in which ConductR is started.
   # Modes: 'standalone', 'mesos'
   # By default 'standalone' is used.
-  # If ConductR should be started on Mesos then it is recommended to specify the 'mesos-master' option when starting
-  # the ConductR process. The 'mesos-master' option will set the mode to 'mesos' and
-  # the 'resource-provider.mesos.master' to the given address
+  # If ConductR should be started on Mesos then it is recommended to specify the '--mesos-master' option when starting
+  # the ConductR process. The '--mesos-master' option will set the mode to 'mesos' and
+  # the 'conductr.mesos-scheduler-client.master' to the given address
   mode = "standalone"
 
+  # The seed nodes or constructr coordination service addresses to bootstrap the ConductR cluster.
+  # The ConductR option --seed is available to add entries to `conductr-seed-nodes`.
+  # Depending on the given addresses the ConductR cluster is bootstrapped differently:
+  # 1. If empty, the ConductR node joins the cluster with itself (default)
+  # 2. If the given addresses does not contain a Zookeeper address, i.e. does not start with zk://, then these addresses
+  #    are interpretes as seed nodes. The ConductR node will join another ConductR cluster by given seed nodes.
+  # 3. If at least one of the given addresses is a Zookeeper address, i.e. address starts with zk://, then the other addresses
+  #    are filtered out and only the Zookeeper addresses are kept. These Zookeeper addresses are then interpreted
+  #    as ConstructR coordination service nodes. ConstructR is then started and therefore responsible to bootstrap the ConductR cluster.
+  seed-nodes = []
+
   # The directory where bundles and their configuration are written to.
-  storage-dir = ${java.io.tmpdir}/conductr/bundles
+  storage-dir = ${java.io.tmpdir}/conductr/${conductr.ip}/bundles
 
   # The amount of time Lightbend ConductR expects to wait on achieving a read quorum. 10 seconds should
   # cover large clusters, but you may need to increase this if read timeouts appear
@@ -168,10 +158,50 @@ conductr {
   # As per read-quorum-timeout.
   write-quorum-timeout = 10 seconds
 
+  # The expected maximum amount of time it takes for the actor system to shutdown.
+  # If the actor system fails to shutdown within this period, an error message will be printed.
+  #
+  # ConductR will attempt to restart its actor system when encountering error. If the shutdown timeout occurs in this
+  # scenario, System.exit() with non-zero exit code will be called.
+  #
+  # If the shutdown timeout occurs as part of the JVM shutdown hook, System.exit() will not be called as invoking
+  # System.exit() within a shutdown hook thread will cause the call to block indefinitely:
+  # https://docs.oracle.com/javase/8/docs/api/java/lang/Runtime.html#exit-int-
+  actor-system-shutdown-timeout = 60 seconds
+
   # Bundle Publisher
   bundle-publisher {
     # The time that a bundle can pending to be served for.
-    request-ttl = 30 seconds
+    request-ttl = 2 minutes
+  }
+
+  # The agent monitor keeps track of agent membership state.
+  agent-monitor {
+    # This is a parameter used for consistent hashing when determining what ConductR is responsible for
+    # a given agent identifier. The parameter should not need to be changed.
+    virtual-nodes-factor = 10
+
+    # The time it takes for the monitor to assume that it is unlikely for an agent to come back
+    # and therefore assume that it has no associated executions. Note that an agent may still
+    # come back after this period.
+    become-down-timeout = 15 seconds
+
+    # The period of time to wait before we assume that an agent will never come back and we should
+    # thus clean up any remaining state in relation to it.
+    down-idle-timeout = 10 minutes
+
+    # The amount of time we'll tolerate waiting for the agent information event
+    agent-info-timeout = 20 seconds
+
+    # The amount of time to wait until the bundle execution state is considered as settled.
+    bundle-execution-state-settling-time = 5 seconds
+
+    # The amount of time to wait to allow for the removal of agent state from core before reconciling
+    # execution state with an agent again.
+    agent-removal-settling-time = 5 seconds
+
+    # The name of the launcher on the remote agent
+    launcher-agent-name = "standalone-launcher-agent"
   }
 
   # Bundling streaming is an out-of-band private channel used between the ConductRs in
@@ -187,7 +217,7 @@ conductr {
 
     # The amount of time to wait on one ConductR connecting to another's bundle stream
     # server.
-    connect-timeout = 30 seconds
+    connect-timeout = 2 minutes
 
     # Bundles and configuration are transiently served i.e. once served then they are no
     # longer available. This parameter dictates the maximum number of bundles that are ready to
@@ -199,7 +229,7 @@ conductr {
     request-fetch-timeout = 5 seconds
 
     # The time that a bundle can pending to be served for.
-    request-ttl = 30 seconds
+    request-ttl = 2 minutes
   }
 
   # The control server provides http services in relation to controlling the ConductR e.g.
@@ -215,6 +245,9 @@ conductr {
 
     # The amount of time to wait on publishing a bundle.
     bundle-publisher-timeout = 20 seconds
+
+    # The amount of time to wait on obtaining agent events publisher.
+    agent-events-timeout = 5 seconds
 
     # The amount of time to wait on obtaining state events publisher.
     state-events-timeout = 5 seconds
@@ -244,6 +277,19 @@ conductr {
 
     # The maximum number of events or logs that can be fetched for each query.
     log-repository-lookup-max-size = 100
+
+    # The service name of the deployment service for pipeline delivery
+    deployment-service-name = "deployments"
+
+    # The amount of time to wait for a service locator lookup in the context of proxying
+    # control protocol requests.
+    service-locator-timeout = 5 seconds
+
+    # The service name of the web UI to serve from the control protocol root context.
+    web-ui-service-name = "visualizer"
+
+    # The maximum size of a bundle configuration given that it is read into memory
+    max-bundle-conf-size = 8k
 
     sse {
       state {
@@ -278,7 +324,7 @@ conductr {
 
     # The time that a bundle replicator for a given bundle id will exist before it stops
     # given no activity. Replicators remain active only when there is work to be done.
-    bundle-replicator-idle-time = 30 seconds
+    bundle-replicator-idle-time = 2 minutes
 
     # The amount of time that a ConductR is expected to wait on another ConductR in order to replicate
     # a bundle. This parameter will be influenced by the speed on the bundle stream network between ConductRs.
@@ -287,6 +333,15 @@ conductr {
 
     # The amount of time required to source a node bundle file on disk at the current node.
     load-scheduler-source-timeout = 5 seconds
+
+    # The amount of delay put in place before replying after a successful bundle load.
+    # This delay is introduced to allow subscribers to be notified of CRDT changes before sending the reply, thus
+    # reducing the chance of client seeing inconsistent information between subscribers (i.e. between LoadScheduler vs
+    # ScaleScheduler)
+    load-scheduler-reply-delay = ${akka.cluster.distributed-data.notify-subscribers-interval}
+
+    # The amount of time LoadExecutor will wait for bundle info to be updated to all Core nodes.
+    load-executor-bundle-info-update-timeout = ${conductr.write-quorum-timeout}
 
     # The number of bundles and configuration to retain on the file system. There is one bundle and config
     # stored per member up to a nr-of-replicas maximum. When a bundle starts executing, another replication
@@ -300,58 +355,8 @@ conductr {
     virtual-nodes-factor = 10
 
     # The amount of time to wait for changes in cluster membership before reacting i.e. re-determining
-    # bundle replication and scale.
+    # bundle replication.
     membership-settling-time = 5 seconds
-  }
-
-  # Mesos related settings.
-  # There are only used if the 'conductr.mode' is set to 'mesos'
-  mesos-scheduler-client {
-    # The address of the Mesos master instance.
-    # The address can be either a Zookeeper or Mesos master address.
-    # A Zookeeper address is typically used when running multiple Mesos master instances (High-availabilty mode)
-    # An address directly to the Mesos master is used in standalone mode.
-    # Zookeeper formats:
-    #   zk://host1:port1,host2:port2,.../path
-    #   zk://username:password@host1:port1,host2:port2,.../path
-    #   file:///path/to/file (where file contains one of the above)
-    # Mesos standalone format:
-    #   host:port
-    master = "127.0.0.1:5050"
-
-    # ConductR framework info
-    framework {
-      name = "conductr"
-      checkpoint = false
-      user = "conductr"
-    }
-
-    mesos-executor {
-      # The start command of a Mesos executor (the conduct agent) that gets invoked on executor startup.
-      start-command = "$(pwd)/conductr-agent-*/bin/conductr-agent"
-
-      # Log level of the ConductR agent. Defaults to the loglevel of the ConductR core node.
-      loglevel = ${akka.loglevel}
-
-      # When supplied this represents the URIs required by a ConductR agent, including the agent itself.
-      # When using Mesos, this is used to supply the Mesos Fetcher with the agent's packages so that it may
-      # be dynamically downloaded.
-      agent-uris = []
-
-      # Controls whether downloads of the agent are cached. The default is to cache downloads for
-      # improved performance.
-      agent-download-cache = on
-
-      # Resources needed to start a Mesos executor that runs a ConductR agent
-      # The CPU param represents Mesos's interpretation, which is expressed as
-      # a fraction of the total # of CPUs. Here, we use the Mesos convention of
-      # expressing just 0.1/nrOfCpus.
-      resources {
-        cpu        = 0.1
-        memory     = 268400000
-        disk-space = 1000000000
-      }
-    }
   }
 
   # The resource provider receives requests for resources and provides resource offers.
@@ -371,28 +376,17 @@ conductr {
 
   # Running is associated with the starting, scaling and stopping of a bundle within the cluster.
   run {
-    # The start and end (inclusive) of the range for dynamically allocated ports.
-    # It's a requirement that users of the ConductR must ensure that this port range is free.
-    allocated-ports {
-      start = 10000
-      end   = 10999
-    }
-
-    # The command used to start Bash; this default should work on most systems.
-    # Another sensible alternative would be ["/bin/bash"]
-    bash-command = ["/usr/bin/env", "bash"]
-
     # The maximum number of tries for starting a bundle.
     bundle-scaler-max-nr-of-tries = 3
 
     # Timeout values for the various states of a bundle scaler.
-    bundle-scaler-idle-timeout      = 30 seconds
+    bundle-scaler-idle-timeout      = 2 minutes
     bundle-scaler-scaling-timeout   = 10 seconds
-    bundle-scaler-launching-timeout = 30 seconds
+    bundle-scaler-launching-timeout = 2 minutes
     bundle-scaler-starting-timeout  = 10 minutes
 
     # Timeout value for an idle system scaler.
-    system-scaler-idle-timeout = 30 seconds
+    system-scaler-idle-timeout = 2 minutes
 
     # Timeout value for getting an acknowledge from a bundle scaler.
     system-scaler-acknowledge-timeout = 5 seconds
@@ -404,25 +398,15 @@ conductr {
     # a given bundle identifier. The parameter should not need to be changed.
     virtual-nodes-factor = 10
 
-    # When ConductR stops a bundle, it will attempt to shutdown the bundle's running children processes.
-    # It does so by issuing a SIGTERM, and after a certain pause, it will issue a SIGKILL for each of the child process.
-    # These configuration values control how long the pause between SIGTERM and SIGKILL mentioned above. "term-delay"
-    # is the time between issuing a SIGTERM and then waiting before looking to see if it may be necessary to then do a
-    # sleep of "term-kill-delay" which will then cause a SIGKILL. "term-delay" can be viewed as the normal amount of time
-    # we allow processes to exit gracefully. Put another way, processes will have up to 10 seconds to exit gracefully,
-    # but we expect most to exit within 5 seconds. The reason we have the two parameters is so that we can avoid the
-    # longer delay in general.
-    term-delay      = 5 seconds
-    term-kill-delay = 8 seconds
-
     # The amount of time that a ConductR is expected to wait on another ConductR in order to replicate
     # a bundle. This parameter will be influenced by the speed on the bundle stream network between ConductRs.
     # If you find that clients e.g. the CLI, are reporting timeouts then try increasing this parameter.
     bundle-retrieve-timeout = 5 minutes
 
-    standalone-mode {
-      agent-remote-path = "/user/reaper/standalone-launcher-agent"
-    }
+    # The amount of time to wait for changes in cluster and agent membership before reacting i.e. re-determining
+    # bundle scale.
+    membership-settling-time = 5 seconds
+
   }
 
   service-locator-server {
@@ -433,6 +417,9 @@ conductr {
 
     # The max time it should take for a service lookup to occur internally.
     locate-timeout = 5 seconds
+
+    # Whether to fallback to DNS SRV lookups if local locator lookups fail
+    dns-srv-fallback = off
 
     cache {
       # The max age a service name lookup should be cached for by a client.
@@ -470,154 +457,9 @@ conductr {
     # The max time it should take for a status update to occur internally.
     status-timeout = 5 seconds
   }
-
-  agent {
-    # The actor path on the ConductR agent which can be used by the Core node to interrogate information on
-    # the agent, i.e. roles.
-    agent-info-remote-path = "/user/reaper/agent-info"
-  }
 }
-```
 
-### Contrail Configuration
-
-In addition, a module named "contrail" is used for logging. Here is its entire declaration:
-
-```
-contrail {
-
-  syslog {
-
-    # Log level used by the configured syslog loggers.
-    # See http://tools.ietf.org/html/rfc3164 for detailed explanation of levels (referred to as "Severity")
-    # Options: OFF, EMERGENCY, ALERT, CRITICAL, ERROR, WARNING, NOTICE, INFO, DEBUG
-    loglevel = INFO
-
-    # Currently only TCP is supported.
-    transport = tcp
-
-    # How to determine this host's name, available:
-    # hostname - use the unix `hostname` command
-    # static   - configured in `contrail.syslog.hostname`
-    hostname-mode = hostname
-
-    # Static hostname, used when `contrail.syslog.hostname-mode` is set to `static`
-    hostname = localhost
-
-    # used for APP-NAME field in Syslog events
-    app-name = contrail-app
-
-    # Timeout for the initial connection
-    connect-timeout = 10s
-
-    # The amount of time after which a broken/closed connection to the syslog server should be re-established.
-    reconnect-interval = 3s
-
-    # Backpressure mode to be applied to log events if unable to send all over to the syslog collector,
-    # Available:
-    #   drop-latest
-    #   drop-oldest
-    #   drop-by-priority
-    #   drop-by-severity
-    #   drop-by-facility
-    collapsing-strategy = drop-by-severity
-
-    # default facility to be used by all syslog-loggers
-    # see http://tools.ietf.org/html/rfc3164 for details, allowed values are:
-    #   0             kernel messages
-    #   1             user-level messages (default)
-    #   2             mail system
-    #   3             system daemons
-    #   4             security/authorization messages (note 1)
-    #   5             messages generated internally by syslogd
-    #   6             line printer subsystem
-    #   7             network news subsystem
-    #   8             UUCP subsystem
-    #   9             clock daemon (note 2)
-    #  10             security/authorization messages (note 1)
-    #  11             FTP daemon
-    #  12             NTP subsystem
-    #  13             log audit (note 1)
-    #  14             log alert (note 1)
-    #  15             clock daemon (note 2)
-    #  16             local use 0  (local0)
-    #  17             local use 1  (local1)
-    #  18             local use 2  (local2)
-    #  19             local use 3  (local3)
-    #  20             local use 4  (local4)
-    #  21             local use 5  (local5)
-    #  22             local use 6  (local6)
-    #  23             local use 7  (local7)
-    facility = 1
-
-    buffer {
-      # number of log messages to be buffered
-      size = 100
-    }
-
-    # may be used for statically configured Syslog instances.
-    # this configuration is only used when Syslog is initialized in static mode (programatically)
-    server {
-      host = "127.0.0.1"
-      port = 514
-
-      # An alternative to providing the above host and port is to use a service locator provided
-      # as an actor outside of contrail.
-      service-locator {
-        enabled = off
-
-        # The actor selection path to resolve in order to communicate with a locator.
-        # When service location is enabled then this selection is expected to resolve to
-        # a com.typesafe.contrail.adapter.syslog.ServiceLocator actor.
-        selection-path = "/user/syslog-service-locator"
-
-        # The service to lookup when locating services
-        service-name = "syslog"
-
-        # The maximum amount of time to wait in order to locate a service
-        lookup-timeout = 2 seconds
-      }
-
-      elasticsearch {
-        enabled: off            # Whether or not to regard the endpoint as being that of elasticsearch
-        index: "contrail"       # The index to write to - applications will typically override this
-        max-post-size: 5 MiB    # The max size in bytes of a message that can be sent to ES (must not exceed 4 Gib)
-        post-interval: 1 second # The amount of time to wait for at least one message before posting to ES (unless post-size occurs first)
-      }
-    }
-
-    structured-data {
-      expose = [
-        # loggly, # example usage for including API keys etc
-
-        stacktrace, # includes stacktraces of exceptions
-        akka, # includes actor system name - those are "autofilled"
-        mdc   # includes logger's MDC - those are "autofilled"
-      ]
-
-      # loggly {
-      #   id = "my-loggly-key"
-      #   values = [
-      #     # key value pairs, represented as 2 element lists here, because duplicates *are allowed*
-      #     # in structured data, they are not however in json so we can't use the {key: value} syntax.
-      #     [tag, "my-cluster-007"],
-      #     [tag, "backend"]
-      #   ]
-      # }
-
-      # depth of stacktrace to be included in syslog event with exception
-      # full         - entire stacktrace
-      # NOT IMPLEMENTED YET: max-cause-## - only the ## first causes
-      # NOT IMPLEMENTED YET: max-lines-## - only the ## first lines
-      stacktrace-mode = full
-    }
-  }
-}
-```
-
-ConductR Core overrides contrail settings as follows:
-
-```
+# Lightbend Contrail configuration
 contrail {
 
   syslog {
@@ -641,13 +483,8 @@ contrail {
     }
   }
 }
-```
 
-### Monitoring configuration
-
-The following monitoring properties are declared:
-
-```
+# Lightbend Monitoring configuration
 cinnamon {
 
   instrumentation = off
@@ -658,15 +495,25 @@ cinnamon {
     }
   }
 }
+
+# ConstructR configuration
+
+constructr {
+  # Never give up on ZK disappearing - the consequences of which would be that ConstructR
+  # shuts down the actor system if retries are exceeded. We therefore set the # of retries
+  # to the max positive value of a 32 bit signed int as that is how it is represented
+  # internally.
+  nr-of-retries = 2147483647
+}
 ```
 
 ## ConductR Agent
 
 Each one of the following properties can be overridden by declaring its path and value in ConductR Agent's `conf/conductr-agent.ini`. For example to set ConductR Agent's storage directory you'd specify `-Dconductr.agent.storage-dir=/some-other-dir`.
 
-### Akka Configuration
+## ConductR Agent Configuration
 
-The following Akka properties are overridden:
+Here is the entire configuration for ConductR Agent.
 
 ```
 akka {
@@ -677,22 +524,18 @@ akka {
   loglevel                         = info
 
   actor {
-    provider = akka.cluster.ClusterActorRefProvider
+    provider = akka.actor.LocalActorRefProvider
+
+    enable-additional-serialization-bindings = on
 
     serializers = {
-      "akka-misc"            = "akka.remote.serialization.MiscMessageSerializer"
-      "conductr-agent-proto" = "com.typesafe.conductr.AgentProtobufSerializer"
+      conductr-agent-proto = "com.typesafe.conductr.AgentProtobufSerializer"
     }
 
     serialization-bindings {
       "java.io.Serializable"                     = none
-      "akka.actor.ActorIdentity"                 = "akka-misc"
-      "akka.actor.Identify"                      = "akka-misc"
-      "com.typesafe.conductr.AgentRemotableMessage" = "conductr-agent-proto"
-    }
 
-    serialization-identifiers {
-      "akka.remote.serialization.MiscMessageSerializer" = 16
+      "com.typesafe.conductr.AgentRemotableMessage" = conductr-agent-proto
     }
 
     // We use a round-robin-pool actor here given that the default
@@ -711,42 +554,26 @@ akka {
     }
   }
 
+  cluster.client {
+    # ConductR Agent will try to reconnect to ConductR core upon disconnection for the period specified by this config.
+    # Once the period is elapsed, the ConductR Agent will restart its actor system which will cause its bundles
+    # to stop, and thus be consistent with ConductR core's view.
+    reconnect-timeout = 30s
+  }
+
   http {
     parsing.max-content-length = 200m
+    server.remote-address-header = on
   }
 
   remote {
+    enabled-transports = []
     netty.tcp {
       hostname = ${conductr.agent.ip}
     }
   }
-
-  diagnostics.checker {
-    confirmed-typos = [
-      "akka.actor.serialization-identifiers.\"akka.remote.serialization.MiscMessageSerializer\""
-    ]
-  }
-
-  cluster.client {
-    # ConductR Agent will try to reconnect to ConductR core upon disconnection for the period specified by this config.
-    # Once the period is elapsed, the ConductR Agent will restart its actor system.
-    # DO NOT DISABLE THIS SETTINGS !!!
-    # Disabling this setting will mean ConductR Agent will not restart when disconnected from the ConductR core.
-    #
-    # Once ConductR Agent is responsible for monitoring bundle execution, this setting will ensure runaway process
-    # that is no longer visible to ConductR is terminated when ConductR Agent restarts. If this setting is disabled,
-    # the runaway process will not be terminated.
-    #
-    reconnect-timeout = 30s
-  }
 }
-```
 
-## ConductR Agent Configuration
-
-Here is the entire configuration for ConductR Agent.
-
-```
 conductr.agent {
   # The IP address used by default for all services, e.g. control server, bundle stream server, etc.
   # Defaults to the loopback IP address and can be set via the CONDUCTR_AGENT_IP environment variable.
@@ -759,24 +586,51 @@ conductr.agent {
   mode = "standalone"
 
   # The directory where bundles and their configuration are written to.
-  storage-dir = ${java.io.tmpdir}/conductr-agent/bundles
+  storage-dir = ${java.io.tmpdir}/conductr-agent/${conductr.agent.ip}/bundles
 
   # The directory where bundles record their pids for the purposes of being reaped if they're still
   # hanging around when ConductR restarts (perhaps due to ConductR having been rudely killed via
   # SIGKILL).
-  bundle-pidfile-dir = ${java.io.tmpdir}/conductr-agent/bundles/pids
+  bundle-pidfile-dir = ${conductr.agent.storage-dir}/pids
 
   # The address and port of the ConductR Core's `remote.netty.tcp.hostname` and `remote.netty.tcp.port` respectively.
   # This is used by the ConductR agent's Akka cluster client to form the initial contact so connection to
   # ConductR core can be established.
-  core-nodes = [
-    "127.0.0.1:9004"
-  ]
+  core-nodes = []
+
+  # The name of the ConductR core cluser, i.e. the Akka system name.
+  # Corresponds to the ConductR core settings `conductr.system-name`.
+  # This is used by the ConductR agent's Akka cluster client to form the initial contact so connection to
+  # ConductR core can be established.
+  core-system-name = "conductr"
 
   # The role of the ConductR agent.
   # The roles will be used to decide where bundles can execute, i.e. given a bundle is configured with the role
   # of "front-end", only agents that has "front-end" role can execute this bundle.
   roles = ["web"]
+
+  # The expected maximum amount of time it takes for the actor system to shutdown.
+  # If the actor system fails to shutdown within this period, an error message will be printed.
+  #
+  # ConductR will attempt to restart its actor system when encountering error. If the shutdown timeout occurs in this
+  # scenario, System.exit() with non-zero exit code will be called.
+  #
+  # If the shutdown timeout occurs as part of the JVM shutdown hook, System.exit() will not be called as invoking
+  # System.exit() within a shutdown hook thread will cause the call to block indefinitely:
+  # https://docs.oracle.com/javase/8/docs/api/java/lang/Runtime.html#exit-int-
+  actor-system-shutdown-timeout = 60 seconds
+
+  agent-info {
+    # The amount of time we'll tolerate waiting for a reply for bundle information before bailing out.
+    launcher-agent-bundle-info-timeout = 5 seconds
+
+    # The interval between each reconcilation event of agent info in order to ensure that the
+    # agent state is in sync with core.
+    reconcile-agent-info-interval = 15 seconds
+
+    # The actor path of the resource provider in the ConductR core
+    agent-monitor-remote-path = "/user/reaper/agent-monitor"
+  }
 
   # Bundling streaming is an out-of-band private channel used between the ConductRs in
   # order to stream bundles and associated configuration.
@@ -786,12 +640,21 @@ conductr.agent {
     connect-timeout = 30 seconds
   }
 
-  # The control server provides http services in relation to controlling the ConductR e.g.
-  # loading bundles, starting bundles, obtaining cluster state etc.
-  control-server {
-    # The protocol, IP address and port on which to serve control protocol requests.
+  # Server which proxies ConductR services - control protocol, service locator, and status server.
+  # The port of the services mirrors that of the ConductR, and the actual URL of these services will be obtained from
+  # ConductR Core.
+  core-services-proxy-server {
     protocol = http
-    port = 9005
+    host = ${conductr.agent.ip}
+
+    # The port where control protocol requests will be proxied to ConductR Core.
+    control-server-port = 19005
+
+    # The port where status server requests will be proxied to ConductR Core.
+    status-server-port = 19007
+
+    # The port where service locator requests will be proxied to ConductR Core.
+    service-locator-server-port = 19008
   }
 
   resources {
@@ -799,7 +662,7 @@ conductr.agent {
     poll-interval = 2 seconds
 
     # The actor path of the resource provider in the ConductR core
-    resource-provider-remote-path = "/user/reaper/standalone-resource-provider"
+    resource-provider-remote-path = "/user/reaper/standalone-resource-provider-scale"
   }
 
   # Running is associated with the starting, scaling and stopping of a bundle within the cluster.
@@ -820,18 +683,19 @@ conductr.agent {
     # These configuration values control how long the pause between SIGTERM and SIGKILL mentioned above. "term-delay"
     # is the time between issuing a SIGTERM and then waiting before looking to see if it may be necessary to then do a
     # sleep of "term-kill-delay" which will then cause a SIGKILL. "term-delay" can be viewed as the normal amount of time
-    # we allow processes to exit gracefully. Put another way, processes will have up to 10 seconds to exit gracefully,
+    # we allow processes to exit gracefully. Put another way, processes will have up to 8 seconds to exit gracefully,
     # but we expect most to exit within 2 seconds. The reason we have the two parameters is so that we can avoid the
-    # longer delay in general.
-    term-delay      = 2 seconds
-    term-kill-delay = 8 seconds
+    # longer delay in general. Note that we must stay well within 10 seconds as a Unix's system's restart scripts
+    # are often about 10 seconds before they SIGKILL ConductR itself.
+    term-delay      = 3 seconds
+    term-kill-delay = 5 seconds
 
     # The amount of time to download a bundle from a ConductR core instance.
     # This parameter will be influenced by the speed on the bundle stream network between ConductR agent and core.
     # If you find that the ConductR agent is reporting timeouts then try increasing this parameter.
     bundle-retrieve-timeout = 5 minutes
 
-    core-services {
+    core-services-proxy {
       # The actor path of the actor that returns the ip address of the services provided in the ConductR core
       remote-path = "/user/reaper/core-services"
 
@@ -841,39 +705,45 @@ conductr.agent {
         timeout = 5 seconds
 
         backoff {
-          min-backoff = ${conductr.agent.run.core-services.request.timeout}
+          min-backoff = ${conductr.agent.run.core-services-proxy.request.timeout}
           max-backoff = 30 seconds
           random-factor = 0.2
         }
       }
     }
-  }
 
-  service-locator-server {
-    # The protocol, IP address and port on which to serve service locator requests.
-    protocol = http
-    port = 9008
+    bundle-house-keeping {
+      # Bundle house keeping will try to remove unused files from the bundles directory specified in
+      # `conductr.agent.storage-dir`. Bundle house keeping will be invoked when a new bundle starts.
+      #
+      # Bundle house keeping will attempt to delete bundle run directories except the latest directories.
+      # The number of the latest directories to be kept is controlled by `bundle-dirs-threshold`. This attempt will
+      # remove old bundle run directories and its contents (i.e. jars and logs, etc).
+      #
+      # After cleaning up the bundle run directories, and if the size threshold is breached, bundle house
+      # keeping will delete files older than specified `time-threshold`. This attempt will remove old bundle zip files.
+      #
+      # If the size threshold is still breached after this attempt, log warning message will be issued.
+
+      # Number of bundle run directory to be kept within a particular bundle.
+      # Important: never set this number below 1, otherwise the directory of currently running bundle will be deleted.
+      bundle-run-dirs-threshold = 2
+
+      size-threshold = 4GB
+      time-threshold = 30 days
+
+      # Time delay between bundle housekeeping being scheduled to when it's performed.
+      start-delay = 5 seconds
+    }
   }
 
   service-proxy {
     # The name given to a service representing the proxy being used.
     name = "conductr-haproxy"
   }
-
-  status-server {
-    # The protocol, IP address and port on which to serve start-status server requests.
-    protocol = http
-    port     = 9007
-  }
 }
-```
 
-
-### Contrail Configuration
-
-ConductR Agent overrides contrail settings as follows:
-
-```
+# Lightbend Contrail configuration
 contrail {
 
   syslog {
@@ -897,13 +767,8 @@ contrail {
     }
   }
 }
-```
 
-### Monitoring configuration
-
-The following monitoring properties are declared:
-
-```
+# Lightbend Monitoring configuration
 cinnamon {
 
   instrumentation = off

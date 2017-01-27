@@ -45,7 +45,7 @@ You will then need to declare what are known as "scheduling parameters" for Cond
 
 The Play and Lagom bundle plugins provide [default scheduling parameters](https://github.com/typesafehub/sbt-conductr/blob/master/README.md#scheduling-parameters), i.e. it is not mandatory to declare scheduling parameters for these kind of applications. However, we recommend to define custom settings for each of your application.  
 
-In the following example we specify that 0.1 CPU, 64 MiB JVM heap memory, 128 MiB resident memory and 5 MB of disk space is required when your application or service runs:
+In the following example we specify that 0.1 CPU, 64 MiB JVM heap memory, 384 MiB resident memory and 5 MB of disk space is required when your application or service runs:
 
 ```scala
 import ByteConversions._
@@ -56,7 +56,7 @@ javaOptions in Universal := Seq(
 )
 
 BundleKeys.nrOfCpus := 0.1
-BundleKeys.memory := 128.MiB
+BundleKeys.memory := 384.MiB
 BundleKeys.diskSpace := 5.MB
 ```
 
@@ -143,7 +143,6 @@ BundleKeys.minMemoryCheckValue := 128.MiB
 BundleKeys.diskSpace := 25.MB
 BundleKeys.roles := Set("kibana")
 BundleKeys.endpoints := Map(
-  // By default the HAProxy config for this endpoint will be overwritten - refer to haproxy.cfg
   "kibana" -> Endpoint("http", 0, "kibana", RequestAcl(Http("^/".r)))
 )
 BundleKeys.startCommand := Seq(
@@ -151,11 +150,11 @@ BundleKeys.startCommand := Seq(
   "run",
   "--name", "$BUNDLE_ID-$BUNDLE_NAME",
   "--env", "ELASTICSEARCH_URL=$(curl -s -o /dev/null -w %{redirect_url} $SERVICE_LOCATOR/elastic-search)",
-  "--publish", "$BUNDLE_HOST_IP:$KIBANA_HOST_PORT:5601,
+  "--publish", "$BUNDLE_HOST_IP:$KIBANA_HOST_PORT:5601",
   "--rm",
   "kibana:4.1"
 )
-BundleKeys.checks := Seq(uri("docker+http://$KIBANA_HOST_IP:$KIBANA_HOST_PORT?retry-count=10&retry-delay=3"))
+BundleKeys.checks := Seq(uri("docker+http://$BUNDLE_HOST_IP:$KIBANA_HOST_PORT?retry-count=10&retry-delay=3"))
 ```
 
 The `startCommand` and `checks` settings are particulary important when running existing Docker images. The [environment variables](BundleEnvironmentVariables) available to ConductR bundles are also very important. As a convention, we name the Docker container in accordance with its unique identifier and add the bundle's name for human consumption. We also remove a bundle's mappings given that sbt-native-packager populates this setting by default (and these files have no use here).

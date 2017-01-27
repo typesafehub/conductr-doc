@@ -98,6 +98,19 @@ Either the service has not been started, or the service requested cannot be foun
 
 Other status codes should also be treated as a failure.
 
+### Events
+
+A `GET` on the `/service-hosts{service-name}/events` endpoint can be used to receive server sent events in relation to the service execution state changing. The following event types are possible:
+ 
+* `running`
+* `stopped`
+
+The "data" of the event represents the host and port where the service has stopped or is running.
+
+An `event` parameter may be supplied to as a repeated set of query parameters with the value representing the filtering of specific event types. Partial event type names are permitted e.g.: `GET` `/service-hosts{service-name}/events?event=running` would filter the emission of `running` only. These filtering parameters are also case insensitive.
+
+Heartbeat events are also emitted so that the connection is kept alive through http proxies. SSE heartbeats are empty lines.
+
 ## The Find Host Service
 
 Returns the host and port of the running service given a service name and host ip.
