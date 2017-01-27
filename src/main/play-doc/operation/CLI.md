@@ -9,25 +9,7 @@ The API can be used by any HTTP client, but ConductR comes with CLI tool impleme
 
 ## New CLI installation
 
-Firstly `pip3` is required:
-
-```bash
-sudo apt-get install python3-setuptools
-sudo easy_install3 -U pip
-```
-
-...then:
-
-```bash
-pip3 install --user conductr-cli
-```
-
-`pip3` will install the CLI in your home folder under the .local folder (at least on Ubuntu). Ensure that your path captures this:
-
-```bash
-# Local bin files
-PATH=$HOME/.local/bin:$PATH
-```
+The CLI is distributed as a "native" distribution for Windows, OS X and Linux. Lightbend hosts these native images at bintray: https://bintray.com/lightbend/generic/conductr-cli. Download an archive that is suitable for your environment and then place the resultant package in a place accessible from your `PATH`. For example, on Unix, please copy the contents of archive to your `/usr/local/bin` folder.
 
 To verify the installation type:
 
@@ -43,29 +25,12 @@ usage: conduct [-h] {version,info,services,load,run,stop,unload} ...
 optional arguments:
   -h, --help            show this help message and exit
 
-subcommands:
-  valid subcommands                                                                                       depl
-
-  {version,info,services,load,run,stop,unload}
-                        help for subcommands
-    version             print version
-    info                print bundle information
-    service-names       print service locator information
-    load                load a bundle
-    run                 run a bundle
-    stop                stop a abundle
-    unload              unload a bundle
-```
-
-## Upgrading the CLI
-
-```bash
-pip3 install --user --upgrade conductr-cli
+subcommands:...
 ```
 
 ## Packaging configuration
 
-In addition to consuming services provided by ConductR, the CLI also provides a quick way of packaging custom configuration to a bundle. We will go through most of the CLI features by deploying the Visualizer bundle to ConductR that comes together with the ConductR installation. The Visualizer can be loaded from the [bundles repo](https://bintray.com/typesafe/bundle) using the `load` command.
+In addition to consuming services provided by ConductR, the CLI also provides a quick way of packaging custom configuration to a bundle. We will go through most of the CLI features by deploying the Visualizer bundle to ConductR that comes together with the ConductR installation. The Visualizer can be resolved and loaded from the [bundles repo](https://bintray.com/typesafe/bundle) using the `load` command.
 
 ```bash
 conduct load visualizer
@@ -96,7 +61,7 @@ The configuration is now ready to be loaded along with a bundle. Configuration i
 
 ## Accessing the Visualizer
 
-Access to services in ConductR is proxied for high availability and load balancing. To access Visualizer point your browser to any ConductR node and use the URL, `http://172.17.0.1:9999`. Alternatively, if you can only access ConductR nodes using SSH, create a SSH tunnel that tunnels local port from your machine to the Visualizer service `ssh -L 8080:172.17.0.1:9999 172.17.0.1` (don't forget to substitute the `172.17.0.1`) and then access Visualizer by pointing your browser to `http://localhost:9999`.
+Access to services in ConductR is proxied for high availability and load balancing. To access Visualizer, and supposing that ConductR is running at `172.17.0.1`, use the URL, `http://172.17.0.1:9999`. Alternatively, if you can only access ConductR nodes using SSH, create a SSH tunnel that tunnels local port from your machine to the Visualizer service `ssh -L 9999:172.17.0.1:9999 172.17.0.1` and then access Visualizer by pointing your browser to `http://localhost:9999`.
 
 Visualizer shows ConductR nodes as small blue circles with IP addresses next to them. Green circles denote bundles, and spinning circle means that a bundle is running. You should see one instance of bundle running. Try starting Visualizer on more nodes by executing:
 
@@ -107,3 +72,7 @@ conduct run --ip 172.17.0.1 --scale 2 visualizer
 You should see another green circle start spinning, which means that another instance of Visualizer was started. Play around with more `conduct` commands and see how it affects ConductR cluster visualization.
 
 Our aim is to make using Lightbend ConductR by operators akin to using Play by developers; a joyful and productive experience! ConductR starts to shine when used in the context of managing more than 2 nodes; a common scenario for reactive applications. Go and spin those nodes up!
+
+## DC/OS
+
+The CLI is able to integrate with the DC/OS CLI e.g. `dcos conduct info` will render the current ConductR state on DC/OS. To setup CLI integration type `conduct setup-dcos`.

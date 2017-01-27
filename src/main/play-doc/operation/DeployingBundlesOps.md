@@ -17,6 +17,8 @@ conduct load --ip 172.17.0.1 \
              ./visualizer-poll-interval.sh-...zip
 ```
 
+> Substitute `172.17.0.1` with the address of a ConductR core on your cluster. `192.168.10.1` is the default address when using the developer sandbox.
+
 Note that by default, bundles have a maximum size of 100MB. This can be altered via the `akka.http.server.parsing.max-content-length` setting.
 
 Use `conduct info` command to list all loaded bundles. You should see Visualizer replicated but not running (note that the example below shows 3 replications - you'll only get that if you have 3 or more nodes as the bundle cannot replicate beyond the cluster size).
@@ -44,6 +46,8 @@ ID               NAME              #REP  #STR  #RUN
 23391d4-3cc322b  visualizer        3     0     1
 ```
 
+> Pro tip: if you get bored of typing `--ip` you can set the `CONDUCTR_IP` environment variable instead.
+ 
 ## Using CLI to orchestrate bundle deployments
 
 The CLI commands `conduct load`, `conduct run`, `conduct stop`, and `conduct unload` waits for an expected event to occur. For example `conduct load` will wait for bundle to be installed, and `conduct run` will wait for the number of scale requested to be achieved.

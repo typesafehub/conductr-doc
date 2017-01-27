@@ -11,7 +11,7 @@ This section covers several troubleshooting scenarios:
 
 ## Cluster Split Brain Recovery
 
-Cluster partition is a failure that may occur when running a cluster based application. To recover from this situation ConductR utilizes Akka SBR (Split Brain Recovery). ConductR uses Akka SBR version `1.0.0` which is a part of Akka's commercial extension.
+Cluster partition is a failure that may occur when running a cluster based application. To recover from this situation ConductR utilizes Akka SBR (Split Brain Recovery), which is a part of Akka's commercial extension.
 
 The Akka SBR strategy adopted by ConductR is `keep-majority`. This strategy ensures when cluster split occurs:
 

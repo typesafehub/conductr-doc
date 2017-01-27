@@ -18,11 +18,9 @@ This section focuses to get you up and running quickly. The full documentation o
 
 ## Prerequisites
 
-* [Docker](https://www.docker.com/)
+* [Docker](https://www.docker.com/) (when using Docker based bundles)
 * [sbt](http://www.scala-sbt.org/download.html)
 * [conductr-cli](CLI)
-
-Docker is required so that you can run the ConductR cluster as if it were running on a number of machines in your network. You won't need to understand much about Docker for ConductR other than installing it as described in its "Get Started" section. If you are on Windows or Mac then you will become familiar with `docker-machine` which is a utility that controls a virtual machine for the purposes of running Docker.
 
 sbt is our interactive build tool. Reading the getting started guide for sbt is recommended.
 
@@ -39,26 +37,28 @@ The conductr-cli is used to communicate with the ConductR cluster.
 To use `sbt-conductr` for your project add the plugin to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.17")
+addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.20")
 ```
 
 ## Signaling application state
 
-Your application should tell ConductR when it has completed its initialization and is ready for work. Fortunately, `sbt-conductr` does this for a Play application automatically.
+Your application should tell ConductR when it has completed its initialization and is ready for work. Fortunately, `sbt-conductr` does this for Play and Lagom application/services automatically.
 
 ## Starting ConductR cluster
 
-Now, you can go ahead and start the ConductR cluster locally. For that you should use the ConductR sandbox which is a docker image based on Ubuntu that includes ConductR. With this docker image you can easily spin up multiple ConductR nodes on your local machine. The `sandbox run` command will pick up and run this ConductR docker image. In order to use this command we need to specify the ConductR version. Please visit the [ConductR Developer page](https://www.lightbend.com/product/conductr/developer) to pick up the latest ConductR version from the section **Quick Configuration**.
+Now, you can go ahead and start the ConductR cluster locally. For that you should use the ConductR sandbox so you can easily spin up multiple ConductR nodes on your local machine. The `sandbox run` command will pick up and run this ConductR docker image.
+
+> Windows users are required to run the developer sandbox inside a Linux based Virtual Machine.
 
 Afterwards, you can start the ConductR cluster by executing the following from within sbt:
 
 ```scala
-sandbox run <CONDUCTR_VERSION> --feature visualization
+sandbox run 2.0.0 --feature visualization
 [info] Running ConductR...
-[info] Running container cond-0 exposing 192.168.59.103:9909...
+[info] Running container cond-0 exposing 192.168.10.1:9999...
 ```
 
-The `visualization` feature is simple Play application that visualizes the ConductR cluster state. Access the ConductR visualizer at `http://{docker-host-ip}:9909` where `docker-host-ip` is the host of your docker environment. For convenience, the url of the visualizer app is displayed in the sbt session, e.g. http://192.168.59.103:9909.
+The `visualization` feature is simple Play application that visualizes the ConductR cluster state. Access the ConductR visualizer at `http://{sandbox-host-ip}:9909` where `sandbox-host-ip` is the host of your docker environment (`192.168.10.1` by default).
 
 [[images/visualizer_simple.png]]
 
@@ -70,7 +70,7 @@ From within sbt:
 install
 ```
 
-The above will introspect your project and any sub projects, generate "bundles" and their configuration, restart the sandbox to ensure a clean state and then load and run your application. You can then access your application at http://docker-host-ip:9000.
+The above will introspect your project and any sub projects, generate "bundles" and their configuration, restart the sandbox to ensure a clean state and then load and run your application. You can then access your application at http://sandbox-host-ip:9000.
 
 > Bundles and their configuration are tamperproof given a digest hash incorporated into their filename. ConductR will verify this hash against the one supplied in the filename when loading a bundle. With bundles and configuration then, you can roll releases forward and backward with a high degree of confidence.
 

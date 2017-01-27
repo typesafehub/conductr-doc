@@ -4,9 +4,10 @@ The [ConductR bundle library](https://github.com/typesafehub/conductr-lib#typesa
 
 * Akka 2.4 for Java and Scala - [akka24-conductr-bundle-lib](#akka23|24-conductr-bundle-lib)
 * Akka 2.3 for Java and Scala - [akka23-conductr-bundle-lib](#akka23|24-conductr-bundle-lib)
-* Play 2.5 for Scala (including Akka 2.4) - [play25-conductr-bundle-lib](#play25-conductr-bundle-lib)
+* Play 2.5 for Java and Scala (including Akka 2.4) - [play25-conductr-bundle-lib](#play25-conductr-bundle-lib)
 * Play 2.4 for Java and Scala (including Akka 2.3) - [play24-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
 * Play 2.3 for Java and Scala (including Akka 2.3) - [play23-conductr-bundle-lib](#play23|24-conductr-bundle-lib)
+* Lagom 1 for Java and Scala (including Akka 2.4, Play 2.5) - [lagom1-conductr-bundle-lib](#lagom1-conductr-bundle-lib)
 
 
 ## akka[23|24]-conductr-bundle-lib
@@ -346,3 +347,8 @@ A common use-case when using Akka clustering with your Play application is to wa
 ```scala
 Cluster(system).registerOnMemberUp(yourhandler)
 ```
+
+## lagom1-conductr-bundle-lib
+
+Lagom 1 builds on Akka 2.4 and Play 2.5 and so all of what is described for [Play 2.5]
+(#play25-conductr-bundle-lib) applies to Lagom 1. However, users of Lagom need not call any of the ConductR lib APIs directly e.g. the service locator implementation of Lagom will automatically detect ConductR at build time via sbt-conductr.
