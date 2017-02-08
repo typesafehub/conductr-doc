@@ -208,7 +208,7 @@ conductr {
   # order to stream bundles and associated configuration.
   bundle-stream-server {
     # The protocol, IP address and port on which to serve bundling streaming server requests.
-    protocol = http
+    bind-protocol = http
     ip       = ${conductr.ip}
     port     = 9006
 
@@ -236,7 +236,7 @@ conductr {
   # loading bundles, starting bundles, obtaining cluster state etc.
   control-server {
     # The protocol, IP address and port on which to serve control protocol requests.
-    protocol = http
+    bind-protocol = http
     ip       = ${conductr.ip}
     port     = 9005
 
@@ -411,7 +411,7 @@ conductr {
 
   service-locator-server {
     # The protocol, IP address and port on which to serve service locator requests.
-    protocol = http
+    bind-protocol = http
     ip       = ${conductr.ip}
     port     = 9008
 
@@ -447,7 +447,7 @@ conductr {
 
   status-server {
     # The protocol, IP address and port on which to serve start-status server requests.
-    protocol = http
+    bind-protocol = http
     ip       = ${conductr.ip}
     port     = 9007
 
@@ -644,7 +644,7 @@ conductr.agent {
   # The port of the services mirrors that of the ConductR, and the actual URL of these services will be obtained from
   # ConductR Core.
   core-services-proxy-server {
-    protocol = http
+    bind-protocol = http
     host = ${conductr.agent.ip}
 
     # The port where control protocol requests will be proxied to ConductR Core.
