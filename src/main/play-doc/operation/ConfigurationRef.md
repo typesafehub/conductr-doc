@@ -99,7 +99,7 @@ bundle-execution-dispatcher {
 ```
 
 ## ConductR Configuration
-Here is the entire configuration for ConductR. 
+Here is the entire configuration for ConductR.
 
 ```
 conductr {
@@ -128,7 +128,7 @@ conductr {
   # order to stream bundles and associated configuration.
   bundle-stream-server {
     # The protocol, IP address and port on which to serve bundling streaming server requests.
-    protocol = http
+    bind-protocol = http
     ip       = ${conductr.ip}
     port     = 9006
 
@@ -156,7 +156,7 @@ conductr {
   # loading bundles, starting bundles, obtaining cluster state etc.
   control-server {
     # The protocol, IP address and port on which to serve control protocol requests.
-    protocol = http
+    bind-protocol = http
     ip       = ${conductr.ip}
     port     = 9005
 
@@ -316,7 +316,7 @@ conductr {
 
   service-locator-server {
     # The protocol, IP address and port on which to serve service locator requests.
-    protocol = http
+    bind-protocol = http
     ip       = ${conductr.ip}
     port     = 9008
 
@@ -349,7 +349,7 @@ conductr {
 
   status-server {
     # The protocol, IP address and port on which to serve start-status server requests.
-    protocol = http
+    bind-protocol = http
     ip       = ${conductr.ip}
     port     = 9007
 
