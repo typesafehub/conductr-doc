@@ -288,6 +288,8 @@ We will limit the bundle's sudo privileges to running `/usr/bin/reloadHAProxy.sh
 [172.17.0.1]$ echo "conductr-agent ALL=(root) NOPASSWD: /usr/bin/reloadHAProxy.sh" | sudo tee -a /etc/sudoers
 ```
 
+Note: If it is not possible or preferrable to edit the /etc/sudoers file, HAProxy may still be used with ConductR by using an [[alternative HAProxy configuration|DynamicProxyConfiguration#enabling-conductr-to-use-haproxy-without-altering-the-sudoers-file]].
+
 ## Loading and Running ConductR-HAProxy Bundle
 
 ConductR-HAProxy bundle listens for bundle changes within ConductR and updates the HAProxy config to expose the bundle endpoints accordingly.

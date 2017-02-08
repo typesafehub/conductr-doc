@@ -556,6 +556,61 @@ Here are the explanation for the example template above:
 * The `http-request auth realm kibana_users if !kibana_basic_auth` will trigger the HTTP basic auth prompt if the HTTP basic auth is not supplied with the request.
 * The example has list of users declared with insecure password. In the actual production scenario, consider using a `password` HAProxy directive which declares a secure password - refer to the [HAProxy](http://www.haproxy.org/) documentation for further details.
 
+### Enabling ConductR to reload HAProxy without altering the sudoers file
+
+On some systems, it may not be possible or desirable to provide root privileges to the conductr-agent such that it can execute the `/usr/bin/reloadHAProxy.sh` script. In these cases, it is still possible for ConductR to utilize HAProxy with a slightly modified configuration. Note that with this modified configuration, HAProxy will be limited to binding to ports greater than or equal to 1024. It will also limit the maximum number of connections (maxconn) to the maximum number of open file descriptors for non-root Linux users (1024 by default).
+
+In addition to [[installing HAProxy|Install#installing-a-proxy]], this setup requires the following ownership changes on all nodes that will run HAProxy:
+
+```lang-none
+sudo mkdir /var/run/haproxy
+sudo chown conductr-agent:conductr-agent /var/run/haproxy
+sudo chown conductr-agent:conductr-agent /etc/haproxy/haproxy.cfg
+```
+
+We now need to create a custom HAProxy configuration bundle. Starting with the default `/tmp/custom-haproxy-conf/haproxy-override.cfg` shown above, remove the `chroot`, `user` and `group` lines, such that the top of the file looks as follows:
+
+```
+global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    stats socket /var/run/haproxy/stats
+    stats timeout 30s
+    maxconn 1024
+    daemon
+
+#The remaining HAProxy configuration below remains unchanged from the default
+# ...
+```
+
+A new script will be required to reload HAProxy without root access. We'll create it as follows:
+
+```lang-none
+touch /tmp/custom-haproxy-conf/reload-haproxy-nosudo.sh
+```
+
+Populate `/tmp/custom-haproxy-conf/reload-haproxy-nosudo.sh` with the following:
+
+```bash
+#!/bin/bash
+haproxy -f /etc/haproxy/haproxy.cfg -p /var/run/haproxy/haproxy.pid -sf $(cat /var/run/haproxy/haproxy.pid)
+```
+
+Populate `/tmp/custom-haproxy-conf/runtime-config.sh` with the following to ensure that the reload-haproxy-nosudo.sh is used for reloading haproxy:
+
+```bash
+#!/bin/bash
+CONFIG_DIR=$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
+export CONDUCTR_HAPROXY_CONFIG_OVERRIDE="$CONFIG_DIR/haproxy-override.cfg"
+
+#Update Conductr-Agent Configuration to call the custom reload HAProxy script
+CONFIG_FILE="conductr-haproxy/conf/application.ini"
+echo -Dconductr-haproxy.configurator.command.0="/bin/bash" | tee -a "${CONFIG_FILE}"
+echo -Dconductr-haproxy.configurator.command.1="$CONFIG_DIR/reload-haproxy-nosudo.sh" | tee -a "${CONFIG_FILE}"
+```
+
+Finally, you will need to use `shazar` to package the custom configuration bundle before loading it to ConductR as described above.
+
 ## Troubleshooting
 
 Here are the common troubleshooting steps when there's a problem exposing bundle endpoints.
