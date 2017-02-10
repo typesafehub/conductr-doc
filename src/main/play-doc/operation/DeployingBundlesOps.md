@@ -7,21 +7,19 @@ The standard bundle lifecycle in the ConductR is:
 3. Stop. Bundle is stopped by stopping all instances of all defined bundle components.
 4. Unload. Bundle is unloaded from a ConductR cluster and all bundle replicas are removed from cluster nodes.
 
-We use `conduct` command provided by the CLI to load a Visualizer bundle together with configuration to the ConductR and then run it. Every `conduct` command that is communicating with a ConductR needs to be given `--ip` and `--port` parameters (these can be omitted if ConductR is running on the same machine and on the default port). Alternatively CLI can use `CONDUCTR_IP` and `CONDUCTR_PORT` environment variables for corresponding parameters.
+We use `conduct` command provided by the CLI to load a Visualizer bundle together with configuration to the ConductR and then run it. Every `conduct` command that is communicating with a ConductR needs to be given `--host` and `--port` parameters (these can be omitted if ConductR is running on the same machine and on the default port). Alternatively CLI can use `CONDUCTR_HOST` and `CONDUCTR_PORT` environment variables for corresponding parameters.
 
-This data is used by the ConductR when making bundle scheduling decisions. Load the Visualizer bundle by executing:
+This data is used by ConductR when making bundle scheduling decisions. Load the Visualizer bundle by executing:
 
 ```bash
-conduct load --ip 172.17.0.1 \
-             /usr/share/conductr/samples/visualizer-...zip \
-             ./visualizer-poll-interval.sh-...zip
+conduct load --host 172.17.0.1 visualizer
 ```
 
 > Substitute `172.17.0.1` with the address of a ConductR core on your cluster. `192.168.10.1` is the default address when using the developer sandbox.
 
 Note that by default, bundles have a maximum size of 100MB. This can be altered via the `akka.http.server.parsing.max-content-length` setting.
 
-Use `conduct info` command to list all loaded bundles. You should see Visualizer replicated but not running (note that the example below shows 3 replications - you'll only get that if you have 3 or more nodes as the bundle cannot replicate beyond the cluster size).
+Use `conduct info` command to list all loaded bundles. You should see that the Visualizer is replicated but not running (note that the example below shows 3 replications - you'll only get that if you have 3 or more nodes as the bundle cannot replicate beyond the cluster size).
 
 ```bash
 conduct info --ip 172.17.0.1
@@ -33,7 +31,7 @@ ID               NAME              #REP  #STR  #RUN
 23391d4-3cc322b  visualizer        3     0     0
 ```
 
-Run Visualizer by executing:
+Run the Visualizer by executing:
 
 ```bash
 conduct run --ip 172.17.0.1 visualizer
@@ -46,8 +44,8 @@ ID               NAME              #REP  #STR  #RUN
 23391d4-3cc322b  visualizer        3     0     1
 ```
 
-> Pro tip: if you get bored of typing `--ip` you can set the `CONDUCTR_IP` environment variable instead.
- 
+> Pro tip: if you get bored of typing `--host` you can set the `CONDUCTR_HOST` environment variable instead.
+
 ## Using CLI to orchestrate bundle deployments
 
 The CLI commands `conduct load`, `conduct run`, `conduct stop`, and `conduct unload` waits for an expected event to occur. For example `conduct load` will wait for bundle to be installed, and `conduct run` will wait for the number of scale requested to be achieved.
@@ -83,6 +81,8 @@ In the example above the bundle shorthand expression `reactive-maps-backend-regi
 
 The CLI comes with built-in URI and Bintray resolvers which comes into play when `conduct load` command is invoked.
 
+### URI resolver
+
 The URI resolver accepts local file system path as well as HTTP URL, e.g.
 
 ```
@@ -90,7 +90,15 @@ conduct load /tmp/downloads/reactive-maps-frontend-v1-023f9da2243a0751c2e231b452
 conduct load http://192.168.0.1/files/reactive-maps-frontend-v1-023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2.zip
 ```
 
-The Bintray resolver accepts a [bundle shorthand expression](#Bundle-shorthand-expression) which is translated to a Bintray download URL. Bundles can be published to Bintray using [sbt-bintray-bundle](https://github.com/sbt/sbt-bintray-bundle) plugin.
+### Bintray resolver
+
+The Bintray resolver accepts a [bundle shorthand expression](#Bundle-shorthand-expression) which is translated to a Bintray download URL.
+
+```
+conduct load reactive-maps-frontend
+```
+
+Bundles can be published to Bintray using the [sbt-bintray-bundle](https://github.com/sbt/sbt-bintray-bundle) plugin.
 
 
 ## Bundle shorthand expression
@@ -125,18 +133,28 @@ from conductr_cli.resolvers import uri_resolver
 # other imports here...
 
 
-def load_from_cache(cache_dir, uri):
-    actual_http_url_or_file_path = do_convert(uri)
-    return uri_resolver.load_from_cache(cache_dir, actual_http_url_or_file_path)
-
-
 def resolve_bundle(cache_dir, uri):
     actual_http_url_or_file_path = do_convert(uri)
     return uri_resolver.resolve_bundle(cache_dir, actual_http_url_or_file_path)
 
 
+def load_bundle_from_cache(cache_dir, uri):
+    actual_http_url_or_file_path = do_convert(uri)
+    return uri_resolver.load_bundle_from_cache(cache_dir, actual_http_url_or_file_path)
+
+
+def resolve_bundle_configuration(cache_dir, uri):
+    actual_http_url_or_file_path = do_convert(uri)
+    return uri_resolver.resolve_bundle_configuration(cache_dir, actual_http_url_or_file_path)
+
+
+def load_bundle_configuration_from_cache(cache_dir, uri):
+    actual_http_url_or_file_path = do_convert(uri)
+    return uri_resolver.load_bundle_configuration_from_cache(cache_dir, actual_http_url_or_file_path)
+
+
 def do_convert(uri):
-    # Use one own's logic to convert uri string into actual http url or file path
+    # Use own logic to convert uri string into actual http url or file path
     ...
 ```
 
@@ -152,6 +170,6 @@ resolvers = [
 ]
 ```
 
-The resolution will follow the sequence of resolvers declared in `~/.conductr/settings.conf`. Based on the example above, if `my_resolver` returns a bundle (either from cache or a new download), then the remaining resolvers will not be invoked.
+The resolution will follow the sequence of resolvers declared in `~/.conductr/settings.conf`. Based on the example above, if `my_resolver` returns a bundle and bundle configuration (either from cache or a new download), then the remaining resolvers will not be invoked.
 
 **Do not use `print`** - use built-in Python logging library instead. This will allow correct output when `-q` is supplied to `conduct load` command. Using `print` instead of Python logging library will break [orchestration](#Using-CLI-to-orchestrate-bundle-deployments) of bundle deployments.
