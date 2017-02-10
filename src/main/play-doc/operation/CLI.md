@@ -76,3 +76,23 @@ Our aim is to make using Lightbend ConductR by operators akin to using Play by d
 ## DC/OS
 
 The CLI is able to integrate with the DC/OS CLI e.g. `dcos conduct info` will render the current ConductR state on DC/OS. To setup CLI integration type `conduct setup-dcos`.
+
+## HTTP Basic Authentication
+
+To enable HTTP Basic Authentication, provide the following settings file in the `~/.conductr/settings.conf`.
+
+```
+conductr {
+  auth {
+    enabled  = true
+    username = "steve"
+    password = "letmein"
+  }
+  server_ssl_verification_file = "/home/user/validate-server.pem"
+}
+```
+
+HTTP Basic Authentication is enabled if the flag `enabled` is set to `true`. Setting it to `false` is disabling basic auth.
+Set the `username` and `password` accordingly. The `server_ssl_verification_file` points to an absolute path of the file used to validate the SSL cert of the server.
+
+If HTTP Basic Authentication is enabled then the CLI will send HTTP requests using HTTPS instead of HTTP.
