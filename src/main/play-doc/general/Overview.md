@@ -87,6 +87,28 @@ The information required to configure proxy services is made available from Ligh
 
 Proxies should generally reside on DMZ style machines, but can also exist alongside ConductR core for smaller clusters. A proxy is always accompanied by a ConductR agent so that it may be updated with execution state.
 
+### ConductR Architecture
+
+A ConductR cluster is composed of three service roles: core scheduler, execution agent and dynamic proxy. In a very small clusters it is common to run all roles on all nodes for resilience. With larger clusters resilience for schedulers and proxies can be satisfied by a subset of the cluster. Thus larger clusters are primarily composed of execution agent nodes being scheduled by a relatively small number of nodes that only run the core scheduler service.
+
+#### Core and Agent
+
+The ConductR core is the scheduler service for the cluster. Nodes running the ConductR service schedule bundles for execution on nodes running the ConductR-Agent execution service. The core and agent need not be on the same node, but they do need to able to reach each other on the remoting port per [[installation instructions|Install]].
+
+The core members form an [Akka cluster](http://doc.akka.io/docs/akka/current/common/cluster.html). You can view cluster membership using the [members endpoint](ControlAPI#QueryMemberState) of the Control Protocol.
+
+The agent execution nodes are clients to the core members. Each agent is always being observed by one core member. You can view the cluster's agents using the [agents endpoint](ControlAPI#QueryAgentState) of the Control Protocol.
+
+#### Proxy
+
+The proxy role is for proxying the service endpoints to the instance bound endpoints. ConductR-HAProxy dynamically updates HAProxy. HAProxy performs the actually proxying.  See [Dynamic Proxy Configuration](DynamicProxyConfiguration) for setting up proxying.
+
+#### Private agents, public proxies
+
+Only the proxy nodes need be publicly reachable by `0.0.0.0/0`. Core and agent nodes can be assigned only an internal or private ip address as long as that internal address is reachable by the public proxy nodes.
+
+Not assigning a public ip address to core and agents nodes further reduces their attack surface. Such configuration does complicate cluster management, requiring an admin bastion gateway host within the private network. The private agent topology is recommended for advanced users in production.
+
 ### The Control Protocol
 
 The control protocol (CP) is used to convey lifecycle events including:
