@@ -356,9 +356,9 @@ Prior to using the Ansible playbooks to create your cluster, you will needs the 
 
 The [ConductR-Ansible](https://github.com/typesafehub/conductr-ansible) plays and playbooks provision [Lightbend ConductR](https://conductr.lightbend.com) cluster nodes in AWS EC2 using [Ansible](http://www.ansible.com). The branches of the repository track that of ConductR. As such the 2.0.x branch of ConductR-Ansible would be used to build ConductR 2.0.x clusters.
 
-Use create-network-ec2.yml to setup a new Virtual Private Cloud (VPC) and create your cluster in the new VPC. You only need to provide your access keys and what region to execute in. The playbook outputs a vars file for use with the build-cluster-ec.yml.
+Optionally, use create-network-ec2.yml to setup a new Virtual Private Cloud (VPC) and create your cluster in the new VPC. You only need to provide your access keys and what region to execute in. The playbook outputs a vars file for use with the build-cluster-ec.yml. If you choose to use an existing VPC, be certain to note the required security group rules.
 
-The playbook build-cluster-ec2.yml launches three instances across three availability zones and one instance for imaging. ConductR Core and ConductR Agent are installed on all instances and configured to form a cluster. The nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
+The playbook build-cluster-ec2.yml launches three instances across three availability zones and one instance for imaging. ConductR Core, ConductR Agent and HAProxy are installed on all instances and configured to form a cluster. Conductr-HAProxy is loaded and the nodes are registered with a load balancer. This playbook can be used with the newly created VPC from create-network-ec2.yml or your existing VPC and security groups.
 
 ### Prepare controller host
 
@@ -467,13 +467,6 @@ SG-ELB Inbound Rules
 | HTTP    | TCP     | 80          | 0.0.0.0/0  | HTTP Public Access  |
 | HTTPS   | TCP     | 443         | 0.0.0.0/0  | HTTPS Public Access |
 
-SG-ELB Outbound Rules
-
-| Type    | Proto   | Port        | Destination | Description                |
-| :------ | :-----  | :---------- | :---------- | :------------------------- |
-| HTTP    | TCP     | 9000        | 0.0.0.0/0   | HTTP application endpoints |
-| HTTP    | TCP     | 9009        | 0.0.0.0/0   | ELB health check           |
-| HTTP    | TCP     | 9999        | 0.0.0.0/0   | Visualizer                 |
 
 #### Bastion Host Subnet and Security Group
 
@@ -491,14 +484,6 @@ SG-BASTION Inbound Rules
 | :------ | :-----  | :---------- | :--------- | :---------------- |
 | SSH     | TCP     | 22          | 0.0.0.0/0  | Remote SSH Access |
 
-
-SG-BASTION Outbound Rules
-
-| Type    | Proto   | Port        | Destination      | Description           |
-| :------ | :-----  | :---------- | :--------------- | :-------------------- |
-| SSH     | TCP     | 22          | 0.0.0.0/0        | SSH to ConductR nodes |
-| HTTP    | TCP     | 80          | 0.0.0.0/0        | Internet Access       |
-| HTTPS   | TCP     | 443         | 0.0.0.0/0        | Internet Access       |
 
 
 #### Public Subnets and Security Group
@@ -519,18 +504,6 @@ SG-AGENT-PUBLIC Inbound Rules
 | HTTP    | TCP     | 9009        | SG-ELB     | ELB health check                 |
 | HTTP    | TCP     | 9999        | SG-ELB     | Visualizer                       |
 
-SG-AGENT-PUBLIC Outbound Rules
-
-| Type    | Proto   | Port        | Destination      | Description                      |
-| :------ | :-----  | :---------- | :--------------- | :------------------------------- |
-| HTTP    | TCP     | 80          | 0.0.0.0/0        | Internet Access                  |
-| HTTPS   | TCP     | 443         | 0.0.0.0/0        | Internet Access                  |
-| Custom  | TCP     | 9004        | 0.0.0.0/0        | Akka Remoting from Agent to Core |
-| Custom  | TCP     | 9005        | 0.0.0.0/0        | ConductR Control Protocol        |
-| Custom  | TCP     | 9006        | 0.0.0.0/0        | ConductR Bundle Stream Server    |
-| Custom  | TCP     | 9007        | 0.0.0.0/0        | ConductR Status Server           |
-| Custom  | TCP     | 9008        | 0.0.0.0/0        | ConductR Service Locator         |
-
 
 #### Private Subnets
 
@@ -547,18 +520,6 @@ SG-AGENT-PRIVATE Inbound Rules
 | SSH     | TCP     | 22          | SG-BASTION      | Remote SSH Access                             |
 | Custom  | TCP     | 2552        | SG-CORE         | Akka Remoting from Core to Agent              |
 | HTTP    | TCP     | 10000-10999 | SG-AGENT-PUBLIC | Proxy access from ConductR public agent nodes |
-
-SG-AGENT-PRIVATE Outbound Rules
-
-| Type    | Proto   | Port        | Destination      | Description                      |
-| :------ | :-----  | :---------- | :--------------- | :------------------------------- |
-| HTTP    | TCP     | 80          | 0.0.0.0/0        | Internet Access                  |
-| HTTPS   | TCP     | 443         | 0.0.0.0/0        | Internet Access                  |
-| Custom  | TCP     | 9004        | 0.0.0.0/0        | Akka Remoting from Agent to Core |
-| Custom  | TCP     | 9005        | 0.0.0.0/0        | ConductR Control Protocol        |
-| Custom  | TCP     | 9006        | 0.0.0.0/0        | ConductR Bundle Stream Server    |
-| Custom  | TCP     | 9007        | 0.0.0.0/0        | ConductR Status Server           |
-| Custom  | TCP     | 9008        | 0.0.0.0/0        | ConductR Service Locator         |
 
 
 SG-CORE Inbound Rules
