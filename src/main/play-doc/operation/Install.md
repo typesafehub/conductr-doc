@@ -450,6 +450,8 @@ For further information about using ConductR-Ansible, please see the project [Re
 
 This tutorial will provide you with all the key configuration details needed to run ConductR on EC2. It presumes a working knowledge of EC2 and does not provide click-by-click instructions for using EC2. Detailed instructions for all AWS steps discussed can be found in the [AWS documentation](https://aws.amazon.com/documentation/).
 
+This section provides information for running in the advanced private agent mode but presumes use of the simple setup where all nodes run all three services. See (ConductR Architecture)[Overview#ConductRArchitecture] for more information.
+
 ### Preparing EC2
 
 Begin by preparing the EC2 network and security environment. This tutorial uses a Virtual Private Cloud (VPC) with a Classless Inter-Domain Routing (CIDR) of `10.0.0.0/16` and example addresses will be based accordingly.
@@ -477,7 +479,9 @@ SG-ELB Outbound Rules
 
 #### Bastion Host Subnet and Security Group
 
-Create a subnet in the closest AZ. The bastion host will be hosted in this subnet, and thus only allowing SSH access from the outside world.
+> This is required for private agents but _optional_ for 'flat' clusters where all nodes have public ip addreses.
+
+Create a subnet in any AZ. The bastion host will be hosted in this subnet, and thus only allowing SSH access from the outside world.
 
 The bastion host will require SSH access to all ConductR nodes in the cluster. This subnet will need an internet gateway added to their route table for the destination `0.0.0.0/0`. This required so that our bastion host can access the internet.
 
@@ -534,6 +538,8 @@ SG-AGENT-PUBLIC Outbound Rules
 
 #### Private Subnets
 
+> Only create this subnet for use with private agent topology.
+
 Create a subnet in each AZ. This subnet will be private, and thus not directly accessible from outside world. The ConductR core and the ConductR private agents will be hosted in this subnet.
 
 Our example subnets names indicate their AZ. In this case the subnet will be called SN-PRIVATE-A with a CIDR of `10.0.1.0/49`, SN-PRIVATE-B with a CIDR of `10.0.2.0/49`, and SN-PRIVATE-C with a CIDR of `10.0.3.0/49`. Each subnet will need an internet gateway added to their route table for the destination `0.0.0.0/0`. This required so that our nodes can access the internet.
@@ -577,21 +583,13 @@ SG-CORE Inbound Rules
 | Custom  | TCP     | 9008        | SG-AGENT-PRIVATE | ConductR Service Locator         |
 | Custom  | TCP     | 9008        | SG-AGENT-PUBLIC  | ConductR Service Locator         |
 
-SG-CORE Outbound Rules
-
-| Type    | Proto   | Port        | Destination      | Description                      |
-| :------ | :-----  | :---------- | :--------------- | :------------------------------- |
-| HTTP    | TCP     | 80          | 0.0.0.0/0        | Internet Access                  |
-| HTTPS   | TCP     | 443         | 0.0.0.0/0        | Internet Access                  |
-| Custom  | TCP     | 2552        | 0.0.0.0/0        | Akka Remoting from Core to Agent |
-
 #### Load Balancer
 
 Create an external facing load balancer from the EC2 control panel. You will need to create an internet gateway and attach it to your VPC in order to have a public load balancer. We'll add an optional HTTPS protocol listener on port 443 to the default port 80 HTTP listener. For this tutorial we will map both of our listeners to instance port 9000 and port 9999. Add all public agent subnets to the load balancer and assign the load balancer to the SG-ELB security group. Optionally you can upload an SSL Certificate to use the ELB as your TLS endpoint if you added the HTTPS listener. For health monitoring we'll use ConductR's proxy status endpoint, HTTP:9009/status. This endpoint will return an OK when ConductR's proxy has been configured.
 
 ### Preparing the AMI
 
-Launch a single instance of the desired base AMI to use as our image master. We'll use the Ubuntu 16.04 LTS HVM EBS-SSD boot image in US-East-1, e.g. ami-fd6e3bea. If you choose another base image, use an EBS boot image as they are much easy to image unless you know what your doing there. Be certain to assign a public ip address in instance details to make it easy to ssh into.
+Launch a single instance of the desired base AMI to use as our image master. We'll use the Ubuntu 16.04 LTS HVM EBS-SSD boot image in US-East-1, e.g. ami-fd6e3bea. If you choose another base image, use an EBS boot image as they are much easy to image unless you know what your doing there. Be certain to assign a public ip address in instance details to make it easy to ssh into. For running core, agents and proxies separately, launch an instance per role for imaging.
 
 Access the console of the image instance with root access. For Ubuntu AMIs this is done as the user ubuntu using the PEM file specified at launch. The user ubuntu has sudo access. Other images will use different users. Check with the image provider for the correct user name to use.
 
@@ -680,13 +678,13 @@ sudo usermod -a -G docker conductr-agent
 
 ### Create the AMI
 
-With our packages installed we can create the ConductR machine image. Image the host by selecting the running instance in the EC2 dashboard and using the Create Image option from the Actions menus. We are now done with the image host and it can be terminated.
+With our packages installed we can create the ConductR machine image. Image the host by selecting the running instance in the EC2 dashboard and using the Create Image option from the Actions menus. If you created a host for each role, image each role. We are now done with the image host(s) and it/they can be terminated.
 
 ### Bring up the cluster
 
-Once your ConductR AMI is available, launch three instances. In this tutorial we'll launch one instance into SN-A, SN-B and SN-C each so that our cluster spans three availability zones. All instances will be launched into our SG-Nodes security group. Be certain to assign public IP addresses to we can ssh into our nodes.
+Once your ConductR AMI is available, launch three instances. In this tutorial we'll launch one instance into SN-A, SN-B and SN-C each so that our cluster spans three availability zones. All instances will be launched into our SG-Nodes security group. Be certain to assign public IP addresses to we can ssh into our nodes or use an admin bastion with private network access.
 
-We will now configure ConductR on the instances and form a cluster. Repeat these steps on each of the three instances ConductR AMI.
+We will now configure ConductR on the instances and form a cluster. Repeat these steps on each of the ConductR core instances.
 
 To be able to form an inter-machine cluster, ConductR Core must be configured to listen to the machine's private host interface. This can be enabled adding a property declaration for `CONDUCTR_IP` to the start command as follows:
 
@@ -751,7 +749,7 @@ A typical response contains the current members of the cluster (shown here is a 
 
 ### Configuring ConductR Agent
 
-_Repeat each step in this section on each node._
+_Repeat each step in this section on each node running the agent service._
 
 ConductR Agent needs to be connected to a ConductR core node in order for ConductR to run any application process. To establish this connection, configure ConductR Agent as such:
 
@@ -773,7 +771,7 @@ ConductR-HAProxy bundle listens for bundle changes within ConductR and updates t
 
 #### Prepare ConductR-HAProxy nodes
 
-_Repeat each step in this section on each node._
+_Repeat each step in this section on each node providing proxying._
 
 ConductR-HAProxy bundle must be installed on all nodes where HAProxy is installed, and these nodes can be distinguished by the `haproxy` role. Assign the `haproxy` role to the nodes where the proxy will be hosted.
 
