@@ -15,7 +15,7 @@ Choose on of the following installation guides to get started:
 ## Prerequisites
 
 * x86/64 bit Debian or Rpm based Linux system (recommended: Ubuntu 16.04 LTS or RHEL/CentOS 7)
-* Oracle Java Runtime Environment 8 (JRE 8)
+* Oracle or OpenJDK Java Runtime Environment 8 (JRE 8)
 * Python 3.4
 * Debian or Rpm package of ConductR Core
 * Debian or Rpm package of ConductR Agent
@@ -24,7 +24,19 @@ Choose on of the following installation guides to get started:
 
 Install Java 8 as the default JRE on the system.
 
-On Ubuntu, you can use the webupd8team repository provided that you accept the Oracle license agreement.
+On Ubuntu 14.10 and newer, you can use the built in package manager.
+
+```bash
+sudo apt-get install openjdk-8-jdk
+```
+
+On RHEL/CentOS 7, you can use the built in package manager.
+
+```bash
+sudo yum install java-1.8.0-openjdk.x86_64
+```
+
+On Ubuntu 14.04 and older, you can use the webupd8team repository provided that you accept the Oracle license agreement.
 
 ```bash
 sudo add-apt-repository -y ppa:webupd8team/java
@@ -32,6 +44,18 @@ sudo apt-get update
 sudo apt-get -y install oracle-java8-installer && sudo apt-get clean
 sudo apt-get -y install oracle-java8-set-default
 echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" | sudo tee -a /etc/environment
+```
+
+NOTE: You can also configure ConductR to use a local JRE installation. To do this, you must follow these steps after installing ConductR Core and Agent in the subsequent sections.
+
+```bash
+# This example assumes you've installed the JRE to /opt/my-jdk and have already installed ConductR Core and Agent
+
+echo 'JAVA_HOME=/opt/my-jdk' | sudo tee -a /etc/default/conductr
+echo 'JAVA_HOME=/opt/my-jdk' | sudo tee -a /etc/default/conductr-agent
+
+echo 'PATH="/opt/my-jdk/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin"' | sudo tee -a /etc/default/conductr
+echo 'PATH="/opt/my-jdk/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin"' | sudo tee -a /etc/default/conductr-agent
 ```
 
 ### Optional dependencies
