@@ -7,5 +7,7 @@ ManageServices:Managing ConductR services
 ClusterSetupConsiderations:Cluster setup considerations
 ClusterTroubleshooting:Cluster troubleshooting
 DynamicProxyConfiguration:Dynamic proxy configuration
+LogFiles:Log Files
+BundleHousekeeping:Bundle Housekeeping
 ContinuousDeliverySetupOps: Continuous Delivery Setup
 ConfigurationRef:Configuration Reference
