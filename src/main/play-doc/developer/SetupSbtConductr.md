@@ -8,7 +8,7 @@
 
 ## Prerequisites
 
-* [Docker](https://www.docker.com/)
+* [Docker](https://www.docker.com/) (when using Docker based bundles)
 * [conductr-cli](CLI#New-CLI-installation)
 
 The conductr-cli is used to communicate with the ConductR cluster. The CLI also includes a "developer sandbox" so that you may test your bundles in a production-like environment, but locally on your machine.
@@ -20,7 +20,7 @@ The conductr-cli is used to communicate with the ConductR cluster. The CLI also 
 Add sbt-conductr to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.1.20")
+addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.2.4")
 ```
 
 This makes several commands available within sbt. We'll use these commands on the next pages.
