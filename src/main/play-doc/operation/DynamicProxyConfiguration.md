@@ -558,12 +558,11 @@ Here are the explanation for the example template above:
 
 ### Securing the ConductR CLI with Basic Authentication
 
-HTTP Basic Authentication may be used to restrict access to a ConductR's [Control API](ControlAPI). The [ConductR CLI](CLI) uses the Control API to load bundles and retrieve cluster information, thus applying Basic Authentication against this service restricts who is allowed to load, start and stop bundles in the ConductR cluster. This provides another method of securing the cluster beyond security group and firewall restrictions. This is particularly useful when a fully restricted [bastion host](https://en.wikipedia.org/wiki/Bastion_host) is not viable, or to further restrict access to particular clusters via the CLI. For example, while it may be acceptable to allow everyone on a team to deploy bundles to a development or staging cluster, a production cluster may require more restrictive access.
+HTTP Basic Authentication may be used to restrict access to a ConductR's [Control API](ControlAPI). The [ConductR CLI](CLI) uses the Control API to load bundles and retrieve cluster information, thus applying Basic Authentication against this service restricts who is allowed to load, start and stop bundles in the ConductR cluster. This provides another method of securing the cluster beyond security group and firewall restrictions. This is useful when a fully restricted [bastion host](https://en.wikipedia.org/wiki/Bastion_host) is not viable, or to further restrict access to particular clusters via the CLI. For example, while it may be acceptable to allow everyone on a team to deploy bundles to a development or staging cluster, a production cluster may require more restrictive access.
 
-As a prerequisite, the ConductR Cores should be configured to bind to a private IP address and an available port. By default, the ConductR Cores will bind to the configured `CONDUCTR_IP` and port `9005`. Binding to a different IP and port is achieved by adding the following lines to `/usr/share/conductr/conf/conductr.ini` and restarting the ConductR Core Service. For this case, we will bind to localhost and use port 9055 internally, such that the ConductR Control API will only be available locally on this host.
+As a prerequisite, the ConductR Core's Control Server should be configured to bind to a private IP address and an available port. By default, the Control Server will bind to the configured ConductR Core IP address and port `9005`. Binding to a different IP and/or port can be achieved by updating the configuration values `conductr.control-server.ip` and/or `conductr.control-server.port` respectively in `/usr/share/conductr/conf/conductr.ini`. For this example, we will assume the ConductR Core's IP address is private to the cluster, but will bind the Control Server to `9055` internally to distinguish it from the external Control Protocol. Note that this change will be made on all ConductR Cores.
 
 ```
--Dconductr.control-server.ip = 127.0.0.1
 -Dconductr.control-server.port = 9055
 ```
 
@@ -573,7 +572,7 @@ Restart the ConductR Core Service with the following command:
 > sudo service conductr restart
 ```
 
-HAProxy must then be configured to provide Basic Authentication and SSL termination for the Control Protocol, such that it is still accessed via the default port `9005` externally. As we bound the Control Protocol to localhost above, we are assuming HAProxy is running on the same host(s) as the ConductR Core(s).
+HAProxy must then be configured to provide Basic Authentication and SSL termination for the Control Protocol. In this case, it will still be accessed via the default port `9005` externally. 
 
 Note: An SSL certificate will need to be generated and installed on the HAProxy host to enable two-way authentication for HTTPS. [OpenSSL](https://www.openssl.org/) can be used for this. While there are lots of resources available online for creating certificates, the following script can be used to generate a self-signed certificate for **testing purposes only**. You will need to substitute the fields of the `openssl req` comman with appropriate values for your server. It will create a folder called `ssl-conductr.cli` containing the certificates and a .pem file:
 
@@ -602,7 +601,7 @@ echo "Concat crt and key into pem file"
 cat $SSL_CERT_DIR/$CERT_NAME.crt $SSL_CERT_DIR/$CERT_NAME.key | tee $SSL_CERT_DIR/$CERT_NAME.pem
 ```
 
-We will then configure HAProxy with the path of our installed certificate and apply Basic Authentication to incoming ConductR Control API requests via port `9005`. To do this, we create a frontend `ctrl_frontend_secure` to handle incoming Control API requests, a userlist `ctrl_users` and a backend `ctrl_backend_auth` to direct to the Conductr Core.
+HAProxy is then configured with the path of our installed certificate and credentials to apply Basic Authentication to incoming ConductR Control API requests via port `9005`. To do this, we create a frontend `ctrl_frontend_secure` to handle incoming Control API requests, a userlist `ctrl_users` and a backend `ctrl_backend_auth` to direct to one of three available Conductr Cores, running on `172.17.0.1`,`172.17.0.2` and `172.17.0.3` listening to port `9055` as configured above.
 
 ```
 frontend dummy
@@ -619,58 +618,14 @@ userlist ctrl_users
 
 backend ctrl_backend_auth
   mode http
-  server ctrl_server_1 127.0.0.1:9055 maxconn 1024
+  server ctrl_server_1 172.17.0.1:9055 maxconn 1024
+  server ctrl_server_2 172.17.0.2:9055 maxconn 1024
+  server ctrl_server_3 172.17.0.3:9055 maxconn 1024
   acl ctrl_auth_ok http_auth(ctrl_users)
   http-request auth realm ConductR if !ctrl_auth_ok
 ```
 
-Note - while the above configuration proxies only one ConductR Core backend on the same hosts (`127.0.0.1:9055`), it is also possible to use a single HAProxy instance to restrict access to multiple ConductR Core backends. In that case, we would include a server for each ConductR Core under `backend ctrl_backend_auth`, and ensure that the ConductR Core IP address are not accessible outside of the cluster.
-
-With the above setup, Control Protocol requests must be sent via HTTPS with Basic Authentication credentials. The ConductR CLI supports this via a credentials file that must created at the following location `~/.conductr/settings.conf` containing:
-
-```
-conductr {
-  auth {
-    username = "steve"
-    password = "stevespassword"
-  }
-  server_ssl_verification_file = "/path/to/my/local/sslcert/ssl-conductr.cli.pem"
-}
-```
-
-Note also, that the `~/.conductr/settings.conf` file may specify configuraiton for multiple clusters as shown below:
-
-```
-conductr {
-  auth {
-    "192.168.99.100" {
-      enabled  = true
-      username = "steve"
-      password = "password"
-      server_ssl_verification_file = "/Users/felixsatyaputra/workspace/typesafe-fsat/haproxy-docker/foo.test/foo.test.pem"
-    }
-    "192.168.99.200" {
-      enabled  = false
-    }
-  }
-}
-```
-
-In the above case, authentication credentials will be used when the ConductR CLI interacts with the cluster located at `192.168.99.100`, while the ConductR Core located at `192.168.99.200` will not require authentication. 
-
-With the above setting in place, the ConductR CLI can be used as normally. 
-
-```
-conduct info --host 192.168.99.100
-```
-
-With HAProxy enforcing basic authentication, if valid credentials are not found in ~/.conductr/settings.conf, the ConductR CLI will return a "401 Unauthorized" error.
-
-Note: If HAProxy is listening for Control Protocol requests on a port other than `9005`, the ConductR CLI can continue to be used by specifying the `--port` (-p) argument. For example, if the Control Protocol is listening on port `7777`, ConductR CLI commands would be as follows:
-
-```
-conduct info --host 192.168.99.100 -p 7777
-```
+With the above setup, Control Protocol requests must be sent via HTTPS with Basic Authentication credentials. The ConductR CLI supports this via a credentials file that must created at the following location `~/.conductr/settings.conf`, which must point to PEM file used to validate the SSL certificate locally (ss-conductr-cli.pem in the above example). Configuring this file is decribed in detail the ConductR CLI documentation section called [HTTP Basic Authentication](CLI#HTTP-Basic-Authentication).
 
 ### Enabling ConductR to reload HAProxy without altering the sudoers file
 
