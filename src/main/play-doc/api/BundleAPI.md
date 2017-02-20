@@ -196,7 +196,7 @@ When your application or service has performed its initialization and is satisfi
 ### Request
 
 ```
-PUT {CONDUCTR_STATUS}/v2/bundles/{bundle-id}?isStarted=true
+PUT {CONDUCTR_STATUS}/bundles/{bundle-id}?isStarted=true
 ```
 
 Field            | Description
