@@ -79,7 +79,7 @@ The CLI is able to integrate with the DC/OS CLI e.g. `dcos conduct info` will re
 
 ## HTTP Basic Authentication
 
-Note: From a cluster setup perspective, HTTP Basic Authentication for the ConductR CLI can be setup and enforced as described in the section in the section [Securing the ConductR CLI with Basic Authentication](DynamicProxyConfiguration#Securing-the-ConductR-CLI-with-Basic-Authentication).
+> Note: From a cluster setup perspective, HTTP Basic Authentication for the ConductR CLI can be set up and enforced as described in the section [Securing the ConductR CLI with Basic Authentication](DynamicProxyConfiguration#Securing-the-ConductR-CLI-with-Basic-Authentication).
 
 To enable HTTP Basic Authentication on the ConductR CLI, provide the following settings file in the `~/.conductr/settings.conf`.
 
@@ -125,7 +125,7 @@ With the above setting in place, the ConductR CLI can be used as normally:
 conduct info --host 192.168.99.100
 ```
 
-If valid credentials are not found in ~/.conductr/settings.conf, the ConductR CLI will return a "401 Unauthorized" error.
+If valid credentials are not found in ~/.conductr/settings.conf, the ConductR CLI will return a 401 Unauthorized error.
 
 ## ConductR CLI on alternative ports
 
