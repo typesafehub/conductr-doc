@@ -26,6 +26,8 @@ For EC2 deployments, the bastion host will be placed in a different security gro
 
 The bastion host can be also be used as the controller host for installation and maintenance. Deployment bundles can be uploaded to the bastion host from build servers to provide a final gated 'one command' deployment step to a continuous deployment pipeline.
 
+SSL and Basic Authentication may also be setup to further secure the [ConductR CLI](CLI) and [Control API](ControlAPI) from unauthorized access. This is particularly useful where a fully locked down bastion host is not viable, or bundle deployments need to be limited to certain authorized users. For example, if operating a cluster on an internal 'flat' network, it is desirable to ensure that only authorized users are allowed to deploy bundles. It can also be advantageous to limit who can deploy to different environments. For example, user A may be allowed to deploy to Staging and Prod, while user B should only be allowed to deploy to Staging. This is described in more detail in the section [Securing the ConductR CLI with Basic Authentication](DynamicProxyConfiguration#Securing-the-ConductR-CLI-with-Basic-Authentication).
+
 # Managing Ports and Paths
 
 It is generally preferred to expose as few ports as required into the cluster from the public network. Ports should be limited to `80` and `443` in general. Most all cluster bundles are thus differentiated on the internet by host name or path. Exceptions to this include internal service ports, e.g. `5444`.  These ports might be used for services only to be used internally, with an internal facing load balancer, that is not exposed to the internet.

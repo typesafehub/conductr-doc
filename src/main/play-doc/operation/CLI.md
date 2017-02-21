@@ -79,14 +79,16 @@ The CLI is able to integrate with the DC/OS CLI e.g. `dcos conduct info` will re
 
 ## HTTP Basic Authentication
 
-To enable HTTP Basic Authentication, provide the following settings file in the `~/.conductr/settings.conf`.
+> Note: From a cluster setup perspective, HTTP Basic Authentication for the ConductR CLI can be set up and enforced as described in the section [Securing the ConductR CLI with Basic Authentication](DynamicProxyConfiguration#Securing-the-ConductR-CLI-with-Basic-Authentication).
+
+To enable HTTP Basic Authentication on the ConductR CLI, provide the following settings file in the `~/.conductr/settings.conf`.
 
 ```
 conductr {
   auth {
     enabled  = true
     username = "steve"
-    password = "letmein"
+    password = "stevespassword"
   }
   server_ssl_verification_file = "/home/user/validate-server.pem"
 }
@@ -96,3 +98,40 @@ HTTP Basic Authentication is enabled if the flag `enabled` is set to `true`. Set
 Set the `username` and `password` accordingly. The `server_ssl_verification_file` points to an absolute path of the file used to validate the SSL cert of the server.
 
 If HTTP Basic Authentication is enabled then the CLI will send HTTP requests using HTTPS instead of HTTP.
+
+The `~/.conductr/settings.conf` file may also specify configurations for multiple clusters as shown below:
+
+```
+conductr {
+  auth {
+    "192.168.99.100" {
+      enabled  = true
+      username = "steve"
+      password = "stevespassword"
+      server_ssl_verification_file = "/home/user/validate-server.pem"
+    }
+    "192.168.99.200" {
+      enabled  = false
+    }
+  }
+}
+```
+
+In the above case, authentication credentials will be used when the ConductR CLI interacts with the cluster located at `192.168.99.100`, while the ConductR Core located at `192.168.99.200` will not require authentication. 
+
+With the above setting in place, the ConductR CLI can be used as normally: 
+
+```
+conduct info --host 192.168.99.100
+```
+
+If valid credentials are not found in ~/.conductr/settings.conf, the ConductR CLI will return a 401 Unauthorized error.
+
+## ConductR CLI on alternative ports
+
+If the ConductR Control Protocol is configurted to listen for requests on a port other than `9005`, the ConductR CLI can still be used by specifying the `--port` (-p) argument. For example, if we wanted to use the ConductR CLI within the cluster setup in the example described in [Securing the ConductR CLI with Basic Authentication](DynamicProxyConfiguration#Securing-the-ConductR-CLI-with-Basic-Authentication), we could access the Control Protocol directly using port `9055`:
+
+```
+conduct info --host 172.17.0.1 -p 9055
+```
+
