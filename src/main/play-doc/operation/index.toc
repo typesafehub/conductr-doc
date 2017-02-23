@@ -6,6 +6,7 @@ Monitoring:Lightbend Monitoring
 ManageServices:Managing ConductR services
 ClusterSetupConsiderations:Cluster setup considerations
 ClusterRestart:Cluster restart
+ClusterStop:Cluster stop
 ClusterTroubleshooting:Cluster troubleshooting
 DynamicProxyConfiguration:Dynamic proxy configuration
 LogFiles:Log Files
