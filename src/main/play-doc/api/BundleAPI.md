@@ -21,7 +21,7 @@ Resolve a service name expressed as path to a URL. The URL returned is to the ne
 ### Request
 
 ```
-GET {SERVICE_LOCATOR}{service-name}
+GET {SERVICE_LOCATOR}/services/{service-name}
 ```
 
 Field            | Description
