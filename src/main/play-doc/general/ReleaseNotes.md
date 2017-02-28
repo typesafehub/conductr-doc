@@ -8,7 +8,7 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 
 > Note: failure to size your bundle's memory as being large enough will cause the Linux OOM killer to terminate all bundles being managed by a conductr-agent on a given host. This is a [known issue with Mesos](https://issues.apache.org/jira/browse/MESOS-3333#). Unfortunately the problem is also difficult to diagnose. Please ensure that your app has plenty of resident memory declared. Think generally in terms of 128MiB increments when going beyond 384MiB.
 
-## 2.0.1 Tuesday, February 28th, 2017
+## 2.0.2 Tuesday, February 28th, 2017
 
 1. There was an edge-case where service locator and other service information could become stale at the ConductR agent. This manifested itself with a bundle using an incorrect service locator i.e. one that may not be there anymore. The problem has been resolved, along with the algorithm improved in that the "nearest" service locator will always be available to a bundle.
 2. The internal `check` command was filling up the /tmp folder in some circumstances, particularly when Docker based bundles failed to start for any reason. While this is a reported problem with the underlying Python technology (pyinstaller leaves files in /tmp on receiving a SIGTERM), we have implemented a work-around so that temporary files are cleaned up.
