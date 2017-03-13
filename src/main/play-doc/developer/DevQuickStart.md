@@ -59,7 +59,7 @@ Now, you can go ahead and start the ConductR cluster locally. For that you shoul
 Afterwards, you can start the ConductR cluster by executing the following from within sbt:
 
 ```scala
-sandbox run 2.0.0 --feature visualization
+sandbox run 2.0.5 --feature visualization
 [info] Running ConductR...
 [info] Running container cond-0 exposing 192.168.10.1:9999...
 ```
