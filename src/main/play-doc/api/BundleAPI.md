@@ -61,7 +61,7 @@ Returns a list of host and port of the running service given a service name.
 ### Request
 
 ```
-GET {SERVICE_LOCATOR}/service-hosts{service-name}
+GET {SERVICE_LOCATOR}/service-hosts/{service-name}
 ```
 
 Field            | Description
@@ -100,14 +100,14 @@ Other status codes should also be treated as a failure.
 
 ### Events
 
-A `GET` on the `/service-hosts{service-name}/events` endpoint can be used to receive server sent events in relation to the service execution state changing. The following event types are possible:
- 
+A `GET` on the `/service-hosts/{service-name}/events` endpoint can be used to receive server sent events in relation to the service execution state changing. The following event types are possible:
+
 * `running`
 * `stopped`
 
 The "data" of the event represents the host and port where the service has stopped or is running.
 
-An `event` parameter may be supplied to as a repeated set of query parameters with the value representing the filtering of specific event types. Partial event type names are permitted e.g.: `GET` `/service-hosts{service-name}/events?event=running` would filter the emission of `running` only. These filtering parameters are also case insensitive.
+An `event` parameter may be supplied to as a repeated set of query parameters with the value representing the filtering of specific event types. Partial event type names are permitted e.g.: `GET` `/service-hosts/{service-name}/events?event=running` would filter the emission of `running` only. These filtering parameters are also case insensitive.
 
 Heartbeat events are also emitted so that the connection is kept alive through http proxies. SSE heartbeats are empty lines.
 
@@ -118,7 +118,7 @@ Returns the host and port of the running service given a service name and host i
 ### Request
 
 ```
-GET {SERVICE_LOCATOR}/service-hosts{service-name}/{host-ip}
+GET {SERVICE_LOCATOR}/service-hosts/{service-name}/{host-ip}
 ```
 
 Field            | Description
@@ -155,7 +155,7 @@ Returns stream of Server Sent Event given a service name. The Server Sent Event 
 ### Request
 
 ```
-GET {SERVICE_LOCATOR}/service-hosts{service-name}/events?event={event-name}
+GET {SERVICE_LOCATOR}/service-hosts/{service-name}/events?event={event-name}
 ```
 
 Field            | Description
