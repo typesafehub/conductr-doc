@@ -6,6 +6,7 @@ ConductR's control protocol is RESTful and has the following functional scope:
 * [Scale a bundle i.e. starting it and possibly stopping it](#Scale-a-bundle)
 * [Unload a bundle](#Unload-a-bundle)
 * [Query bundle state](#Query-bundle-state)
+* [Receive bundle state events](#Receive-bundle-state-events)
 * [Query member state](#Query-member-state)
 * [Query agent state](#Query-agent-state)
 * [Query logs by bundle](#Query-logs-by-bundle)
@@ -293,27 +294,51 @@ uniqueAddress       | An object describing the unique address of a member of Con
 
 Other non 2xx status codes should also be treated as a failure.
 
-### Events
+## Receive bundle state events
 
-A `GET` on the `/bundles/events` endpoint can be used to receive server sent events in relation to the above bundle information changing. The following event types are possible:
- 
-* `bundleConfigAdded`
-* `bundleConfigRemoved`
-* `bundleErrorOccurred`
-* `bundleExecutionAdded`
-* `bundleExecutionChanged`
-* `bundleExecutionRemoved`
-* `bundleInfoAdded`
-* `bundleInfoRemoved`
-* `bundleInstallationAdded`
-* `bundleInstallationChanged`
-* `bundleInstallationRemoved`
+Receive Server Sent Events (SSE) in relation to the bundle information changing.
 
-The "data" of the event represents a bundle id.
 
-An `events` parameter may be supplied to as a repeated set of query parameters with the value representing the filtering of specific event types. Partial event type names are permitted e.g.: `GET` `/bundles/events?events=config&events=execution` would filter the emission of `bundleConfigAdded`, `bundleConfigRemoved`, `bundleExecutionAdded`, `bundleExecutionChanged` and `bundleExecutionRemoved`. These filtering parameters are also case insensitive.
+### Request
+
+```
+GET /v2/bundles/events?events={event-name}
+```
+
+Field            | Description
+-----------------|------------
+event-type       | Optional. The type of the event to be filtered. Valid values see below.
+
+The following event types can be specified as a query parameter to receive to the following events:
+
+Event Type       | Events
+-----------------|------------
+config           | bundleConfigAdded, bundleConfigRemoved
+error            | bundleErrorOccurred
+execution        | bundleExecutionAdded, bundleExecutionChanged, bundleExecutionRemoved
+info             | bundleInfoAdded, bundleInfoRemoved
+installation     | bundleInstallationAdded, bundleInstallationChanged, bundleInstallationRemoved
+
+These filtering parameters are also case insensitive.
+
+#### Success
+
+```
+HTTP/1.1 200 OK
+Content-Type: text/event-stream
+
+data:73595ecbdad1f01a05db5304046b4ad5
+event:bundleExecutionAdded
+
+data:73595ecbdad1f01a05db5304046b4ad5
+event:bundleExecutionRemoved
+```
 
 Heartbeat events are also emitted so that the connection is kept alive through http proxies. SSE heartbeats are empty lines.
+
+#### Failure
+
+Other status codes should also be treated as a failure.
 
 ## Query member state
 
@@ -375,7 +400,7 @@ Other non 2xx status codes should also be treated as a failure.
 ### Events
 
 A `GET` on the `/members/events` endpoint can be used to receive server sent events in relation to the above member information changing. The following event types are possible:
- 
+
 * `memberUp`
 * `memberReachable`
 * `memberUnreachable`
@@ -429,7 +454,7 @@ Other non 2xx status codes should also be treated as a failure.
 ### Events
 
 A `GET` on the `/agents/events` endpoint can be used to receive server sent events in relation to the above agent information changing. The following event types are possible:
- 
+
 * `agentAdded`
 * `agentRemoved`
 

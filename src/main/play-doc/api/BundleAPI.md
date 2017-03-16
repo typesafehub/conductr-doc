@@ -8,13 +8,13 @@ The [ConductR bundle library](https://github.com/typesafehub/conductr-lib#typesa
 
 The following services are covered by the bundle API:
 
-* [Location lookup service](#The-Location-Lookup-Service)
-* [List hosts service](#The-List-Hosts-Service)
-* [Find host service](#The-Find-Host-Service)
-* [Service Server Sent Events](#The-Service-Server-Sent-Event)
-* [Status service](#The-Status-Service)
+* [Location lookup service](#Location-lookup-service)
+* [List hosts service](#List-hosts-service)
+* [Receive hosts events](#Receive-hosts-events)
+* [Find host service](#Find-host-service)
+* [Status service](#Status-service)
 
-## The Location Lookup Service
+## Location lookup service
 
 Resolve a service name expressed as path to a URL. The URL returned is to the nearest service of the cluster in relation to the caller's IP. Service lookup insulates the caller from the actual address of a service, and therefore allows these other services to move around.
 
@@ -54,7 +54,7 @@ The service requested cannot be found as it is unknown to ConductR.
 
 Other status codes should also be treated as a failure.
 
-## The List Hosts Service
+## List hosts service
 
 Returns a list of host and port of the running service given a service name.
 
@@ -98,20 +98,44 @@ Either the service has not been started, or the service requested cannot be foun
 
 Other status codes should also be treated as a failure.
 
-### Events
+## Receive hosts events
 
-A `GET` on the `/service-hosts/{service-name}/events` endpoint can be used to receive server sent events in relation to the service execution state changing. The following event types are possible:
+Returns stream of Server Sent Event (SSE) given a service name. The Server Sent Event will be invoked when a particular service is running or stopped.
 
-* `running`
-* `stopped`
+### Request
 
-The "data" of the event represents the host and port where the service has stopped or is running.
+```
+GET {SERVICE_LOCATOR}/service-hosts/{service-name}/events?event={event-name}
+```
 
-An `event` parameter may be supplied to as a repeated set of query parameters with the value representing the filtering of specific event types. Partial event type names are permitted e.g.: `GET` `/service-hosts/{service-name}/events?event=running` would filter the emission of `running` only. These filtering parameters are also case insensitive.
+Field            | Description
+-----------------|------------
+SERVICE\_LOCATOR | The environment variable value of the same name. This environment variable translates to an http address e.g. `http://10.0.1.22:9008` given that ConductR is running on `10.0.1.22` with a service locator port bound to 9008.
+service-name     | The name of the service required and expressed as a path e.g. `/customers`.
+event-name       | Optional. The name of the event to be filtered. Valid values are either `running` or `stopped`.
+
+#### Success
+
+```
+HTTP/1.1 200 OK
+Content-Type: text/event-stream
+
+data:10.11.23.22:7001
+event:running
+
+data:10.11.23.22:7001
+event:stopped
+```
+
+Where the two events above indicates the service being running and stopped on `10.11.23.22:7001`.
 
 Heartbeat events are also emitted so that the connection is kept alive through http proxies. SSE heartbeats are empty lines.
 
-## The Find Host Service
+#### Failure
+
+Other status codes should also be treated as a failure.
+
+## Find host service
 
 Returns the host and port of the running service given a service name and host ip.
 
@@ -148,48 +172,7 @@ Either the service is not started, or the service requested cannot be found as i
 
 Other status codes should also be treated as a failure.
 
-## The Service Server Sent Event
-
-Returns stream of Server Sent Event given a service name. The Server Sent Event will be invoked when a particular service is running or stopped.
-
-### Request
-
-```
-GET {SERVICE_LOCATOR}/service-hosts/{service-name}/events?event={event-name}
-```
-
-Field            | Description
------------------|------------
-SERVICE\_LOCATOR | The environment variable value of the same name. This environment variable translates to an http address e.g. `http://10.0.1.22:9008` given that ConductR is running on `10.0.1.22` with a service locator port bound to 9008.
-service-name     | The name of the service required and expressed as a path e.g. `/customers`.
-event-name       | Optional. The name of the event to be filtered. Valid values are either `running` or `stopped`.
-
-#### Success
-
-```
-HTTP/1.1 200 OK
-Content-Type: text/event-stream
-
-event:running
-data:10.11.23.22:7001
-
-event:stopped
-data:10.11.23.22:7001
-```
-
-Where the two events above indicates the service being running and stopped on `10.11.23.22:7001`.
-
-#### Failure
-
-```
-HTTP/1.1 404 Not Found
-```
-
-The service requested cannot be found as it is unknown to ConductR.
-
-Other status codes should also be treated as a failure.
-
-## The Status Service
+## Status service
 
 When your application or service has performed its initialization and is satisfied that it is ready to operate, it needs to signal ConductR of this. ConductR will then proceed with other activities such as scaling, proxying and so forth.
 
