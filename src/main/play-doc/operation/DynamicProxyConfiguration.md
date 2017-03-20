@@ -53,11 +53,13 @@ global
 	log /dev/log	local0
 	log /dev/log	local1 notice
 	chroot /var/lib/haproxy
-	stats socket /run/haproxy/admin.sock mode 660 level admin
-	stats timeout 30s
 	user haproxy
 	group haproxy
 	daemon
+
+	# We like statistics
+	stats socket {{haproxyHost}}:8999 level user
+	stats timeout 2m #Wait up to 2 minutes for input
 
 defaults
 	log	global
@@ -187,12 +189,14 @@ global
     log /dev/log    local0
     log /dev/log    local1 notice
     chroot /var/lib/haproxy
-    stats socket /run/haproxy/admin.sock mode 660 level admin
-    stats timeout 30s
     user haproxy
     group haproxy
     daemon
 
+    # We like statistics
+    stats socket {{haproxyHost}}:8999 level user
+    stats timeout 2m #Wait up to 2 minutes for input
+  
     # Default SSL material locations
     ca-base /etc/ssl/certs
     crt-base /etc/ssl/private
@@ -651,10 +655,12 @@ We now need to create a custom HAProxy configuration bundle. Starting with the d
 global
     log /dev/log    local0
     log /dev/log    local1 notice
-    stats socket /var/run/haproxy/stats
-    stats timeout 30s
     maxconn 1024
     daemon
+    
+    # We like statistics
+    stats socket {{haproxyHost}}:8999 level user
+    stats timeout 2m #Wait up to 2 minutes for input
 
 #The remaining HAProxy configuration below remains unchanged from the default
 # ...

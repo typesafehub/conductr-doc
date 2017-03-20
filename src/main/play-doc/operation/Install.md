@@ -941,12 +941,12 @@ sudo hostname $(hostname -i)
 Run the HAProxy Docker container.
 
 ```
-$ docker run -d --name haproxy  -p $(hostname):80:80 -p $(hostname):443:443 -p $(hostname):9000:9000 -p $(hostname):9999:9999 -p $(hostname):65535:65535 -v /etc/haproxy:/usr/local/etc/haproxy:ro haproxy:1.5
+$ docker run -d --name haproxy  -p $(hostname):80:80 -p $(hostname):443:443 -p $(hostname):8999:8999 -p $(hostname):9000:9000 -p $(hostname):9999:9999 -p $(hostname):65535:65535 -v /etc/haproxy:/usr/local/etc/haproxy:ro haproxy:1.5
 ```
 
 The above container has `haproxy` as its name and uses configuration file is located at `/etc/haproxy/haproxy.cfg`. The directory `/etc/haproxy` is mounted within the container on `/usr/local/etc/haproxy`. This will allow updates to `/etc/haproxy/haproxy.cfg` to be visible within the container.
 
-Any application bundle service ports must be exposed for proxying. The container started above exposes the ports `80`, `443`, `9000`, `9999`, and `65535.` This is to expose ports for HTTP/HTTPS, as well as for applications on `9000`, ConductR Visualizer on `9999` and for the HAProxy test endpoint. You can include additional ports or port ranges for your endpoints using the `-p` option as required.
+Any application bundle service ports must be exposed for proxying. The container started above exposes the ports `80`, `443`, `8999`, `9000`, `9999`, and `65535.` This is to expose ports for HTTP/HTTPS and statistics as well as for applications on `9000`, ConductR Visualizer on `9999` and for the HAProxy test endpoint. You can include additional ports or port ranges for your endpoints using the `-p` option as required.
 
 NOTE: The ports exposed by the container is bound the address such as`10.0.7.118` to be used as the service delivery interface for the node using the `hostname` command.  You must verify or set your system hostname or otherwise substitute the $(hostname) in the above example with the correct IP address for  your environment.
 
@@ -955,7 +955,7 @@ Run `docker ps -a` to ensure the container has been started successfully.
 ```
 $ docker ps -a
 CONTAINER ID        IMAGE               COMMAND                CREATED             STATUS              PORTS                                                                               NAMES
-534236e89eac        haproxy:1.5         "/docker-entrypoint.   15 seconds ago      Up 15 seconds       10.0.7.118:80->80/tcp, 10.0.7.118:443->443/tcp, 10.0.7.118:9000->9000/tcp, 10.0.7.118:9999->9999/tcp, 10.0.7.118:65535->65535/tcp   haproxy
+534236e89eac        haproxy:1.5         "/docker-entrypoint.   15 seconds ago      Up 15 seconds       10.0.7.118:80->80/tcp, 10.0.7.118:443->443/tcp, 10.0.7.118:8999->8999/tcp, 10.0.7.118:9000->9000/tcp, 10.0.7.118:9999->9999/tcp, 10.0.7.118:65535->65535/tcp   haproxy
 ```
 
 An additional check can be performed by using `curl` command against the HAProxy test endpoint.
