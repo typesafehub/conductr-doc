@@ -77,13 +77,15 @@ Request a scale (run) of a bundle to the value provided. A scale value of 0 is i
 
 ```
 PUT /v2/bundles/{bundleIdOrName}?scale={scale}&affinity={bundleIdOrName}
+PUT /v2/bundles/{bundleIdOrName}?scaleOffset={scaleOffset}&affinity={bundleIdOrName}
 ```
 
 Field            | Description
 -----------------|------------
-bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading.
-scale            | The number of instances of the bundle to start. A scale value of 0 indicates that all instances should be stopped.
 affinity         | Optional. Identifier to other bundle. If specified, the current bundle will be run on the same host where the specified bundle is currently running.
+bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading. Names may be qualified with a tag in order to further distinguish them. A tag is delimited by a `:` e.g. `mybundle:mytag` is a valid name where `mybundle` is the name and `mytag` is the tag to select.
+scale            | The number of instances of the bundle to start. A scale value of 0 indicates that all instances should be stopped.
+scaleOffset      | An offset relative to the existing number that have been scaled e.g. a `scaleOffset` of `-1` indicates that the current scale should be reduced by one.
 
 ### Responses
 
@@ -133,7 +135,7 @@ DELETE /v2/bundles/{bundleIdOrName}
 
 Field            | Description
 -----------------|------------
-bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading.
+bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading. Names may be qualified with a tag in order to further distinguish them. A tag is delimited by a `:` e.g. `mybundle:mytag` is a valid name where `mybundle` is the name and `mytag` is the tag to select.
 
 ### Responses
 
@@ -208,7 +210,8 @@ Content-Type: application/json
       "memory": {memory},
       "diskSpace": {diskSpace},
       "roles": {roles},
-      "bundleName": "{bundleName}"
+      "bundleName": "{bundleName}",
+      "tags": {tags}
     },
     "bundleConfig": {
       "endpoints": {
@@ -232,6 +235,7 @@ Content-Type: application/json
         }
       },
       "isStarted": {isStarted}
+      "isActive": {isActive}
     }
   ],
   "bundleInstallations": [
@@ -279,13 +283,15 @@ endpoint-name       | The name of an endpoint. Endpoint names are distinct acros
 hasError            | `true` if some event in ConductR has raised an error, `false` otherwise.
 host                | The ip address of the machine hosting the bundle's components.
 hostPort            | The port of the machine hosting the bundle component that will be mapped to the `bindPort`. `hostPort` is distinct across all services running on a host.
-isStarted           | `true` if the bundle has signalled that it has started successfully, `false` if it is in the process of starting up.
+isActive            | `true` if the bundle has signalled that it has started successfully, `false` if it is in the process of starting up or shutting down.
+isStarted           | Deprecated. Use `isActive` instead.
 memory              | The amount of resident memory required to run the bundle. Values are expressed in bytes.
 nrOfCpus            | The minimum number of cpus required to run the bundle (can be fractions thereby expressing a portion of CPU). This value is considered when starting a bundle on a node. If the specified CPUs exceeds the available CPUs on a node, then this node is not considered for scaling the bundle. Once running, the application is not restricted to the given value and tries to use all available CPUs on the node.
 roles               | An array of strings representing the roles that a bundle plays in a ConductR cluster. These roles are matched for eligibility with cluster members when searching for one to load and scale on. Only cluster members with matching roles will be selected.
 scale               | The requested number of instance(s) of the bundle to be started and run.
 services            | An array of string URIs providing the addresses for a given endpoint's proxying.
 system              | The name of a system that the bundle belongs to. Systems are strings that may be used by a number of bundles in order to associate them. ConductR provides a guarantee that bundles belonging to the same system are started with the first one in isolation to the starting of the rest. This behavior can be leverage to form clusters where the first node must form the cluster and other nodes may then join it.
+tags                | An array of strings representing a bundle's metadata.
 uid                 | The unique identifier of a ConductR member within an `address`
 uniqueAddress       | An object describing the unique address of a member of ConductR's cluster.
 
