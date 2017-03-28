@@ -9,7 +9,7 @@ Bundles provide ConductR with some basic knowledge about components in a *bundle
 version               = "1"
 name                  = "simple-test"
 compatibilityVersion  = "1"
-tags                  = []
+tags                  = ["1.0.0-beta.1"]
 system                = "simple-test"
 systemVersion         = "1"
 nrOfCpus              = 0.1
@@ -64,7 +64,7 @@ service-name	     | Discussed [below](#Endpoints).
 start-command        | Command line args required to start the component. Paths are expressed relative to the component's bin folder. The default is to use the bash script in the bin folder. Arguments can be passed to a Docker container run command via a special `dockerArgs` command should additional args be required: `start-command = ["dockerArgs","-v","/var/lib/postgresql/data:/var/lib/postgresql/data"]`.
 system               | A logical name that can be used to associate multiple bundles with each other. This could be an application or service association e.g. myapp. Defaults to the package name.
 systemVersion        | A version to associate with a system. This setting defaults to the value of compatibilityVersion.
-tags                 | A list of tags that may be used to provide additional metadata to a bundle. Tags may be used when selecting a bundle by bundle name, and may be specified by appending a `:` to the name followed by the tag itself e.g. "mybundle:mytag".
+tags                 | A list of tags that may be used to provide more meaning to a bundle's name. They commonly represent version numbers. Tags may be used when selecting a bundle by bundle name, and may be specified by appending a `:` to the name followed by the tag itself e.g. "mybundle:1.0.0-beta.1" where "1.0.0-beta.1" is the tag.
 version				 | The version of the bundle.conf file. Should be set to `1`.
 
 ConductR application bundles should not contain deployment specific configuration information such keys, passwords or secrets. Deployment target specific configuration and secrets should instead be set in a [configuration bundle](#Configuration-Bundles). The configuration bundle is deployed together with the application bundle. This enables a single application bundle to be deployed to multiple environments such test, staging and production by changing only the configuration bundle it is paired with at deployment instead of rebuilding the application bundle.

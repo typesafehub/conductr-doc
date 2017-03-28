@@ -20,7 +20,7 @@ Please visit the [migration guide](MigrationGuide#Production_Suite_Licensing) fo
 
 ### Tagging
 
-When selecting a bundle by its bundle name, you may now also use one of a number of bundle "tags" to qualify the name. Bundle tags are similar to Docker tags in that they help you qualify a bundle with additional metadata. When selecting a bundle by its name, appending a `:` and then one of the bundle's tags will further constrain the selection e.g. "mybundle:mytag".
+When selecting a bundle by its bundle name, you may now also use one of a number of bundle "tags" to qualify the name. Bundle tags are similar to Docker tags in that they help you qualify a bundle with data often equating to version numbers. When selecting a bundle by its name, appending a `:` and then one of the bundle's tags will further constrain the selection e.g. "mybundle:1.0.0-beta.1".
 
 ## 2.1.0-alpha.1 - Tuesday March 28th, 2017 (FIXME)
 

@@ -83,7 +83,7 @@ PUT /v2/bundles/{bundleIdOrName}?scaleOffset={scaleOffset}&affinity={bundleIdOrN
 Field            | Description
 -----------------|------------
 affinity         | Optional. Identifier to other bundle. If specified, the current bundle will be run on the same host where the specified bundle is currently running.
-bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading. Names may be qualified with a tag in order to further distinguish them. A tag is delimited by a `:` e.g. `mybundle:mytag` is a valid name where `mybundle` is the name and `mytag` is the tag to select.
+bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading. Names may be qualified with a tag in order to further distinguish them. A tag is delimited by a `:` e.g. `mybundle:1.0.0-beta.1` is a valid name where `mybundle` is the name and `1.0.0-beta.1` is the tag to select (in this case a version number).
 scale            | The number of instances of the bundle to start. A scale value of 0 indicates that all instances should be stopped.
 scaleOffset      | An offset relative to the existing number that have been scaled e.g. a `scaleOffset` of `-1` indicates that the current scale should be reduced by one.
 
@@ -135,7 +135,7 @@ DELETE /v2/bundles/{bundleIdOrName}
 
 Field            | Description
 -----------------|------------
-bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading. Names may be qualified with a tag in order to further distinguish them. A tag is delimited by a `:` e.g. `mybundle:mytag` is a valid name where `mybundle` is the name and `mytag` is the tag to select.
+bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading. Names may be qualified with a tag in order to further distinguish them. A tag is delimited by a `:` e.g. `mybundle:1.0.0-beta.1` is a valid name where `mybundle` is the name and `1.0.0-beta.1` is the tag to select (in this case a version number).
 
 ### Responses
 
@@ -291,7 +291,7 @@ roles               | An array of strings representing the roles that a bundle p
 scale               | The requested number of instance(s) of the bundle to be started and run.
 services            | An array of string URIs providing the addresses for a given endpoint's proxying.
 system              | The name of a system that the bundle belongs to. Systems are strings that may be used by a number of bundles in order to associate them. ConductR provides a guarantee that bundles belonging to the same system are started with the first one in isolation to the starting of the rest. This behavior can be leverage to form clusters where the first node must form the cluster and other nodes may then join it.
-tags                | An array of strings representing a bundle's metadata.
+tags                | An array of strings that can be used to further qualify a bundle name. These are often represented as versions e.g. "1.0.0-beta.1", "version1" etc.
 uid                 | The unique identifier of a ConductR member within an `address`
 uniqueAddress       | An object describing the unique address of a member of ConductR's cluster.
 
