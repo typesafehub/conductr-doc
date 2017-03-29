@@ -106,7 +106,7 @@ Bundles can be published to Bintray using the [sbt-bintray-bundle](https://githu
 The shorthand bundle expression has the following format:
 
 ```
-[ "urn:x-bundle:" ] , [ organization , "/" ] , [ repository , "/" ] , package , [ ":" , "v" , compatibility-version [ "-" , digest ] ]
+[ "urn:x-bundle:" ] , [ organization , "/" ] , [ repository , "/" ] , package , [ ":" , "v" , tag [ "-" , digest ] ]
 ```
 
 The usage of the shorthand expression is best illustrated with the following example.
@@ -114,9 +114,9 @@ The usage of the shorthand expression is best illustrated with the following exa
 Shorthand Expression                                                                       | Resolved to
 -------------------------------------------------------------------------------------------|------------
 reactive-maps-frontend                                                                     | Latest version of the `reactive-maps-frontend` bundle hosted within `organization` called `typesafe` and `repository` called `bundle`.
-reactive-maps-frontend:v1                                                                  | Latest version of the `reactive-maps-frontend` bundle having `compatibility-version` of `v1` hosted within `organization` called `typesafe` and `repository` called `bundle`.
-reactive-maps-frontend:v1-023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2 | `reactive-maps-frontend` bundle having `compatibility-version` of `v1` and `digest` of `023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2` hosted within `organization` called `typesafe` and `repository` called `bundle`.
-my-company/secret-repo/super-bundle:v1                                                     | Latest version of the `super-bundle` bundle having `compatibility-version` of `v1` hosted within `organization` called `my-company` and `repository` called `secret-repo`.
+reactive-maps-frontend:v1                                                                  | Latest version of the `reactive-maps-frontend` bundle having `tag` of `v1` hosted within `organization` called `typesafe` and `repository` called `bundle`.
+reactive-maps-frontend:v1-023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2 | `reactive-maps-frontend` bundle having `tag` of `v1` and `digest` of `023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2` hosted within `organization` called `typesafe` and `repository` called `bundle`.
+my-company/secret-repo/super-bundle:v1                                                     | Latest version of the `super-bundle` bundle having `tag` of `v1` hosted within `organization` called `my-company` and `repository` called `secret-repo`.
 
 
 ## Implementing your own custom resolver
