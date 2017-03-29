@@ -106,7 +106,7 @@ Bundles can be published to Bintray using the [sbt-bintray-bundle](https://githu
 The shorthand bundle expression has the following format:
 
 ```
-[ "urn:x-bundle:" ] , [ organization , "/" ] , [ repository , "/" ] , package , [ ":" , "v" , tag [ "-" , digest ] ]
+[ "urn:x-bundle:" ] , [ organization , "/" ] , [ repository , "/" ] , package , [ ":" , tag [ "-" , digest ] ]
 ```
 
 The usage of the shorthand expression is best illustrated with the following example.
