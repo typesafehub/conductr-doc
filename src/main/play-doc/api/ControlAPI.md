@@ -21,7 +21,7 @@ Here is an example of uploading a Visualizer bundle without any configuration. [
 ```bash
 curl \
   --form bundleConf=@visualizer/target/bundle/bundle/tmp/bundle.conf \
-  --form bundle=@visualizer/target/bundle/visualizer-v1.1-cfe2a36795fd78507c4d2b5817152ae449e4acd9d5ea94d1f604d2c11417e40f.zip \
+  --form bundle=@visualizer/target/bundle/visualizer-1.0.0-cfe2a36795fd78507c4d2b5817152ae449e4acd9d5ea94d1f604d2c11417e40f.zip \
   http://localhost:9005/v2/bundles
 ```
 
