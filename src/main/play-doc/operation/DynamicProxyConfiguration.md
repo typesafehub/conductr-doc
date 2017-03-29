@@ -23,6 +23,8 @@ The endpoints that failed to satisfy this requirement will be considered as dupl
 
 It is possible to provide custom HAProxy configuration by supplying configuration overrides to the ConductR HAProxy bundle.
 
+Follow these steps to provide custom HAProxy configuration to ConductR HAProxy running on a clustered environment (i.e. non-sandbox). To provide a custom configuration for the Sandbox go to the chapter [Creating and deploying custom HAProxy configuration for Sandbox](#creating-and-deploying-custom-haproxy-configuration-for-sandbox).
+
 [[ConductR CLI|CLI]] is required to perform the following steps, and as such it needs to be installed beforehand.
 
 These are the steps to deploying custom HAProxy configuration.
@@ -89,9 +91,9 @@ backend my_www_backend
 {{/eachAcls}}
 ```
 
-Here are the explanation for the example template above:
+Here is the explanation for the example template above:
 
-* *HAProxy Specific Configuration* section is declared prior *Custom Endpoint Configuration* section.
+* *HAProxy Specific Configuration* section is declared prior to *Custom Endpoint Configuration* section.
 * *HAProxy Specific Configuration* section is populated with operating system specific setup. In the example above it is populated with a cut-down version of Ubuntu's configuration.
 * *Custom Endpoint Configuration* section contains application specific proxy configuration.
 * The endpoint that matches the following criteria has a custom configuration declared within the [ifAcl](#ifAcl) block:
@@ -100,7 +102,7 @@ Here are the explanation for the example template above:
     * `endpoint name` is `main`
 * HAProxy frontend `my_www_frontend` is configured to listen on HTTP port `80` and will relay request for `www.acme.com` to `my_www_backend`.
 * HAProxy backend `my_www_backend` server is generated based on the backend server information contained within the [eachBackendServer](#eachBackendServer) helper function.
-* The backend server information will be updated whenever there's changes to the endpoint, e.g. bundle instances being started or stopped the within the ConductR cluster.
+* The backend server information will be updated whenever there's changes to the endpoint, e.g. bundle instances being started or stopped within the ConductR cluster.
 * All other endpoints is for configured using ConductR default configuration. The HTTP endpoint is exposed on the port `9443`
 
 ### Deploying SSL certificate
@@ -135,7 +137,7 @@ frontend my_www_frontend
 
 ### Declare the custom HAProxy configuration template
 
-Create a file called `runtime-config.sh` within the proxy configuration directory, e.g.
+Create a file called `runtime-config.sh` within the proxy configuration directory which will be sourced by ConductR HAProxy upon startup, e.g.
 
 ```lang-none
 touch /tmp/custom-haproxy-conf/runtime-config.sh
@@ -150,7 +152,46 @@ CONFIG_DIR=$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
 export CONDUCTR_HAPROXY_CONFIG_OVERRIDE="$CONFIG_DIR/haproxy-override.cfg"
 ```
 
-The `CONFIG_DIR` refers to the directory where the configuration override will be expanded. `CONDUCTR_HAPROXY_CONFIG_OVERRIDE` is the environment variable which tells ConductR where to find the custom HAProxy configuration template.
+The `CONFIG_DIR` refers to the directory where the configuration override will be expanded. `CONDUCTR_HAPROXY_CONFIG_OVERRIDE` is the environment variable which tells ConductR HAProxy where to find the custom HAProxy configuration template.
+
+
+### Specifying custom HAProxy reload script
+
+_This step is optional. If a custom HAProxy reload script is not supplied, ConductR HAProxy will make use of its own default reload script packaged internally. The default reload script works for HAProxy installed for Systemd or SystemV._
+
+ConductR HAProxy makes use of a reload script to reload HAProxy whenever a new HAProxy configuration is generated. When ConductR HAProxy starts, the reload script is copied from the path specified by `HAPROXY_RELOAD_SCRIPT_SOURCE` environment variable to the path specified by `HAPROXY_RELOAD_SCRIPT_LOCATION` environment variable.
+
+Create a file called `runtime-config.sh` within the proxy configuration directory which will be sourced by ConductR HAProxy upon startup, e.g.
+
+```lang-none
+touch /tmp/custom-haproxy-conf/runtime-config.sh
+```
+
+Populate the file with the following entry.
+
+```bash
+#!/bin/bash
+
+CONFIG_DIR=$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
+export HAPROXY_RELOAD_SCRIPT_SOURCE="$CONFIG_DIR/reloadHAProxy.sh"
+export HAPROXY_RELOAD_SCRIPT_LOCATION="/usr/local/etc/haproxy/reloadHAProxy.sh"
+
+# Ensure empty reload script exists with correct permission so it can be copied over
+touch "${HAPROXY_RELOAD_SCRIPT_LOCATION}"
+chmod u+x "${HAPROXY_RELOAD_SCRIPT_LOCATION}"
+```
+
+In the example above, the reload script will be copied from inside the bundle configuration to `/usr/local/etc/haproxy/reloadHAProxy.sh`.
+
+Populate the custom reload script `/tmp/custom-haproxy-conf/reloadHAProxy.sh`, e.g.
+
+```bash
+#!/bin/bash
+
+/usr/local/bin/haproxy reload
+```
+
+The custom reload script in the example above issued the `/usr/local/bin/haproxy reload` command. Modify the command to suit your needs accordingly.
 
 
 ### Package the custom HAProxy configuration template
@@ -168,6 +209,8 @@ The generated file `custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239
 
 ### Load the custom HAProxy configuration template
 
+_If there's an existing ConductR HAProxy running within ConductR, the running ConductR HAProxy instances have to be stopped. This is because each ConductR HAProxy instance is responsible for managing the HAProxy instance where the ConductR HAProxy instance is running._
+
 Once custom configuration override is generated, it can be loaded into ConductR, e.g:
 
 ```lang-none
@@ -177,6 +220,264 @@ conduct load /tmp/conductr-haproxy-v2-0d24d10cb0d1af9bf9f7e0bf81778a61d2cc001f93
 In the example above, the files required are placed within the `/tmp` directory. Replace the `/tmp` with the actual path to the files.
 
 Refer to the set of `conduct` commands described in [[Deploying bundles|DeployingBundlesOps]] for more details.
+
+
+## Creating and deploying custom HAProxy configuration for Sandbox
+
+Follow these steps to provide a custom HAProxy configuration to ConductR HAProxy running in the Sandbox. To provide a custom configuration for a non-sandbox environment go to the chapter [Creating and deploying custom HAProxy configuration](#creating-and-deploying-custom-haproxy-configuration).
+
+> The steps are the same as in non-sandbox mode. However, the configuration values differ from the non-sandbox environment since HAProxy is running as a docker container on the Sandbox.
+
+We will go through building the bundle configuration for HAProxy that can be loaded into the Sandbox. This will allow you to customize the behavior of HAProxy when using the Sandbox.
+
+### Setup
+
+Create a directory where the custom HAProxy configuration will be placed, e.g.
+
+```lang-none
+mkdir -p /tmp/custom-haproxy-conf
+```
+
+### Declare the custom HAProxy configuration entry point
+
+Create a file called `runtime-config.sh` within the proxy configuration directory, e.g.
+
+```lang-none
+touch /tmp/custom-haproxy-conf/runtime-config.sh
+```
+
+Populate the file with the following entry:
+
+```lang-none
+#!/bin/bash
+
+export CONDUCTR_HAPROXY_USE_SUDO="off"
+
+# HAProxy instance will be running inside Docker container, hence access will be controlled via docker run -p options.
+export HAPROXY_BIND_HOST=0.0.0.0
+
+CONFIG_DIR=$( cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
+export CONDUCTR_HAPROXY_CONFIG_OVERRIDE="$CONFIG_DIR/haproxy-override.cfg"
+export HAPROXY_RELOAD_SCRIPT_SOURCE="$CONFIG_DIR/reloadHAProxy.sh"
+
+SANDBOX_PROXY_DIR="${HOME}/.conductr/proxy"
+SANDBOX_HAPROXY_CFG_DIR="${SANDBOX_PROXY_DIR}/haproxy"
+
+export HAPROXY_RELOAD_SCRIPT_LOCATION="${SANDBOX_PROXY_DIR}/reloadHAProxy.sh"
+export HAPROXY_CONFIG_FILE="${SANDBOX_HAPROXY_CFG_DIR}/haproxy.cfg"
+
+# Ensure directory exists
+mkdir -p "${SANDBOX_HAPROXY_CFG_DIR}"
+
+# Ensure empty reload script exists with correct permission so it can be copied over
+touch "${HAPROXY_RELOAD_SCRIPT_LOCATION}"
+chmod u+x "${HAPROXY_RELOAD_SCRIPT_LOCATION}"
+```
+
+`CONDUCTR_HAPROXY_USE_SUDO` is set to `off` since the HAProxy will be running as a docker container, as such the reload script needs to be run as the same user running the sandbox (hence no `sudo`).
+
+`HAPROXY_BIND_HOST` is set to `0.0.0.0` since the actual HAProxy is running within the docker container, and there's no way to tell what the actual bind ip will be until the container is started. The restriction of the incoming traffic to the HAProxy will be provided by the ports being opened into the container.
+
+The `HAPROXY_RELOAD_SCRIPT_LOCATION` is located at `~/.conductr/proxy/reloadHAProxy.sh`.
+
+The `HAPROXY_CONFIG_FILE` is located at `~/.conductr/proxy/haproxy/haproxy.cfg`. The directory `~/.conductr/proxy/haproxy` is mounted into the container so the `haproxy.cfg` can be read by the HAProxy running within the container.
+
+### Create HAProxy reload script
+
+Create the custom HAProxy reload script, e.g.
+
+```lang-none
+touch /tmp/custom-haproxy-conf/reloadHAProxy.sh
+```
+
+Populate the file with the following template.
+
+```lang-none
+#!/bin/bash
+
+set -e
+docker kill -s HUP sandbox-haproxy
+```
+
+The signal `HUP` issued to the `sandbox-haproxy` container won't terminate the container. Instead it will cause the HAProxy instance running within the `sandbox-haproxy` container to be reloaded with the new configuration.
+
+### Populate the custom HAProxy configuration template
+
+Create the custom HAProxy template, e.g.
+
+```lang-none
+touch /tmp/custom-haproxy-conf/haproxy-override.cfg
+```
+
+Populate the file with the following template.
+
+```lang-none
+# HAProxy Specific Configuration
+global
+    daemon
+
+    # We like statistics
+    stats socket {{haproxyHost}}:8999 level user
+    stats timeout 2m #Wait up to 2 minutes for input
+
+defaults
+    log global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+
+frontend conductr-haproxy-test
+  bind :65535
+  mode http
+  monitor-uri /test
+
+# Custom Endpoint Configuration
+
+{{#eachAcls bundles defaultHttpPort=9000}}
+
+  {{#ifAcl 'conductr-elasticsearch' '1' 'es'}}
+# ConductR - Elasticsearch Bundle HAProxy Configuration
+frontend elasticsearch_frontend
+  bind {{haproxyHost}}:9200
+  mode http
+  acl elasticsearch_context_root path_beg / /elastic-search
+  use_backend elasticsearch_backend if elasticsearch_context_root
+
+backend elasticsearch_backend
+  mode http
+  reqrep ^([^\ :]*)\ /elastic-search/?(.*) \1\ /\2
+    {{#eachBackendServer}}
+  server {{serverName}} {{host}}:{{port}} maxconn 1024
+    {{/eachBackendServer}}
+  {{/ifAcl}}
+
+  {{#ifAcl 'conductr-kibana' '1' 'kibana'}}
+# ConductR - Kibana Bundle HAProxy Configuration
+frontend kibana_frontend
+  bind {{haproxyHost}}:5601
+  mode http
+  acl kibana_context_root path_beg /
+  use_backend kibana_backend if kibana_context_root
+
+backend kibana_backend
+  mode http
+    {{#eachBackendServer}}
+  server {{serverName}} {{host}}:{{port}} maxconn 1024
+    {{/eachBackendServer}}
+  {{/ifAcl}}
+
+  {{#ifAcl 'cinnamon-grafana-docker' '2' 'grafana'}}
+# Cinnamon - Grafana HAProxy Configuration
+frontend grafana_frontend
+  bind {{haproxyHost}}:3000
+  mode http
+  acl grafana_context_root path_beg /
+  use_backend grafana_backend if grafana_context_root
+
+backend grafana_backend
+  mode http
+    {{#eachBackendServer}}
+  server {{serverName}} {{host}}:{{port}} maxconn 1024
+    {{/eachBackendServer}}
+  {{/ifAcl}}
+
+  {{#ifAcl 'visualizer' '2' 'visualizer'}}
+# ConductR - Visualizer Bundle HAProxy Configuration
+frontend visualizer_frontend
+  bind {{haproxyHost}}:9999
+  mode http
+  acl visualizer_context_root path_beg /
+  use_backend visualizer_backend if visualizer_context_root
+
+backend visualizer_backend
+  mode http
+    {{#eachBackendServer}}
+  server {{serverName}} {{host}}:{{port}} maxconn 1024
+    {{/eachBackendServer}}
+  {{/ifAcl}}
+
+{{/eachAcls}}
+
+
+{{#haproxyConf bundles}}
+{{serviceFrontends}}
+{{#unless (serviceFrontends)}}
+frontend dummy
+  bind 127.0.0.1:65535
+{{/unless}}
+{{serviceBackends}}
+{{/haproxyConf}}
+```
+
+Here is the explanation for the example template above:
+
+* *HAProxy Specific Configuration* section is declared prior to *Custom Endpoint Configuration* section.
+* *Custom Endpoint Configuration* section contains application specific proxy configuration.
+* The HTTP endpoint is exposed on the port `9000` by default.
+* The backend server information will be updated whenever there's changes to the endpoint, e.g. bundle instances being started or stopped within the ConductR cluster.
+
+The custom configuration is declared within the [ifAcl](#ifAcl) block:
+
+Bundle Name             | System Version | Endpoint Name | HTTP Port
+------------------------|----------------|---------------|----------
+conductr-elasticsearch  |              1 | es            | 9200
+conductr-kibana         |              1 | kibana        | 5601
+conductr-grafana-docker |              2 | grafana       | 3000
+visualizer              |              2 | visualizer    | 9999
+
+These HTTP ports by will be exposed to the HAProxy docker container when the Sandbox starts.
+
+### Package the custom HAProxy configuration template
+
+Use the CLI to package the configuration override:
+
+```lang-none
+shazar /tmp/custom-haproxy-conf
+Created digested ZIP archive at ./custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
+
+```
+
+The generated file `custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip` is the configuration override that can be loaded alongside ConductR HAProxy bundle.
+
+
+### Load the custom HAProxy configuration template
+
+_If there's an existing ConductR HAProxy running within ConductR, the running ConductR HAProxy instances have to be stopped. This is because each ConductR HAProxy instance is responsible for managing the HAProxy instance where the ConductR HAProxy instance is running._
+
+Once custom configuration override is generated, it can be loaded into ConductR, e.g:
+
+```lang-none
+conduct load /tmp/conductr-haproxy-v2-0d24d10cb0d1af9bf9f7e0bf81778a61d2cc001f9393ef035cb343722da3ac87.zip /tmp/custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
+```
+
+In the example above, the files required are placed within the `/tmp` directory. Replace the `/tmp` with the actual path to the files.
+
+Refer to the set of `conduct` commands described in [[Deploying bundles|DeployingBundlesOps]] for more details.
+
+
+
+## HAProxy environment variables
+
+Here is the list of environment variables available to the operator when customizing the HAProxy via the `runtime-config.sh` file.
+
+
+Environment Variable              | Description
+----------------------------------|-------------
+HAPROXY_BIND_HOST                 | The bind host of the HAProxy. Defaults to the IP address assigned to the ConductR agent where ConductR HAProxy is running.
+HAPROXY_CONFIG_FILE               | The absolute path to where generated HAProxy config will be placed. This defaults `/etc/haproxy/haproxy.cfg`.
+CONDUCTR_HAPROXY_CONFIG_OVERRIDE  | The absolute path where HAProxy override template resides. If not supplied, the default template packaged internally within ConductR HAProxy will be used.
+CONDUCTR_HAPROXY_USE_SUDO         | If `true` the HAProxy reload script will be invoked using `sudo`, and `false` otherwise.  Defaults to `true`.
+HAPROXY_RELOAD_SCRIPT_SOURCE      | The absolute path where HAProxy reload script will be copied from. Defaults to `reloadHAProxy.sh` packaged internally within ConductR HAProxy.
+HAPROXY_RELOAD_SCRIPT_LOCATION    | The absolute path to the HAProxy reload script. Defaults to `/usr/bin/reloadHAProxy.sh`.
+STATUS_BIND_IP                    | The bind address of the HAProxy status endpoint. Defaults to the IP address assigned to the ConductR agent where ConductR HAProxy is running. The status endpoint is used for health check when exposing HAProxy to Load Balancer.
+STATUS_BIND_PORT                  | The bind port of the HAProxy status endpoint. Defaults to `9009`.
+HAPROXY_STATS_IP                  | The bind address of the HAProxy stats endpoint. Defaults to the IP address assigned to the ConductR agent where ConductR HAProxy is running. The stats endpoint is used for obtaining HAProxy performance stat.
+HAPROXY_STATS_PORT                | The bind port of the HAProxy. Defaults to `8999`.
+
+
 
 ## Default configuration
 
@@ -192,6 +493,10 @@ global
     user haproxy
     group haproxy
     daemon
+
+    # We like statistics
+    stats socket {{haproxyHost}}:8999 level user
+    stats timeout 2m #Wait up to 2 minutes for input
 
     # Default SSL material locations
     ca-base /etc/ssl/certs
@@ -512,7 +817,7 @@ backend reactive_summit_www_backend
 {{/eachAcls}}
 ```
 
-Here are the explanation for the example template above:
+Here is the explanation for the example template above:
 * The first two [ifAcl](#ifAcl) instructions collects the `typesafe-website` and `reactive-summit` endpoints under same HTTP frontend port `80`.
 * The [eachAcls](#eachAcls) instruction exposes the remaining endpoints to port `5443` which is declared as the default HTTP port.
 * The [ifAcl](#ifAcl) instructions nested within the [eachAcls](#eachAcls) will render the backend for `typesafe-website` and `reactive-summit` endpoints respectively.
@@ -546,7 +851,7 @@ backend kibana_backend
 {{/eachAcls}}
 ```
 
-Here are the explanation for the example template above:
+Here is the explanation for the example template above:
 * The endpoint that matches the following criteria has a custom configuration declared within the [ifAcl](#ifAcl) block:
   * `system` is `conductr-kibana`
   * `system version` is `1`
@@ -572,7 +877,7 @@ Restart the ConductR Core Service with the following command:
 > sudo service conductr restart
 ```
 
-HAProxy must then be configured to provide Basic Authentication and SSL termination for the Control Protocol. In this case, it will still be accessed via the default port `9005` externally. 
+HAProxy must then be configured to provide Basic Authentication and SSL termination for the Control Protocol. In this case, it will still be accessed via the default port `9005` externally.
 
 > An SSL certificate will need to be generated and installed on the HAProxy host to enable two-way authentication for HTTPS. [OpenSSL](https://www.openssl.org/) can be used for this. While there are lots of resources available online for creating certificates, the following script can be used to generate a self-signed certificate for **testing purposes only**. You will need to substitute the fields of the `openssl req` command with appropriate values for your server. It will create a folder called `ssl-conductr.cli` containing the certificates and a .pem file:
 
@@ -601,12 +906,12 @@ echo "Concat crt and key into pem file"
 cat $SSL_CERT_DIR/$CERT_NAME.crt $SSL_CERT_DIR/$CERT_NAME.key | tee $SSL_CERT_DIR/$CERT_NAME.pem
 ```
 
-HAProxy is then configured with the path of our installed certificate and credentials to apply Basic Authentication to incoming ConductR Control API requests via port `9005`. To do this, we add the following to our custom HAProxy Configuration: 
+HAProxy is then configured with the path of our installed certificate and credentials to apply Basic Authentication to incoming ConductR Control API requests via port `9005`. To do this, we add the following to our custom HAProxy Configuration:
  - a frontend `ctrl_frontend_secure` to handle incoming Control API requests
- - a userlist `ctrl_users`, which specifies acceptable users and passwords. 
- 
+ - a userlist `ctrl_users`, which specifies acceptable users and passwords.
+
 > While a plain text insecure password is shown below, HAProxy also supports secure (encrypted) passwords in userlists, which are recommended for production installations.
-   
+
  - a backend `ctrl_backend_auth` to direct to one of three available Conductr Cores (`172.17.0.1`,`172.17.0.2` and `172.17.0.3`). In this case, each Control Server is listening on port `9055` as configured above.
 
 ```
@@ -655,6 +960,10 @@ global
     stats timeout 30s
     maxconn 1024
     daemon
+
+    # We like statistics
+    stats socket {{haproxyHost}}:8999 level user
+    stats timeout 2m #Wait up to 2 minutes for input
 
 #The remaining HAProxy configuration below remains unchanged from the default
 # ...
