@@ -8,13 +8,13 @@ Bundles provide ConductR with some basic knowledge about components in a *bundle
 ```
 version               = "1"
 name                  = "simple-test"
-compatibilityVersion  = "1"
+compatibility-version = "1"
 tags                  = ["1.0.0-beta.1"]
 system                = "simple-test"
-systemVersion         = "1"
-nrOfCpus              = 0.1
+system-version        = "1"
+nr-of-cpus            = 0.1
 memory                = 134217728
-diskSpace             = 10485760
+disk-space            = 10485760
 roles                 = ["web"]
 components = {
   "angular-seed-play" = {
@@ -49,21 +49,21 @@ Name                 | Description
 ---------------------|-------------
 acls     			 | Discussed [below](#Endpoints).
 bind-port			 | Discussed [below](#Endpoints).
-compatibilityVersion | A versioning scheme that will be included in a bundle's name that describes the level of compatibility with bundles that go before it. By default we take the major version component of a version as defined by <http://semver.org/>. However you can make this mean anything that you need it to mean in relation to bundles produced prior to it. We take the notion of a compatibility version from <http://ometer.com/parallel.html>.
+compatibilityVersion | A versioning scheme that will be included in a bundle's name that describes the level of compatibility with the bundle that went before it. By default we take the major version component of a version as defined by <http://semver.org/>. However you can make this mean anything that you need it to mean in relation to the bundle produced prior to it. We take the notion of a compatibility version from <http://ometer.com/parallel.html>.
 components			 | Each bundle has at least one component, and generally just one. A bundle component contains all that is required to run itself in terms of its directory on disk when the bundle is expanded. This section describes the meta data required for each bundle component.
 description			 | A human readable description of the bundle component.
-diskSpace            | The amount of disk space required to host an expanded bundle and configuration.
+disk-space           | The amount of disk space required to host an expanded bundle and configuration.
 endpoints            | Discussed [below](#Endpoints).
 file-system-type	 | Describes the type of the bundle and can be either "universal" or "docker". A universal type means that this bundle copmonent will be run outside of a container. The Host environment will therefore be available, including a Java runtime. Docker types expect a Dockerfile to reside within a component. The Docker component will be built and run at the time of the bundle being run.
 memory               | The amount of resident memory required to run the bundle. Use the Unix top command to determine this value by observing the RES and rounding up to the nearest 10MiB.
 name				 | The human readable name of the bundle. This name appears often in operational output such as the CLI.
-nrOfCpus             | The minimum number of cpus required to run the bundle (can be fractions thereby expressing a portion of CPU). This value is considered when starting a bundle on a node. If the specified CPUs exceeds the available CPUs on a node, then this node is not considered for scaling the bundle. Once running, the application is not restricted to the given value and tries to use all available CPUs on the node. Required.
+nr-of-cpus           | The minimum number of cpus required to run the bundle (can be fractions thereby expressing a portion of CPU). This value is considered when starting a bundle on a node. If the specified CPUs exceeds the available CPUs on a node, then this node is not considered for scaling the bundle. Once running, the application is not restricted to the given value and tries to use all available CPUs on the node. Required.
 protocol			 | Discussed [below](#Endpoints).
 roles                | The types of node in the cluster that this bundle can be deployed to. Defaults to "web".
 service-name	     | Discussed [below](#Endpoints).
 start-command        | Command line args required to start the component. Paths are expressed relative to the component's bin folder. The default is to use the bash script in the bin folder. Arguments can be passed to a Docker container run command via a special `dockerArgs` command should additional args be required: `start-command = ["dockerArgs","-v","/var/lib/postgresql/data:/var/lib/postgresql/data"]`.
 system               | A logical name that can be used to associate multiple bundles with each other. This could be an application or service association e.g. myapp. Defaults to the package name.
-systemVersion        | A version to associate with a system. This setting defaults to the value of compatibilityVersion.
+system-version       | A version to associate with a system. This setting defaults to the value of compatibilityVersion.
 tags                 | A list of tags that may be used to provide more meaning to a bundle's name. They commonly represent version numbers. Tags may be used when selecting a bundle by bundle name, and may be specified by appending a `:` to the name followed by the tag itself e.g. "mybundle:1.0.0-beta.1" where "1.0.0-beta.1" is the tag.
 version				 | The version of the bundle.conf file. Should be set to `1`.
 
@@ -132,14 +132,14 @@ As a quick example, suppose that you wish to bundle [ActiveMQ](http://activemq.a
 ```
 version               = "1"
 name                  = "jms-docker"
-compatibilityVersion  = "1"
+compatibility-version = "1"
 
 system         = "jms-docker"
-systemVersion  = "1"
+system-version = "1"
 
-nrOfCpus   = 0.1
+nr-of-cpus   = 0.1
 memory     = 67108864
-diskSpace  = 10485760
+disk-space = 10485760
 roles      = ["jms"]
 
 components = {
