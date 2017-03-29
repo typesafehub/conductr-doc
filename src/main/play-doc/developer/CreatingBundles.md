@@ -71,7 +71,7 @@ bundle:dist
 Take a look in your `target/bundle` folder - you'll see your new bundle with a hash string, something like this:
 
 ```
-visualizer-v1.1-b07601b2bd015c94de0514ad698760d0396cb6f95881396d37981b271c0e7142.zip
+visualizer-1.0.0-b07601b2bd015c94de0514ad698760d0396cb6f95881396d37981b271c0e7142.zip
 ```
 
 i.e. the name of your project (`visualizer`), its version `1.1` and the hash value representing its contents (`b07601b2bd015c94de0514ad698760d0396cb6f95881396d37981b271c0e7142`).
