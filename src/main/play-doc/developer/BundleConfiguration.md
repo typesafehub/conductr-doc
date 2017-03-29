@@ -49,7 +49,7 @@ Name                 | Description
 ---------------------|-------------
 acls     			 | Discussed [below](#Endpoints).
 bind-port			 | Discussed [below](#Endpoints).
-compatibilityVersion | A versioning scheme that will be included in a bundle's name that describes the level of compatibility with the bundle that went before it. By default we take the major version component of a version as defined by <http://semver.org/>. However you can make this mean anything that you need it to mean in relation to the bundle produced prior to it. We take the notion of a compatibility version from <http://ometer.com/parallel.html>.
+compatibility-version | A versioning scheme that will be included in a bundle's name that describes the level of compatibility with the bundle that went before it. By default we take the major version component of a version as defined by <http://semver.org/>. However you can make this mean anything that you need it to mean in relation to the bundle produced prior to it. We take the notion of a compatibility version from <http://ometer.com/parallel.html>.
 components			 | Each bundle has at least one component, and generally just one. A bundle component contains all that is required to run itself in terms of its directory on disk when the bundle is expanded. This section describes the meta data required for each bundle component.
 description			 | A human readable description of the bundle component.
 disk-space           | The amount of disk space required to host an expanded bundle and configuration.
