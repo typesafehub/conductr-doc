@@ -28,3 +28,4 @@ When selecting a bundle by its bundle name, you may now also use one of a number
 * The control protocol has been enhanced so that bundles may now be scaled given a signed offset.
 * A bundle's `isStarted` flag is now deprecated in favour of a new `isActive` field. `isActive` is `false` during the startup of a bundle, and now also the stopping of a bundle. A bundle now stops over the period of a couple of seconds in order to provide proxies with enough time to drain any existing connections. This permits a cleaner serving of connections to the outside world during a rolling upgrade scenario, particular short-lived ones such as http.
 * The "services" endpoint has been removed in favor of ACLs. Service endpoints were deprecated in 2.0.
+* The bundle info endpoint now associates a process ID with a bundle execution.
