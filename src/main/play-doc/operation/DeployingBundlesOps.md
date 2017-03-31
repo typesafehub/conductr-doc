@@ -22,7 +22,7 @@ Note that by default, bundles have a maximum size of 100MB. This can be altered 
 Use `conduct info` command to list all loaded bundles. You should see that the Visualizer is replicated but not running (note that the example below shows 3 replications - you'll only get that if you have 3 or more nodes as the bundle cannot replicate beyond the cluster size).
 
 ```bash
-conduct info --ip 172.17.0.1
+conduct info --host 172.17.0.1
 ```
 ...will yield something like:
 
@@ -34,7 +34,7 @@ ID               NAME              #REP  #STR  #RUN
 Run the Visualizer by executing:
 
 ```bash
-conduct run --ip 172.17.0.1 visualizer
+conduct run --host 172.17.0.1 visualizer
 ```
 
 Whenever you need to refer to a bundle you can use a prefix of or a full bundle id/name. Run `conduct info` once again, to see that the bundle has been successfully started.

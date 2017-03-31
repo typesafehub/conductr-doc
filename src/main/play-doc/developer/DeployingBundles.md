@@ -13,10 +13,10 @@ conduct load <HIT THE TAB KEY AND THEN RETURN>
 Using the tab completion feature of sbt will produce a URI representing the location of the last distribution
 produced by the native packager. When using the `sandbox` the location of the ConductR cluster is automatically picked up.
 
-To load a bundle to a remote ConductR cluster, use the `--ip` option:
+To load a bundle to a remote ConductR cluster, use the `--host` option:
 
 ```bash
-conduct load --ip 172.14.0.1 <HIT THE TAB KEY AND THEN RETURN>
+conduct load --host 172.14.0.1 <HIT THE TAB KEY AND THEN RETURN>
 ```
 
 On successfully uploading the bundle the plugin will report the `BundleId` to use for subsequent commands on that bundle.
