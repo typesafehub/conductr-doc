@@ -27,8 +27,8 @@ conduct info --ip 172.17.0.1
 ...will yield something like:
 
 ```bash
-ID               NAME              #REP  #STR  #RUN
-23391d4-3cc322b  visualizer        3     0     0
+ID       NAME          TAG  #REP  #STR  #RUN  ROLES
+6cc7dbc  visualizer  2.0.0     3     0     0  web
 ```
 
 Run the Visualizer by executing:
@@ -39,9 +39,9 @@ conduct run --ip 172.17.0.1 visualizer
 
 Whenever you need to refer to a bundle you can use a prefix of or a full bundle id/name. Run `conduct info` once again, to see that the bundle has been successfully started.
 
-``` bash
-ID               NAME              #REP  #STR  #RUN
-23391d4-3cc322b  visualizer        3     0     1
+```bash
+ID       NAME          TAG  #REP  #STR  #RUN  ROLES
+6cc7dbc  visualizer  2.0.0     3     0     1  web
 ```
 
 > Pro tip: if you get bored of typing `--host` you can set the `CONDUCTR_HOST` environment variable instead.
@@ -86,8 +86,8 @@ The CLI comes with built-in URI and Bintray resolvers which comes into play when
 The URI resolver accepts local file system path as well as HTTP URL, e.g.
 
 ```
-conduct load /tmp/downloads/reactive-maps-frontend-v1-023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2.zip
-conduct load http://192.168.0.1/files/reactive-maps-frontend-v1-023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2.zip
+conduct load /tmp/downloads/reactive-maps-frontend-1.0.0-023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2.zip
+conduct load http://192.168.0.1/files/reactive-maps-frontend-1.0.0-023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2.zip
 ```
 
 ### Bintray resolver
