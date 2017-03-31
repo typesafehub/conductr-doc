@@ -20,13 +20,13 @@ The conductr-cli is used to communicate with the ConductR cluster.
 Add sbt-conductr to your `project/plugins.sbt`:
 
 ```scala
-addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.3.0")
+addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.3.2")
 ```
 
 If your project is using Lagom 1.2.x or a previous version use:
 
 ```scala
-addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.2.6")
+addSbtPlugin("com.lightbend.conductr" % "sbt-conductr" % "2.2.7")
 ```
 
 This makes several commands available within sbt. We'll use these commands on the next pages.
