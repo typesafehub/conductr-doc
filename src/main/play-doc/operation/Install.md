@@ -828,7 +828,7 @@ You can now use `dcos conduct <conduct-subcommand>` to connect with your DC/OS c
 
 ```
 $ dcos conduct info
-ID                 NAME                           #REP  #STR  #RUN
+ID  NAME  TAG  #REP  #STR  #RUN  ROLES
 ```
 
 ## Installing a Proxy on Ubuntu
@@ -1034,18 +1034,18 @@ Use the command `conduct info` from the bastion host to verify successful startu
 
 ```bash
 $ dcos conduct info
-ID       NAME        #REP  #STR  #RUN
-6e68f05  visualizer     1     0     1
+ID       NAME          TAG  #REP  #STR  #RUN  ROLES
+6e68f05  visualizer  2.0.0     3     0     1  web
 ```
 
 In the example above, a bundle called `visualizer` has been started successfully.
 
-This can also be confirmed by executing the `dcos task` command which will display the bundle running as a task from the context of DC/OS. The `visualizer-1` task belongs to the currently running `visualizer` bundle having `1` as the `compatibilityVersion`.
+This can also be confirmed by executing the `dcos task` command which will display the bundle running as a task from the context of DC/OS. The `visualizer:2.0.0` task belongs to the currently running `visualizer` bundle with the tag `2.0.0`.
 
 ```bash
 $ dcos task
-NAME           HOST       USER  STATE  ID
-visualizer-1   10.0.3.75  root    R    6e68f055d1f5715ad3ff19172fa5efaf_0f6e119c-9288-425a-89e3-36379dcaccda
+NAME              HOST       USER  STATE  ID
+visualizer:2.0.0  10.0.3.75  root    R    6e68f055d1f5715ad3ff19172fa5efaf_0f6e119c-9288-425a-89e3-36379dcaccda
 ```
 
 The `compatibilityVersion` is explained in the to [bundle configuration](BundleConfiguration).

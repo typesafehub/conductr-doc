@@ -15,10 +15,10 @@ Bintray credentials are required to publish bundle and bundle configuration.
 Add [sbt-bintray-bundle](https://github.com/sbt/sbt-bintray-bundle) to the project.
 
 ```
-addSbtPlugin("com.typesafe.sbt" % "sbt-bintray-bundle" % "1.1.1")
+addSbtPlugin("com.typesafe.sbt" % "sbt-bintray-bundle" % "1.2.0")
 ```
 
-At the time of writing, the latest version of [sbt-bintray-bundle](https://github.com/sbt/sbt-bintray-bundle) is `1.1.1`. Replace this version with the latest version of the plugin.
+At the time of writing, the latest version of [sbt-bintray-bundle](https://github.com/sbt/sbt-bintray-bundle) is `1.2.0`. Replace this version with the latest version of the plugin.
 
 
 Configure the bintray credentials required for publishing.
