@@ -120,6 +120,8 @@ In the above, no declaration of `services` is required as akka remoting is an in
 
 > The Akka cluster of your application or service is distinct to your applications and services given the bundle's `system` and `systemVersion` properties. `sbt-bundle` will set these properties to the name of your bundle and its `compatibilityVersion` by default. The `compatibilityVersion` is the major component of your project's version by default. All of these properties are able to be overridden using bundle keys. You can therefore associate multiple bundles into a single Akka cluster by using the same system and systemVersion. Akka remote ports are always dynamically allocated given the above endpoint declaration, and so you can even have multiple bundles with multiple systems all running alongside each other, some even sharing the same system but different versions.
 
+> When your bundle is scaled down then the newest instance of it will be removed before any older one. This is particularly useful for Akka Cluster Singleton scenarios where keeping the oldest member of a cluster stable will provide greater availability. It can take a small amount of time for singletons to re-establish themselves on new members.
+
 #### Downing Strategies
 
 [The Akka documentation does not recommend auto-downing](http://doc.akka.io/docs/akka/2.4.6/scala/cluster-usage.html#Automatic_vs__Manual_Downing) for use within your Akka cluster based application/service. Instead it recommends that you manually shutdown a non-responsive service or provide a more robust automated strategy, such as using the Reactive Platform based Split Brain Resolver (SBR) package.
