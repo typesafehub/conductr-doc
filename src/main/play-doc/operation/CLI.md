@@ -38,23 +38,16 @@ conduct -h
 ...you should then see output similar to the following:
 
 ```bash
-usage: conduct [-h] {version,info,services,load,run,stop,unload} ...
+conduct -h
+usage: conduct [-h]
+               {version,info,service-names,acls,load,run,start,stop,unload,events,logs,setup-dcos,deploy,members,agents,load-license}
+               ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
-subcommands:
-  valid subcommands                                                                                       depl
-
-  {version,info,services,load,run,stop,unload}
-                        help for subcommands
-    version             print version
-    info                print bundle information
-    service-names       print service locator information
-    load                load a bundle
-    run                 run a bundle
-    stop                stop a abundle
-    unload              unload a bundle
+commands:
+...
 ```
 
 ## Upgrading the CLI
