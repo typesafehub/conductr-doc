@@ -70,7 +70,7 @@ Access to services in ConductR is proxied for high availability and load balanci
 Visualizer shows ConductR nodes as small blue circles with IP addresses next to them. Green circles denote bundles, and spinning circle means that a bundle is running. You should see one instance of bundle running. Try starting Visualizer on more nodes by executing:
 
 ```bash
-conduct run --ip 172.17.0.1 --scale 2 visualizer
+conduct run --host 172.17.0.1 --scale 2 visualizer
 ```
 
 You should see another green circle start spinning, which means that another instance of Visualizer was started. Play around with more `conduct` commands and see how it affects ConductR cluster visualization.
@@ -121,9 +121,9 @@ conductr {
 }
 ```
 
-In the above case, authentication credentials will be used when the ConductR CLI interacts with the cluster located at `192.168.99.100`, while the ConductR Core located at `192.168.99.200` will not require authentication. 
+In the above case, authentication credentials will be used when the ConductR CLI interacts with the cluster located at `192.168.99.100`, while the ConductR Core located at `192.168.99.200` will not require authentication.
 
-With the above setting in place, the ConductR CLI can be used as normally: 
+With the above setting in place, the ConductR CLI can be used as normally:
 
 ```
 conduct info --host 192.168.99.100
@@ -138,4 +138,3 @@ If the ConductR Control Protocol is configurted to listen for requests on a port
 ```
 conduct info --host 172.17.0.1 -p 9055
 ```
-

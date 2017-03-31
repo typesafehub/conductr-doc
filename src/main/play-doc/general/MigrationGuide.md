@@ -12,11 +12,11 @@ A license is now required to run ConductR 2.1 onwards. Not having a license will
 
 ### Obtain license
 
-To obtain a license please download the latest CLI, type `conduct load-license` and follow the instructions it provides. Once authenticated at lightbend.com, `load-license` will download your license, connect to the ConductR cluster via either the `CONDUCTR_IP` or `--ip` and then upload the license. You can invoke `conduct load-license` any number of times, changing the ConductR IP address to upload to accordingly.
+To obtain a license please download the latest CLI, type `conduct load-license` and follow the instructions it provides. Once authenticated at lightbend.com, `load-license` will download your license, connect to the ConductR cluster via either by setting the environment variable `CONDUCTR_HOST` or by providing the CLI option `--host` and then upload the license. You can invoke `conduct load-license` any number of times, changing the ConductR IP address to upload to accordingly.
 
 ### Verify license
 
-To see the license you have, please type the `conduct info` command. This command has been upgraded to display license information. The command will first connect with your ConductR cluster via either the `CONDUCTR_IP` or `--ip`, and then display your license.
+To see the license you have, please type the `conduct info` command. This command has been upgraded to display license information. The command will first connect with your ConductR cluster via either the `CONDUCTR_HOST` or `--host`, and then display your license.
 
 ## Bundle endpoints
 
