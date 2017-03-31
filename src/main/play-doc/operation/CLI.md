@@ -20,12 +20,16 @@ conduct -h
 ...you should then see output similar to the following:
 
 ```bash
-usage: conduct [-h] {version,info,services,load,run,stop,unload} ...
+conduct -h
+usage: conduct [-h]
+               {version,info,service-names,acls,load,run,start,stop,unload,events,logs,setup-dcos,deploy,members,agents,load-license}
+               ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
-subcommands:...
+commands:
+...
 ```
 
 ## Packaging configuration
