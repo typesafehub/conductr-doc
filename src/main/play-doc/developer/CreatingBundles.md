@@ -223,7 +223,7 @@ The [sbt-bintray-bundle](https://github.com/sbt/sbt-bintray-bundle) is used to p
 To add the Bintray bundle plugin to your `plugins.sbt`, or equivalent (check the [plugin's site](https://github.com/sbt/sbt-bintray-bundle) for the latest version):
 
 ```scala
-addSbtPlugin("com.typesafe.sbt" % "sbt-bintray-bundle" % "1.0.2")
+addSbtPlugin("com.typesafe.sbt" % "sbt-bintray-bundle" % "1.2.0")
 ```
 
 Once the plugin is added you need to declare some settings for your build. Here are some taken from [a sample Lagom based application](https://github.com/lagom/activator-lagom-java-chirper):
