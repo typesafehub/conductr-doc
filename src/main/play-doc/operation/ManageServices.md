@@ -1,6 +1,6 @@
 # Managing ConductR services
 
-During installation ConductR registers a linux service named `conductr` and `conductr-agent` for ConductR Core and ConductR Agent respectively. The service is started automatically during boot-up.
+During installation, ConductR registers a linux service named `conductr` and `conductr-agent` for ConductR Core and ConductR Agent respectively. The service is started automatically during boot-up.
 
 ## ConductR Core service user
 
@@ -17,7 +17,7 @@ The `conductr-agent` user executes the commands in the background without any sh
 
 ## Change service state
 
-In order to start, stop or restart ConductR Core on one node change the state of the service.
+To start, stop or restart ConductR Core on one node change the state of the service.
 
 **sysvinit**
 
@@ -55,17 +55,17 @@ echo -Dconductr.agent.roles.1=GPU | sudo tee -a /usr/share/conductr-agent/conf/c
 sudo service conductr-agent restart
 ```
 
-With this setting the node would offer the roles `megaIOPS` and `GPU`. Only bundles with a `BundleKeys.roles` of `megaIOPS,` `GPU` or both `megaIOPS` and `GPU` will be loaded and run on this node.
+With this setting, the node would offer the roles `megaIOPS` and `GPU`. Only bundles with a `BundleKeys.roles` of `megaIOPS,` `GPU` or both `megaIOPS` and `GPU` will be loaded and run on this node.
 
 The ConductR Agent service must be restarted after changes to the `conductr-agent.ini` to take effect. Role matching must also be enabled on the cluster core nodes for bundles to be scheduled by role.
 
 ## Roles
 
-Roles allow machines to be targeted for specific purposes. Some machines may have greater IO capabilities than others, some may have more CPU, memory and other resources. Some may also be required to maintain a volume that holds a database.
+Roles allow machines to be targeted for specific purposes. Some machines may have greater IO capabilities than others, some may have more CPU, memory, and other resources. Some may also be required to maintain a volume that holds a database.
 
-When getting started with ConductR it is reasonable to start with ConductR not considering roles during scheduling. ConductR has the default settings `-Dconductr.resource-provider.match-offer-roles=off`.
+When getting started with ConductR, it is reasonable to start with ConductR not considering roles during scheduling. ConductR has the default settings `-Dconductr.resource-provider.match-offer-roles=off`.
 
-However when moving into a production scenario you should plan and assign roles for your ConductR cluster. The roles can be enabled by modifying the settings `-Dconductr.resource-provider.match-offer-roles=on` as such.
+However, when moving into a production scenario, you should plan and assign roles for your ConductR cluster. The roles can be enabled by modifying the settings `-Dconductr.resource-provider.match-offer-roles=on` as such.
 
 ```bash
 echo \
@@ -74,29 +74,29 @@ echo \
 sudo /etc/init.d/conductr restart
 ```
 
-When a bundle is to be scheduled for loading or scaling, a check is made to first see whether a resource offer's roles intersect with the roles that the bundle requires. If it does then it is eligible. If no resource offers provide the roles required by the bundle, the bundle cannot be loaded or scaled. Bundles will only be loaded to member nodes providing the bundle required roles. If no members of the cluster provide those roles, the bundle will fail to load.
+When a bundle is to be scheduled for loading or scaling, a check is made first to see whether a resource offer's roles intersect with the roles that the bundle requires. If it does, then it is eligible. If no resource offers provide the roles required by the bundle, the bundle cannot be loaded or scaled. Bundles will only be loaded to member nodes providing the bundle required roles. If no members of the cluster provide those roles, the bundle will fail to load.
 
 ### Using Roles
 
-Roles can be leveraged in varying levels of specificity as needed to achieve the desired results. Small clusters running multiple apps will generally need few roles. Bundles need to be able to relocated to other nodes in the event of failure. Overly dividing a small cluster into small sub-sets reduces relience.  Smaller clusters therefore will generally use few roles to create a few sub-sets of nodes.
+Roles can be leveraged in varying levels of specificity as needed to achieve the desired results. Small clusters running multiple apps will generally need only a few roles. Bundles need to be able to relocated to other nodes in the event of failure. Overly dividing a small cluster into small sub-sets reduces resilience.  Smaller clusters therefore will generally use few roles to create a few subsets of nodes.
 
-Larger clusters on the other hand will generally want more specialization and therefore benefit from further use of roles. Bundles with specific needs, such as resource intensive and data storage applications, will generally want exclusive use of a subset of nodes by using highly specific roles.
+Larger clusters, on the other hand, will generally want more specialization and therefore benefit further from the use of roles. Bundles with specific needs, such as resource intensive and data storage applications, will generally want exclusive use of a subset of nodes by using highly specific roles.
 
 ## Service Monitoring
 
-For best resilience, the ConductR service daemons should be monitored and restarted in the event of failure. [sbt-native-packager](https://github.com/sbt/sbt-native-packager) has experimental [systemd support](http://www.scala-sbt.org/sbt-native-packager/archetypes/java_server/customize.html#systemd-support). As systemd support matures, ConductR will be made available as a package managed by systemd with restart on failure enabled. Until that time, third party daemon monitors can be utilized to provide restart on failure.
+For best resilience, the ConductR service daemons should be monitored and restarted in the event of failure. [sbt-native-packager](https://github.com/sbt/sbt-native-packager) has experimental [systemd support](http://www.scala-sbt.org/sbt-native-packager/archetypes/java_server/customize.html#systemd-support). As systemd support matures, ConductR will be made available as a package managed by systemd with a restart on failure enabled. Until that time, third party daemon monitors can be utilized to provide restart on failure.
 
 # Upgrading ConductR
 
 A running cluster can be upgraded without downtime either at the node or cluster level.
 
-On a per node basis, new updated nodes are introduced to the cluster while the old nodes are removed from the cluster. The per node update strategy is applicable to both ConductR Core node or ConductR Agent node.
+On a per node basis, new updated nodes are introduced to the cluster while the old nodes are removed from the cluster. The per node update strategy applies to both ConductR Core node or ConductR Agent node.
 
-On a per cluster basis, incoming requests are directed from the old cluster to the new cluster using load balancer membership or DNS changes.
+On a per-cluster basis, incoming requests are directed from the old cluster to the new cluster using load balancer membership or DNS changes.
 
 ## Per node upgrade
 
-Per node upgrades are generally easier, however they cannot be performed across ConductR releases that are marked as not compatible with previous releases.
+Per node upgrades are generally easier. However, they cannot be performed across ConductR releases that are marked as not compatible with previous releases.
 
 To perform a per node upgrade for ConductR Core, introduce new cluster members to the cluster. The new nodes could be created with updated versions of ConductR, Java, the Linux operating system or any other component installed during provisioning. As old members are removed from the cluster, bundles will be replicated to the new resources.
 
@@ -112,13 +112,13 @@ Be certain to ensure that sufficient resources for all roles are provisioned. St
 
 ## Per cluster upgrade
 
-To perform a per cluster upgrade, build a new cluster in isolation from the current running cluster. Once the new cluster is fully prepared, cut-over traffic using DNS, load balancers, routers, etc. Per cluster upgrades may require more complicated strategies for migrating data storage managed by the cluster.
+To perform a per cluster upgrade, build a new cluster in isolation from the current running cluster. Once the new cluster is fully prepared, cut-over traffic using DNS, load balancers, routers, etc. Per cluster, upgrades may require more complicated strategies for migrating data storage managed by the cluster.
 
 ## Elasticsearch Verification
 
 To perform deployment on a running cluster without downtime, Elasticsearch requires the new node to join the Elasticsearch cluster, the primary shard(s) is relocated from the old node to the new node, and Elasticsearch master is re-elected if required. Elasticsearch has the means to perform automatic relocation of primary shard(s) from the old node to the new node.
 
-Firstly, we will use Elasticsearch cluster health endpoint to ensure the cluster is in a good health after the new node joined. Elasticsearch endpoints are exposed via the proxy node via port `9200` under `/elastic-search` path. Replace `10.0.1.250` with the ip address of the proxy node.
+Firstly, we will use Elasticsearch cluster health endpoint to ensure the cluster is in good health after the new node joined. Elasticsearch endpoints are exposed via the proxy node via port `9200` under `/elastic-search` path. Replace `10.0.1.250` with the ip address of the proxy node.
 
 ```bash
 curl -XGET 'http://10.0.1.250:9200/elastic-search/_cluster/health?pretty=true'
@@ -132,13 +132,13 @@ It is crucial to wait for this transition to occur successfully.
 
 Once this transition has occurred successfully, the `number_of_nodes` should display the number of running Elasticsearch nodes, and `unassigned_shards` should have the value of `0`. The `unassigned_shards` having the value of `0` means the primary shards has been successfully allocated to all members of the cluster, including the new node.
 
-Next we will use Elasticsearch endpoint to ensure master has been elected. This endpoint will display the name and IP address of the elected master within the Elasticsearch cluster.
+Next, we will use Elasticsearch endpoint to ensure master has been elected. This endpoint will display the name and IP address of the elected master within the Elasticsearch cluster.
 
 ```bash
 curl -XGET 'http://10.0.1.250:9200/elastic-search/_cat/master'
 ```
 
-Once these steps has been performed with successful result, Elasticsearch cluster should be in a good working order.
+Once these steps have been performed successfully, Elasticsearch cluster should be in a good working order.
 
 ## Recovering from Red Elasticsearch Cluster
 
@@ -174,9 +174,9 @@ conductr 4 r UNASSIGNED
 
 In the example output we can see primary shard `0`, `2`, and `4` are not assigned. We can also see primary shard `1` and `3` are assigned to the node called `Spectra`, while the node called `Thin Man` and `Sam Wilson` does not have any primary shards assigned.
 
-We will distribute shard `0`, `2`, and `4` between `Thin Man` and `Sam Wilson` to resolve this situation.
+We will distribute the shard `0`, `2`, and `4` between `Thin Man` and `Sam Wilson` to resolve this situation.
 
-To distribute shard `0` to `Thin Man`, we will invoke the cluster reroute endpoint.
+To distribute the shard `0` to `Thin Man`, we will invoke the cluster reroute endpoint.
 
 ```bash
 curl -XPOST '10.0.1.250:9200/elastic-search/_cluster/reroute' -d '{
@@ -192,7 +192,7 @@ curl -XPOST '10.0.1.250:9200/elastic-search/_cluster/reroute' -d '{
  }'
 ```
 
-Ensure shard is allocated successfully by re-checking the shard allocation.
+Ensure that the shard is allocated successfully by re-checking the shard allocation.
 ```bash
 curl -XGET 'http://10.0.1.250:9200/elastic-search/_cat/shards'
 ```
@@ -201,4 +201,4 @@ The shard `0` should now be allocated to the node called `Thin Man`. Repeat thes
 
 When allocating shards, ensure the shards are distributed as evenly as possible across all nodes of the Elasticsearch cluster. This will improve the resiliency of the cluster.
 
-Once all the shards have been reallocated, the cluster health endpoint `status` should be back to `green` and the Elasticsearch cluster should be back in a working order.
+Once all the shards have been reallocated, the cluster health endpoint `status` should be back to `green` and the Elasticsearch cluster should be back in working order.
