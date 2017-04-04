@@ -3,7 +3,6 @@
 This section covers several troubleshooting scenarios:
 
 * [Cluster Split Brain Recovery](#Cluster-Split-Brain-Recovery)
-* [Restarting ConductR Cluster](#Restarting-ConductR-Cluster)
 * [ConductR Core node termination](#ConductR-Core-node-termination)
 * [ConductR Agent node termination](#ConductR-Agent-node-termination)
 * [Bundle termination](#Bundle-termination)
