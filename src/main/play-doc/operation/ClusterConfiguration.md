@@ -1,4 +1,4 @@
-# Managing ConductR services
+# Configuring ConductR Cluster
 
 During installation, ConductR registers a linux service named `conductr` and `conductr-agent` for ConductR Core and ConductR Agent respectively. The service is started automatically during boot-up.
 
@@ -13,29 +13,6 @@ The `conductr` user executes the commands in the background without any shell. Y
 The `conductr-agent` service runs as the daemon user `conductr-agent` in the user group `conductr-agent`. When the service is started the first time it creates the user and group itself.
 
 The `conductr-agent` user executes the commands in the background without any shell. You can specify additional environment variables in `/etc/default/conductr-agent`. This file will be sourced before the actual service gets started.
-
-
-## Change service state
-
-To start, stop or restart ConductR Core on one node change the state of the service.
-
-**sysvinit**
-
-```bash
-sudo service conductr start
-sudo service conductr stop
-sudo service conductr restart
-```
-
-Similarly for ConductR Agent:
-
-**sysvinit**
-
-```bash
-sudo service conductr-agent start
-sudo service conductr-agent stop
-sudo service conductr-agent restart
-```
 
 ## Configuring ConductR Core
 
