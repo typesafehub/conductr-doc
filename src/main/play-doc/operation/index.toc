@@ -5,6 +5,7 @@ ConsolidatedLogging:Consolidated Logging
 Monitoring:Lightbend Monitoring
 ClusterSetupConsiderations:Cluster setup considerations
 ClusterConfiguration:Cluster configuration
+ClusterUpgrade:Cluster upgrade
 ClusterRestart:Cluster restart
 ClusterStop:Cluster stop
 ClusterTroubleshooting:Cluster troubleshooting
