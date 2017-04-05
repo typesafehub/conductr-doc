@@ -16,6 +16,9 @@ nr-of-cpus            = 0.1
 memory                = 134217728
 disk-space            = 10485760
 roles                 = ["web"]
+annotations           = {
+  "com.mycomany.region" = "us-east"
+}
 components = {
   "angular-seed-play" = {
     description      = "angular-seed-play"
@@ -48,6 +51,7 @@ The following table describes each property:
 Name                 | Description
 ---------------------|-------------
 acls     			 | Discussed [below](#Endpoints).
+annotations           | A [HOCON](https://github.com/typesafehub/config/blob/master/HOCON.md) value describing any additional metadata that ConductR itself is not concerned with. Annotation keys should be namespaced as per the [OCI image specification](https://github.com/opencontainers/image-spec/blob/master/annotations.md).
 bind-port			 | Discussed [below](#Endpoints).
 compatibility-version | A versioning scheme that will be associated with a bundle that describes the level of compatibility with the bundle that went before it. ConductR can use this property to reason about the compatibility of one bundle to another given the same bundle name. By default we take the major version component of a version as defined by <http://semver.org/>. However you can make this mean anything that you need it to mean in relation to the bundle produced prior to it. We take the notion of a compatibility version from <http://ometer.com/parallel.html>.
 components			 | Each bundle has at least one component, and generally just one. A bundle component contains all that is required to run itself in terms of its directory on disk when the bundle is expanded. This section describes the meta data required for each bundle component.
