@@ -7,6 +7,8 @@ ConductR's control protocol is RESTful and has the following functional scope:
 * [Unload a bundle](#Unload-a-bundle)
 * [Query bundle state](#Query-bundle-state)
 * [Receive bundle state events](#Receive-bundle-state-events)
+* [Query bundle configuration](#Query-bundle-configuration)
+* [Query bundle files](#Query-bundle-files)
 * [Query member state](#Query-member-state)
 * [Query agent state](#Query-agent-state)
 * [Query logs by bundle](#Query-logs-by-bundle)
@@ -347,6 +349,72 @@ Heartbeat events are also emitted so that the connection is kept alive through h
 #### Failure
 
 Other status codes should also be treated as a failure.
+
+## Query bundle configuration
+
+Request the bundle configuration of a bundle. The bundle configuration will be the merging of the bundle's and any configuration bundle `bundle.conf`.
+
+### Request
+
+```
+GET /v2/bundles/{bundleIdOrName} Accept: application/hocon
+```
+
+> Note the `Accept` header requirement.
+
+Field            | Description
+-----------------|------------
+bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading.
+
+### Responses
+
+#### Success
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/hocon
+
+compatibilityVersion="1",components{eslite{description=eslite,endpoints{akka-remote{bind-port=0,bind-protocol=tcp,services=[]},es{bind-port=0,bind-protocol=http,service-name=elastic-search,services=[]}},file-system-type=universal,start-command=["eslite/bin/eslite","-J-Xms134217728","-J-Xmx134217728","-Dhttp.address=$ES_BIND_IP","-Dhttp.port=$ES_BIND_PORT","-Dplay.crypto.secret=65736c697465"]}},diskSpace=200000000,memory=402653184,name=eslite,nrOfCpus=0.1,roles=[elasticsearch],system=eslite,systemVersion="1",version="1"
+```
+
+The fields returned are explained on the [Bundle Configuration page](BundleConfiguration).
+
+#### Failure
+
+Other non 2xx status codes should also be treated as a failure.
+
+## Query bundle files
+
+Request the bundle files of a bundle.
+
+### Request
+
+```
+GET /v2/bundles/{bundleIdOrName} Accept: multipart/form-data
+```
+
+> Note the `Accept` header requirement.
+
+Field            | Description
+-----------------|------------
+bundleIdOrName   | An existing bundle identifier, a shortened version of it (min 7 characters) or a non-ambigious name given to the bundle during loading.
+
+### Responses
+
+#### Success
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/hocon
+
+...data
+```
+
+A bundle file part will be optionally followed by a bundle configuration part. Each part describes a zipped file.
+
+#### Failure
+
+Other non 2xx status codes should also be treated as a failure.
 
 ## Query member state
 
