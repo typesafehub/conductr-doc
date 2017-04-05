@@ -38,3 +38,4 @@ The contents of annotations are generally outside of the scope of what ConductR 
 * The "services" endpoint has been removed in favor of ACLs. Service endpoints were deprecated in 2.0.
 * The bundle info endpoint now associates a process ID with a bundle execution.
 * When scaling down, bundles are now stopped with the newest ones first. This should help with situations where Akka Cluster Singleton is being used by your service. Akka Cluster Singleton retains the singleton at the oldest cluster member.
+* ConductR instrumentation now includes Akka clustering, SBR, remoting and more. In addition, DogStatsD reporting is used so that integration with OpsClarity can be achieved.

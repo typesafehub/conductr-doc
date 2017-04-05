@@ -1,54 +1,20 @@
 # Lightbend Monitoring
 
-[Lightbend Monitoring](http://www.lightbend.com/products/monitoring) is a suite of insight tools for monitoring Lightbend Platform applications. These tools gain visibility into ConductR and its bundles — to respond early to changes that could indicate problems, to tune a system, or to track down the cause of unexpected behavior.
+[Lightbend Monitoring](http://developer.lightbend.com/docs/monitoring/latest/home.html) is a suite of insight tools for monitoring Lightbend Platform applications. These tools, which include [OpsClarity](https://www.opsclarity.com/), gain visibility into ConductR and its bundles — to respond early to changes that could indicate problems, to tune a system, or to track down the cause of unexpected behavior.
 
-This guide discusses ConductR specifics regarding Lightbend Monitoring. For a comprehensive description please visit [Lightbend Monitoring's documentation](http://monitoring.lightbend.com/docs/latest/home.html).
+This guide discusses ConductR specifics regarding Lightbend Monitoring. For a comprehensive description please visit [Lightbend Monitoring's documentation](http://developer.lightbend.com/docs/monitoring/latest/home.html).
 
 ## Monitoring ConductR
 
-ConductR is a Lightbend Platform based application and has been configured to support Lightbend Monitoring by enabling some settings within its configuration files.
+ConductR is a Lightbend Reactive Platform based application and has been configured to support Lightbend Monitoring with zero configuration. By default, Akka, clustering, remoting, dispatchers and the Split Brain Resolver are all instrumented. In addition, this telemetry is reported via DogStatsD/UDP to 127.0.0.1 on port 8125. A DogStatsD protocol service such as the [OpsClarity](https://www.opsclarity.com/) agent is expected to reside at that address.
 
-### Enabling ConductR Monitoring for Takipi
+Please follow the instructions for installing OpsClarity agents [here](https://support.opsclarity.com/hc/en-us/articles/213214888-Install-the-OpsClarity-agent). 
+By way of example, to start the OpsClarity agent on port 8125 (port 8125 is required in place of the 10101 default port given that the latter will clash with ConductR):
 
-To enable monitoring for ConductR with [Takipi](https://www.takipi.com/) you'll need an account by [signing up with them](https://app.takipi.com/). Once done you can enable ConductR Core (you'll need to do this for each node where ConductR Core runs):
-
-```bash
-echo \
-  -Dcinnamon.instrumentation=on \
-  -J-agentlib:TakipiAgent \
-  -Dtakipi.name="conductr" | \
-  sudo tee -a /usr/share/conductr/conf/conductr.ini
-sudo /etc/init.d/conductr restart
 ```
-
-similarly for ConductR Agent (you'll need to do this for each node where ConductR Agent runs):
-
-```bash
-echo \
-  -Dcinnamon.instrumentation=on \
-  -J-agentlib:TakipiAgent \
-  -Dtakipi.name="conductr" | \
-  sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-sudo /etc/init.d/conductr-agent restart
+sudo bash ./agent-installer.sh -p 8125 -k "<your-ops-clarity-key-goes-here>"
 ```
-
-Note also that the Takipi agent will require installation at each node where ConductR Core and ConductR Agent is running.
 
 ## Monitoring Bundles
 
-You can also incorporate Lightbend Monitoring capabilities into your bundles. This section assumes you have [signed up with Takipi]((https://app.takipi.com/)) and installed its agent at each ConductR node.
-
-### Enabling Bundle Monitoring for Takipi
-
-Your developers declare additional properties for your bundle's configuration:
-
-> Note that the following is only required if the agent and bundle name have not already been declared as properties for your developer's application or service. Monitoring configuration is typically left for deployment configuration though, so it may make more sense to use the following.
-
-```scala
-javaOptions in Bundle ++= Seq(
-  "-J-agentlib:TakipiAgent", 
-  s"""-Dtakipi.name="${(normalizedName in Bundle).value}""""
-  )
-```
-
-Be sure to have your bundle developers become familiar with ["Cinnamon"](http://monitoring.lightbend.com/docs/latest/home.html) - Lightbend Monitoring's API.
+You should also incorporate Lightbend Monitoring capabilities into your bundles. Please see [the related OpsClarity documentation](https://support.opsclarity.com/hc/en-us/articles/115005141468-Akka-Statsd-Support) which describes how to configure Lightbend Monitoring for the DogStatsD protocol (used by OpsClarity).
