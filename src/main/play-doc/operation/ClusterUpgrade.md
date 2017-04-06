@@ -8,7 +8,7 @@ On a per-cluster basis, incoming requests are directed from the old cluster to t
 
 ## Per node upgrade
 
-Per node upgrades are generally easier. However, they cannot be performed across ConductR releases that are marked as not compatible with previous releases.
+Per node upgrades are generally easier. However, they can only be performed across ConductR patch releases, e.g. 2.0.0 to 2.0.1. Use the [per cluster upgrade](#Per-cluster-upgrade) approach to perform a ConductR upgrade to a minor or major version, e.g. 2.0.0 to 2.1.0.
 
 To perform a per node upgrade for ConductR Core, introduce new cluster members to the cluster. The new nodes could be created with updated versions of ConductR, Java, the Linux operating system or any other component installed during provisioning. As old members are removed from the cluster, bundles will be replicated to the new resources.
 
@@ -16,7 +16,7 @@ To perform a per node upgrade for ConductR Agent, connect the new agent node to 
 
 To perform a per node upgrade for ConductR Core and ConductR Agent installed on the same host, connect both the ConductR Core and ConductR agent to an existing cluster. As old hosts (containing both old ConductR Core and ConductR Agent) are removed from the cluster, bundles will be replicated to the new resources, and bundles will be rescheduled for execution on the new agent nodes.
 
-It is critical to allow sufficient time for bundle relocation and replication before removing old members. In addition to ConductR replicating bundles to new nodes, stateful bundles may require additional time to replicate application data. Removing an agent node before application data has fully replicated can result in application data loss. Elasticsearch bundle provided along with ConductR, for example, requires [verification](#Elasticsearch-Verification) to ensure the data is transferred into the new agent node.
+It is advised to allow sufficient time for bundle relocation and replication before removing old members. In addition to ConductR replicating bundles to new nodes, stateful bundles may require additional time to replicate application data. Removing an agent node before application data has fully replicated can result in application data loss. The Elasticsearch bundle provided along with ConductR, for example, requires [verification](#Elasticsearch-Verification) to ensure the data is transferred into the new agent node.
 
 Application specific data replication should also be monitored during an upgrade to prevent data loss.
 
@@ -24,9 +24,11 @@ Be certain to ensure that sufficient resources for all roles are provisioned. St
 
 ## Per cluster upgrade
 
-To perform a per cluster upgrade, build a new cluster in isolation from the current running cluster. Once the new cluster is fully prepared, cut-over traffic using DNS, load balancers, routers, etc. Per cluster, upgrades may require more complicated strategies for migrating data storage managed by the cluster.
+To perform a per cluster upgrade, build a new cluster in isolation from the current running cluster. Once the new cluster is fully prepared, cut-over traffic using DNS, load balancers, routers, etc. Per cluster, upgrades may require more complex strategies for migrating data storage managed by the cluster.
 
 ## Elasticsearch Verification
+
+> This section only applies when running Elasticsearch within the ConductR cluster.
 
 To perform deployment on a running cluster without downtime, Elasticsearch requires the new node to join the Elasticsearch cluster, the primary shard(s) is relocated from the old node to the new node, and Elasticsearch master is re-elected if required. Elasticsearch has the means to perform automatic relocation of primary shard(s) from the old node to the new node.
 
@@ -40,7 +42,7 @@ The fields of interest are `status`, `number_of_nodes`, and `unassigned_shards`.
 
 During the transfer between old node to the new node, the cluster health will transition from `green` to `yellow`, and back to `green` once the new node successfully joined.
 
-It is crucial to wait for this transition to occur successfully.
+It is important to wait for this transition to occur successfully.
 
 Once this transition has occurred successfully, the `number_of_nodes` should display the number of running Elasticsearch nodes, and `unassigned_shards` should have the value of `0`. The `unassigned_shards` having the value of `0` means the primary shards has been successfully allocated to all members of the cluster, including the new node.
 
@@ -50,7 +52,7 @@ Next, we will use Elasticsearch endpoint to ensure master has been elected. This
 curl -XGET 'http://10.0.1.250:9200/elastic-search/_cat/master'
 ```
 
-Once these steps have been performed successfully, Elasticsearch cluster should be in a good working order.
+Once these steps have been performed successfully, the Elasticsearch cluster should be in a good working order.
 
 ## Recovering from Red Elasticsearch Cluster
 

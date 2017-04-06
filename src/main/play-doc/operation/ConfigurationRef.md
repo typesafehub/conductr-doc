@@ -13,7 +13,7 @@ Each one of the following properties can be overridden by declaring its path and
 
 ### ConductR Core Configuration
 
-Here is the entire configuration for ConductR Core in Standalone mode.
+Here is the entire configuration for ConductR Core when running in Standalone mode.
 
 ```
 akka {
@@ -520,7 +520,7 @@ Each one of the following properties can be overridden by declaring its path and
 
 ### ConductR Agent Configuration
 
-Here is the entire configuration for ConductR Agent in standalone mode.
+Here is the entire configuration for ConductR Agent when running in Standalone mode.
 
 ```
 akka {
@@ -790,11 +790,11 @@ cinnamon {
 
 ## DC/OS mode
 
-On DC/OS, the configuration of ConductR Core and Agent is performed via the DC/OS Services UI page. For more info how to specify custom configuration, check out [Cluster Configuration DC/OS mode](ClusterConfiguration#DC/OS-mode).
+On DC/OS, the configuration of ConductR Core and Agent is performed via the DC/OS Services UI page. For more information how to specify custom configuration, check out [Cluster Configuration DC/OS mode](ClusterConfiguration#DC/OS-mode).
 
 ### ConductR Core Configuration
 
-Here is the entire configuration for ConductR Core in DC/OS mode.
+Here is the entire configuration for ConductR Core when running in DC/OS mode.
 
 ```
 akka {
@@ -1450,7 +1450,7 @@ mesos-scheduler-driver-run-executor {
 
 ### ConductR Agent Configuration
 
-Here is the entire configuration for ConductR Agent in DC/OS mode.
+Here is the entire configuration for ConductR Agent when running in DC/OS mode.
 
 ```
 akka {
