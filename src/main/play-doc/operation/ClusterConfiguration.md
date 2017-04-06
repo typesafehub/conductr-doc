@@ -7,29 +7,29 @@ How to configure a ConductR cluster depends on the ConductR mode. Choose one of 
 
 ## Standalone
 
-During installation, ConductR registers a linux service named `conductr` and `conductr-agent` for ConductR Core and ConductR Agent respectively. The service is started automatically during boot-up.
+During installation, ConductR registers two Linux services named `conductr` and `conductr-agent` for ConductR Core and ConductR Agent respectively. These services are started automatically during boot-up.
 
 ### ConductR Core service user
 
-The `conductr` service runs as the daemon user `conductr` in the user group `conductr`. When the service is started the first time it creates the user and group itself.
+The `conductr` service runs as the daemon user `conductr` in the user group `conductr`. When the service is started for the first time it creates the user and group itself.
 
 The `conductr` user executes the commands in the background without any shell. You can specify additional environment variables in `/etc/default/conductr`. This file will be sourced before the actual service gets started.
 
 ### ConductR Agent service user
 
-The `conductr-agent` service runs as the daemon user `conductr-agent` in the user group `conductr-agent`. When the service is started the first time it creates the user and group itself.
+The `conductr-agent` service runs as the daemon user `conductr-agent` in the user group `conductr-agent`. When the service is started the for first time it creates the user and group itself.
 
 The `conductr-agent` user executes the commands in the background without any shell. You can specify additional environment variables in `/etc/default/conductr-agent`. This file will be sourced before the actual service gets started.
 
 ### Configuring ConductR Core
 
-The configuration file `/usr/share/conductr/conf/conductr.ini` is the primary configuration file for the ConductR Core service. This file is used to specify Core ConductR service settings, such as `-Dconductr.ip` used during installation. See the comments section of the `conductr.ini` file for more examples.
+The configuration file `/usr/share/conductr/conf/conductr.ini` is the primary configuration file for the ConductR Core service. This file is used to specify Core ConductR settings, such as `-Dconductr.ip` used during installation. See the comments section of the `conductr.ini` file for more examples.
 
 The ConductR Core service must be restarted after changes to the `conductr.ini` to take effect.
 
 ### Configuring ConductR Agent
 
-The configuration file `/usr/share/conductr-agent/conf/conductr-agent.ini` is the primary configuration file for the ConductR Agent service. This file is used to specify ConductR Agent service settings, such as `-Dconductr.agent.roles` used during installation. See the comments section of the `conductr-agent.ini` file for more examples.
+The configuration file `/usr/share/conductr-agent/conf/conductr-agent.ini` is the primary configuration file for the ConductR Agent service. This file is used to specify ConductR Agent settings, such as `-Dconductr.agent.roles` used during installation. See the comments section of the `conductr-agent.ini` file for more examples.
 
 Akka module configuration can also be set using this file. For example, to assign a ConductR node the roles of `megaIOPS` and `muchMem` instead of the default, `web`, set `akka.cluster.roles` in `conductr-agent.ini`:
 
@@ -39,9 +39,9 @@ echo -Dconductr.agent.roles.1=GPU | sudo tee -a /usr/share/conductr-agent/conf/c
 sudo service conductr-agent restart
 ```
 
-With this setting, the node would offer the roles `megaIOPS` and `GPU`. Only bundles with a `BundleKeys.roles` of `megaIOPS,` `GPU` or both `megaIOPS` and `GPU` will be loaded and run on this node.
+With this setting, the agent would offer the roles `megaIOPS` and `GPU`. Only bundles with a `BundleKeys.roles` of `megaIOPS,` `GPU` or both `megaIOPS` and `GPU` will be loaded and run on this agent.
 
-The ConductR Agent service must be restarted after changes to the `conductr-agent.ini` to take effect. Role matching must also be enabled on the cluster core nodes for bundles to be scheduled by role.
+The ConductR Agent service must be restarted after changes to the `conductr-agent.ini` to take effect. [Role matching](#Roles) must also be enabled on the cluster core nodes for bundles to be scheduled by role.
 
 ### Roles
 
@@ -58,7 +58,7 @@ echo \
 sudo /etc/init.d/conductr restart
 ```
 
-When a bundle is to be scheduled for loading or scaling, a check is made first to see whether a resource offer's roles intersect with the roles that the bundle requires. If it does, then it is eligible. If no resource offers provide the roles required by the bundle, the bundle cannot be loaded or scaled. Bundles will only be loaded to member nodes providing the bundle required roles. If no members of the cluster provide those roles, the bundle will fail to load.
+When a bundle is to be scheduled for loading or scaling, a check is made first to see whether a resource offer's roles intersect with the roles that the bundle requires. If it does, then the bundle is eligible. If no resource offers provide the roles required by the bundle, the bundle cannot be loaded or scaled. Bundles will only be loaded or scaled to member nodes providing the bundle required roles. If no members of the cluster provide those roles, the bundle will fail to load or scale.
 
 #### Using Roles
 
@@ -127,7 +127,7 @@ To specify additional ConductR Agent settings, add your custom setting to the st
 conductr.mesos-scheduler-client.mesos-executor.start-command='GLOBIGNORE='"'"'*.tar.gz:*.tgz'"'"' && export JAVA_HOME=$(echo $(pwd)/jre*) && ./conductr-agent-*/bin/conductr-agent -Dakka.loglevel=DEBUG"'
 ```
 
-For a full list of settings that can be overridden check out the [ConductR Agent Configuration Reference](ConductR-Agent-Configuration) page.
+For a full list of settings that can be overridden check out the [ConductR Agent Configuration Reference](ConfigurationRef#ConductR-Agent-Configuration) page.
 
 Providing additional environment variables can be useful if a ConductR Agent setting defaults to an environment variable, e.g.
 
@@ -149,9 +149,9 @@ On DC/OS, role matching is by default activated with the option:
 conductr.resource-provider.match-offer-roles = on
 ```
 
-This means that when a bundle is to be scheduled for loading or scaling, a check is made first to see whether a resource offer's roles intersect with the roles that the bundle requires. If it does, then it is eligible. If no resource offers provide the roles required by the bundle, the bundle cannot be loaded or scaled. Bundles will only be loaded to member nodes providing the bundle required roles. If no members of the cluster provide those roles, the bundle will fail to load.
+When a bundle is to be scheduled for loading or scaling, a check is made first to see whether a resource offer's roles intersect with the roles that the bundle requires. If it does, then the bundle is eligible. If no resource offers provide the roles required by the bundle, the bundle cannot be loaded or scaled. Bundles will only be loaded or scaled to member nodes providing the bundle required roles. If no members of the cluster provide those roles, the bundle will fail to load or scale.
 
-On DC/OS, you can decide whether your bundles run on a public or private agent node.
+By leveraging roles, you can decide on DC/OS whether your bundles run on a public or private agent node.
 
 #### Private agent node
 
