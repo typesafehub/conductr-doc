@@ -10,7 +10,7 @@ Choose on of the following installation guides to get started:
 
 > In order to obtain the Debian or RPM installations of ConductR then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
 
-> This is a tutorial for installing ConductR on linux in production mode. It shows how this is done for a small cluster of 3 machines. If you are looking for a non-production Linux installation (for example, a QA environment that is close to production), be sure to read about [how to setup for non-production](ClusterSetupConsiderations#Setting-up-for-non-production) after reading the remainder of this page.
+> This is a tutorial for installing ConductR on Linux in production mode. It shows how this is done for a small cluster of 3 machines. If you are looking for a non-production Linux installation (for example, a QA environment that is close to production), be sure to read about [how to setup for non-production](ClusterSetupConsiderations#Setting-up-for-non-production) after reading the remainder of this page.
 
 ## Prerequisites
 
@@ -767,7 +767,7 @@ echo -Dconductr.agent.roles.0=web | sudo tee -a /usr/share/conductr-agent/conf/c
 echo -Dconductr.agent.roles.1=haproxy | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 sudo service conductr-agent restart
 ```
-Note that role matching is not enforced unless [role matching is enabled](ManageServices#Roles) on the core nodes.
+Note that role matching is not enforced unless [role matching is enabled](ClusterConfiguration#Roles) on the core nodes.
 
 ### Use CLI to load and run ConductR-HAProxy bundle
 
