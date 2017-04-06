@@ -3,8 +3,9 @@ CLI:CLI
 DeployingBundlesOps:Deploying bundles
 ConsolidatedLogging:Consolidated Logging
 Monitoring:Lightbend Monitoring
-ManageServices:Managing ConductR services
 ClusterSetupConsiderations:Cluster setup considerations
+ClusterConfiguration:Cluster configuration
+ClusterUpgrade:Cluster upgrade
 ClusterRestart:Cluster restart
 ClusterStop:Cluster stop
 ClusterTroubleshooting:Cluster troubleshooting

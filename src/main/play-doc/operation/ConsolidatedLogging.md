@@ -44,8 +44,8 @@ ConductR's logs are always identified given the absence of a bundle identifier t
 
 The setup of Elasticsearch depends on the ConductR mode or if you want to use an alternate Elasticsearch cluster outside of ConductR. Please choose one of the possible setup options:
 
-* [ConductR standalone](#Elasticsearch-on-Standalone-ConductR-cluster)
-* [ConductR on DC/OS](#Elasticsearch-on-DC/OS-cluster)
+* [ConductR Standalone mode](#Elasticsearch-on-Standalone-ConductR-cluster)
+* [ConductR DC/OS mode](#Elasticsearch-on-DC/OS-cluster)
 * [External Elasticsearch cluster](#External-Elasticsearch-cluster)
 
 ### Elasticsearch on Standalone ConductR cluster
@@ -193,7 +193,7 @@ echo \
 sudo /etc/init.d/conductr-agent restart
 ```
 
-The Elasticsearch bundle that we provide in standalone mode has been configured to support back-pressure when receiving event and logging data from ConductR. By default, Elasticsearch will accept bulk index requests regardless of whether it will process them. This means that under certain load conditions, Elasticsearch could lose data being sent to it. To counter this, here is the configuration we use for Elasticsearch (we have chosen a sharding factor of 5, substitute yours accordingly):
+The Elasticsearch bundle that we provide in Standalone mode has been configured to support back-pressure when receiving event and logging data from ConductR. By default, Elasticsearch will accept bulk index requests regardless of whether it will process them. This means that under certain load conditions, Elasticsearch could lose data being sent to it. To counter this, here is the configuration we use for Elasticsearch (we have chosen a sharding factor of 5, substitute yours accordingly):
 
 ```
 threadpool.bulk.type: fixed
@@ -234,8 +234,8 @@ More information on configuring Elasticsearch for production can be found in [th
 
 Kibana is a popular UI to display data stored in Elasticsearch. In the context of ConductR, Kibana can be configured to display, filter and search log messages. The setup of Kibana depends on the ConductR mode. Please choose one of the possible setup options:
 
-* [ConductR standalone](#Kibana-on-Standalone-ConductR-cluster)
-* [ConductR on DC/OS](#Kibana-on-DC/OS-cluster)
+* [ConductR Standalone mode](#Kibana-on-Standalone-ConductR-cluster)
+* [ConductR DC/OS mode](#Kibana-on-DC/OS-cluster)
 
 ### Kibana on Standalone ConductR cluster
 
