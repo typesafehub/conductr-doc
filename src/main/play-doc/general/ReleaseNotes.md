@@ -30,7 +30,7 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
-## 2.1.0-alpha.1 - Thursday April 5th, 2017 (FIXME)
+## 2.1.0-alpha.1 - Saturday April 8th, 2017
 
 * Improvements to the reporting of bundles failing given a lack of resources.
 * The control protocol has been enhanced so that bundles may now be scaled given a signed offset.
@@ -39,3 +39,4 @@ The contents of annotations are generally outside of the scope of what ConductR 
 * The bundle info endpoint now associates a process ID with a bundle execution.
 * When scaling down, bundles are now stopped with the newest ones first. This should help with situations where Akka Cluster Singleton is being used by your service. Akka Cluster Singleton retains the singleton at the oldest cluster member.
 * ConductR instrumentation now includes Akka clustering, SBR, remoting and more. In addition, DogStatsD reporting is used so that integration with OpsClarity can be achieved.
+* Process management within the ConductR Agent has been overhauled and strengthened considerably. The chance of orphaned processes with ConductR should now be quite minimal, particularly around SIGTERM/SIGKILL handling.
