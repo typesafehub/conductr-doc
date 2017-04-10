@@ -114,20 +114,13 @@ http://dcos-host/#services >> Services >> conductr >> Edit
 
 The section `General` contains a text field `Command` in which you can provide additional configuration by overriding ConductR Agent settings and by specifying environment variables.
 
-ConductR Agent executor tasks are started with the `conductr.mesos-scheduler-client.mesos-executor.start-command` command. On DC/OS, the default value is:
+To specify additional ConductR Agent settings, add the setting key `conductr.mesos-scheduler-client.mesos-executor.additional-agent-settings` with your custom settings in the `Command` text field of the `Edit Service` page:
 
 ```
-# The start command of a Mesos executor (the conduct agent) that gets invoked on executor startup.
-conductr.mesos-scheduler-client.mesos-executor.start-command='GLOBIGNORE='"'"'*.tar.gz:*.tgz'"'"' && export JAVA_HOME=$(echo $(pwd)/jre*) && ./conductr-agent-*/bin/conductr-agent'
+-Dconductr.mesos-scheduler-client.mesos-executor.additional-agent-settings='-Dakka.loglevel="DEBUG" --core-system-name my-conductr'
 ```
 
-To specify additional ConductR Agent settings, add your custom setting to the start command in the `Command` text field of the `Edit Service` page:
-
-```
-conductr.mesos-scheduler-client.mesos-executor.start-command='GLOBIGNORE='"'"'*.tar.gz:*.tgz'"'"' && export JAVA_HOME=$(echo $(pwd)/jre*) && ./conductr-agent-*/bin/conductr-agent -Dakka.loglevel=DEBUG"'
-```
-
-For a full list of settings that can be overridden check out the [ConductR Agent Configuration Reference](ConfigurationRef#ConductR-Agent-Configuration) page.
+Each setting is separated by a whitespace. For a full list of settings that can be overridden check out the [ConductR Agent Configuration Reference](ConfigurationRef#ConductR-Agent-Configuration) page.
 
 Providing additional environment variables can be useful if a ConductR Agent setting defaults to an environment variable, e.g.
 
