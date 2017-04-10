@@ -4,13 +4,13 @@
 
 This release broadly consists of the following functionality:
 
-* [Open Container Initiative (OCI) image support](#OCI_Image_Support);
+* [Open Container Initiative (OCI) support](#OCI_Support);
 * [a licensing mechanism to enable free usage](#Free_Licensing); and
 * [Tagging & Annotations](#Tagging_And_Annotations).
 
-### OCI Image Support
+### OCI Support
 
-We are proud to announce ConductR as being the world's first cluster manager to support the OCI image format. OCI image support equates to running Docker images directly within ConductR. The key benefit to the you is the avoidance of “vendor lock-in”. The benefits of OCI images are described well here: https://www.opencontainers.org/faq#faq5.
+We are proud to announce ConductR as being the world's first cluster manager to support the OCI Image and Runtime specifications. This helps to avoid “vendor lock-in” that is common with container software. Another key benefit of this support is that it is now possible to run Docker images directly within ConductR. More information about these OCI specifications and their benefits are available here: https://www.opencontainers.org/faq#faq5.
 
 ### Free Licensing
 
@@ -40,3 +40,4 @@ The contents of annotations are generally outside of the scope of what ConductR 
 * When scaling down, bundles are now stopped with the newest ones first. This should help with situations where Akka Cluster Singleton is being used by your service. Akka Cluster Singleton retains the singleton at the oldest cluster member.
 * ConductR instrumentation now includes Akka clustering, SBR, remoting and more. In addition, DogStatsD reporting is used so that integration with OpsClarity can be achieved.
 * Process management within the ConductR Agent has been overhauled and strengthened considerably. The chance of orphaned processes with ConductR should now be quite minimal, particularly around SIGTERM/SIGKILL handling.
+* ConductR now includes support for OCI Image and Runtime specifications. These are standard container formats that have been developed by the [Open Container Initiative](https://www.opencontainers.org/). For more information, reference [Producing an OCI Bundle with Docker](CreatingBundles#producing-an-oci-bundle-with-docker).

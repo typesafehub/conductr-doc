@@ -236,7 +236,7 @@ You should now see a new node in the cluster members list by using the following
 
 ### Installing ConductR Agent on the remaining machines
 
-Install ConductR Agent and configure:
+Install ConductR Agent:
 
 ```bash
 [172.17.0.1]$ sudo dpkg -i conductr-agent_%PLAY_VERSION%_all.deb
@@ -247,15 +247,16 @@ or
 [172.17.0.1]$ sudo yum install conductr-agent-%PLAY_VERSION%-1.noarch.rpm
 ```
 
-then
+Next, you'll need to configure a couple of settings in `conductr-agent.ini` and grant some privileges. ConductR uses [runc](https://runc.io/) to spawn and run OCI-based bundles. This requires the OCI component of ConductR to have root access.
 
 ```bash
 [172.17.0.1]$ echo -Dconductr.agent.ip=$(hostname) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 [172.17.0.1]$ echo --core-node $(hostname):9004 | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo "conductr-agent ALL=(root) NOPASSWD:SETENV: /usr/share/conductr-agent/bin/conductr-oci" | sudo tee -a /etc/sudoers
 [172.17.0.1]$ sudo service conductr-agent restart
 ```
 
-Install optional dependencies if required. Each ConductR Agent node requires same optional dependencies to be installed.
+Install optional dependencies if required. Each ConductR Agent node requires the same optional dependencies to be installed.
 
 ## Installing a Proxy
 
