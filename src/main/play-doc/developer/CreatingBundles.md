@@ -1,22 +1,43 @@
 # Creating application bundles
 
-Once the application is ready for deployment, developers can view ConductR bundles as just yet another deployment target. We offer two methods of building a bundle:
+Once the application is ready for deployment, developers can view ConductR bundles as just yet another deployment target. We offer a few methods of building a bundle:
 
 1. Using an [sbt](http://www.scala-sbt.org/) plugin with your build
+2. Using `bndl` to create bundles from Docker images
 2. Using `shazar` (we invented that name!)
 
 If you can make changes to the application or service then `sbt-conductr` is what you will typically use to produce a bundle. In fact you can even use sbt-conductr to produce bundles for other applications or services. However you may find yourself crafting a bundle from scratch and for the latter scenario. See the "legacy & third party bundles" section of the [bundles](BundleConfiguration#Legacy-&-third-party-bundles) document for more information on that, and for a deep dive on bundles in general. For now, let's look at bundling a project that you have control of.
 
-Bundles fall broadly into one of two categories
+ConductR supports several different types of bundle components.
+  * OCI bundle components (introduced in 2.1) package an entire container in the bundle. They can be produced from Docker images. They run inside a container using `runc`.
+  * Universal bundle components run directly on the host.
+  * Docker bundle components build a provided `Dockerfile` and run the resulting image
+  
+In addition, Docker images can be run from "universal" bundles. The following sections cover each of these scenarios:
 
-* those that don't use Docker; and
-* those that do.
-
-Accordingly we use the name "universal" to refer to non-Docker based bundles, and "docker" for when using a Dockerfile. In addition, Docker images can be run from "universal" bundles. The following sections cover each of these scenarios:
-
+* [Producing an OCI bundle with Docker](#producing-an-oci-bundle-with-docker)
 * [Producing a universal bundle without Docker](#producing-a-universal-bundle-without-docker)
 * [Producing a universal bundle that runs a Docker image](#producing-a-universal-bundle-that-runs-a-docker-image)
 * [Producing a docker bundle that uses a Dockerfile](#producing-a-docker-bundle-that-uses-a-dockerfile)
+
+## Producing an OCI bundle with Docker
+ConductR is capable of running images that have been exported from Docker. To do this, use the `bndl` tool to convert a docker image into a ConductR bundle. Behind the scenes, we're using the standard OCI Image format so you can be sure your images are free of vendor lock-in. Additionally, this approach doesn't require Docker to be installed in production; ConductR provides everything necessary to run these images.
+
+The following command will load your docker image directly into ConductR.
+
+```bash
+docker save my-image | bndl | conduct load
+```
+
+If you'd rather save the resulting bundle to a file, you can do this using `bndl -o <filename>`.
+```bash
+docker save my-image | bndl -o my-bundle.zip
+```
+
+
+We attempt to extract as much information from the your docker image as possible. Any `EXPOSE` directives in your `Dockerfile` will automatically create corresponding service endpoints in `bundle.conf`. Support for persistent mounting of `VOLUME` directives is planned.
+
+Docker images can vary in size significantly and this can affect development/deployment time and consume additional system resources. Because of this, we recommend that you build your images ontop of a light-weight base image. [openjdk/8-jre-alpine](https://hub.docker.com/_/openjdk/) is a great choice as it's only ~80MB in size (~50MB when compressed). 
 
 ## Producing a universal bundle without Docker
 
