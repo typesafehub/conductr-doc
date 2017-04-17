@@ -37,7 +37,7 @@ docker save my-image | bndl -o my-bundle.zip
 
 We attempt to extract as much information from the your docker image as possible. Any `EXPOSE` directives in your `Dockerfile` will automatically create corresponding service endpoints in `bundle.conf`. Support for persistent mounting of `VOLUME` directives is planned.
 
-Docker images can vary in size significantly and this can affect development/deployment time and consume additional system resources. Because of this, we recommend that you build your images ontop of a light-weight base image. [Alpine](https://hub.docker.com/_/alpine/) is a great choice as it's only 5MB in size. 
+Docker images can vary in size significantly and this can affect development/deployment time and consume additional system resources. Because of this, we recommend that you build your images ontop of a light-weight base image. [openjdk/8-jre-alpine](https://hub.docker.com/_/openjdk/) is a great choice as it's only ~80MB in size (~50MB when compressed). 
 
 ## Producing a universal bundle without Docker
 

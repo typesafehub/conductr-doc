@@ -247,7 +247,7 @@ or
 [172.17.0.1]$ sudo yum install conductr-agent-%PLAY_VERSION%-1.noarch.rpm
 ```
 
-Next, you'll need to configure a couple of settings in `conductr-agent.ini` and grant some privileges. ConductR uses [runc](https://runc.io/) to spawn and run OCI-based bundles. This requires the OCI component of ConductR to have root access.
+Next, you'll need to configure a couple of settings in `conductr-agent.ini` and grant some privileges. ConductR uses [runc](https://runc.io/) to spawn and run OCI-based bundles. Since `runc` makes use of [cgroups](https://en.wikipedia.org/wiki/Cgroups), the OCI component of ConductR must be granted root access by making an entry in `sudoers`. Great care has been taken to ensure only this component requires root privileges. 
 
 ```bash
 [172.17.0.1]$ echo -Dconductr.agent.ip=$(hostname) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
