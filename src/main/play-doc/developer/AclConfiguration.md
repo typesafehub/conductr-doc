@@ -42,8 +42,7 @@ BundleKeys.endpoints := Map(
   "healthcheck" -> Endpoint("http", 0, "healthcheck",
     RequestAcl(
       Http(
-        "/health",
-        "/v2/health"        
+        "/health"
       )
     )
   )
