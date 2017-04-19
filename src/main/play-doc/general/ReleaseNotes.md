@@ -4,9 +4,9 @@
 
 This release broadly consists of the following functionality:
 
-* [Open Container Initiative (OCI) support](#OCI_Support);
-* [a licensing mechanism to enable free usage](#Free_Licensing); and
-* [Tagging & Annotations](#Tagging_And_Annotations).
+* [Open Container Initiative (OCI) support](#OCI-Support);
+* [a licensing mechanism to enable free usage](#Free-Licensing); and
+* [Tagging & Annotations](#Tagging-And-Annotations).
 
 ### OCI Support
 

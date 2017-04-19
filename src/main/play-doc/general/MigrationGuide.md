@@ -2,9 +2,9 @@
 
 This document describes what is required to move between version 2.0 and 2.1.
 
-* [Cluster incompatibility](#Cluster_incompatibility);
-* [Production Suite Licensing](#Production_Suite_Licensing); and
-* [Bundle endpoints](#Bundle_endpoints).
+* [Cluster incompatibility](#Cluster-incompatibility);
+* [Production Suite Licensing](#Production-Suite-Licensing); and
+* [Bundle endpoints](#Bundle-endpoints).
 
 ## Cluster incompatibility
 
