@@ -1,7 +1,7 @@
 # ConductR Migration Guide
 
 
-This document describes what is required to move between version 1.1 to 2.0.
+This document describes what is required to move from version 1.1 to 2.0.
 
 Here is a list of major areas to be considered when migrating:
 
@@ -20,11 +20,11 @@ As such, a new cluster of ConductR 2.0 must be built in isolation from the versi
 
 ConductR 2.0 introduces the notion of ConductR Core and ConductR Agent.
 
-ConductR Core holds the state of the cluster, and is responsible for decision making as to which ConductR Agent gets to run which bundles based on the resource available on the agent. The physical bundle files are stored on the ConductR Core's filesystem and replicated across the cluster.
+ConductR Core holds the state of the cluster and is responsible for decision making as to which ConductR Agent gets to run which bundles based on the resource available on the agent. The physical bundle files are stored on the ConductR Core's filesystem and replicated across the cluster.
 
 ConductR Agent is responsible for running bundle processes. As such, the bundle roles which are previously specified are now to be specified within ConductR Agent.
 
-The ConductR Core and ConductR Agent is available as a number of packages. The [[installation instructions|Install]] describes the steps of installing ConductR Core and ConductR Agent on the same host. These steps are also applicable should ConductR Core and ConductR Agent installation on different hosts be desired.
+The ConductR Core and ConductR Agent is available as a number of packages. The [[installation instructions|Install]] describes the steps of installing ConductR Core and ConductR Agent on the same host. These steps are also applicable should ConductR Core, and ConductR Agent installation on different hosts be desired.
 
 ## Node Peer Access
 
@@ -32,11 +32,11 @@ This distributed topology enables Agents to be managed by remote Cores. This req
 
 ## Proxying
 
-conductr-haproxy is now provided as a bundle with the "haproxy" role. When running conductr-haproxy you should specify a scale for the number of HAProxy services in your cluster. In addition the nodes that run the HAProxy service must have the "haproxy" role from a ConductR perspective.
+conductr-haproxy is now provided as a bundle with the "haproxy" role. When running conductr-haproxy, you should specify a scale for the number of HAProxy services in your cluster. In addition, the nodes that run the HAProxy service must have the "haproxy" role from a ConductR perspective.
 
 ### Amazon's ELB
 
-Prior to 1.2, we recommended that you configure the ELB to poll the /bundles endpoint of the control protocol. Given conductr-haproxy you should now configured the ELB to poll the http://:9009/status. This endpoint will return an HTTP OK status when HAProxy has been correctly configured therefore leading to a more reliable configuration of the ELB. See [the cluster setup considerations document](ClusterSetupConsiderations#Cluster-security-considerations) for more information.
+Prior to 1.2, we recommended that you configure the ELB to poll the /bundles endpoint of the control protocol. Given conductr-haproxy, you should now configure the ELB to poll the http://:9009/status. This endpoint will return an HTTP OK status when HAProxy has been correctly configured therefore leading to a more reliable configuration of the ELB. See [the cluster setup considerations document](ClusterSetupConsiderations#Cluster-security-considerations) for more information.
 
 ## Syslog
 
@@ -53,7 +53,7 @@ The same also goes for ConductR Agent's `conductr-agent.ini`.
 
 ## Service endpoint declaration
 
-The services endpoint declaration defines the protocol, port, and/or path under which your service will be addressed to the outside world.
+The services endpoint declaration defines the protocol, port and/or path under which your service will be addressed to the outside world.
 
 **From 1.2 onwards, the service endpoint declaration is deprecated in lieu of [[request ACL|AclConfiguration]].**
 
@@ -69,7 +69,7 @@ The following HTTP based service definition can be migrated by supplying its [[r
 
 ##### Services mapped to root path
 
-Given the following example where the service URI was "http://my-service", ConductR will interpret the first path component (`my-service`) as the service name for the purposes of service lookup. By default ConductR will then remove the first path component when rewriting the request. This means that your application or service will be deployed as root context or `/`.
+Given the following example where the service URI was "http://my-service", ConductR will interpret the first path component (`my-service`) as the service name for the purposes of service lookup. By default, ConductR will then remove the first path component when rewriting the request. This means that your application or service will be deployed as root context or `/`.
 
 ###### Migrating build.sbt
 
@@ -100,46 +100,46 @@ Modify the `endpoints` section declared within the `bundle.conf` as such.
 From:
 
 ```
-    endpoints         = {
-      "endpoint-label" = {
-        bind-protocol = "http"
-        bind-port     = 0
-        services      = ["http://my-service]
-      }
-    }
+endpoints         = {
+  "endpoint-label" = {
+    bind-protocol = "http"
+    bind-port     = 0
+    services      = ["http://my-service]
+  }
+}
 ```
 
 To:
 
 ```
-    endpoints         = {
-      "endpoint-label" = {
-        bind-protocol = "http"
-        bind-port     = 0
-        service-name  = "my-service"
-        acls          = [
-          {
-            http = {
-              requests = [
-                {
-                  path-beg = "/my-service"
-                  rewrite = "/"
-                }
-              ]
+endpoints         = {
+  "endpoint-label" = {
+    bind-protocol = "http"
+    bind-port     = 0
+    service-name  = "my-service"
+    acls          = [
+      {
+        http = {
+          requests = [
+            {
+              path-beg = "/my-service"
+              rewrite = "/"
             }
-          }
-        ]
+          ]
+        }
       }
-    }
+    ]
+  }
+}
 ```
 
 
 
 ##### Services mapped with preserved path
 
-The `preservePath` query parameter on a service declaration indicated that the context root path should be preserved when passing through ConductR's proxy. Given the service URI `http://my-service?preservePath`, the service is accessible from the outside world on HTTP port allocated by ConductR under `/my-sevice` context.
+The `preservePath` query parameter on a service declaration indicated that the context root path should be preserved when passing through ConductR's proxy. Given the service URI `http://my-service?preservePath`, the service is accessible from the outside world on HTTP port allocated by ConductR under `/my-service` context.
 
-This behaviour can now be declared with a request ACL.
+This behavior can now be declared with a request ACL.
 
 ###### Migrating build.sbt
 
@@ -170,36 +170,36 @@ Modify the `endpoints` section declared within the `bundle.conf` as such.
 From:
 
 ```
-    endpoints         = {
-      "endpoint-label" = {
-        bind-protocol = "http"
-        bind-port     = 0
-        services      = ["http://my-service?preservePath"]
-      }
-    }
+endpoints         = {
+  "endpoint-label" = {
+    bind-protocol = "http"
+    bind-port     = 0
+    services      = ["http://my-service?preservePath"]
+  }
+}
 ```
 
 To:
 
 ```
-    endpoints         = {
-      "endpoint-label" = {
-        bind-protocol = "http"
-        bind-port     = 0
-        service-name  = "my-service"
-        acls          = [
-          {
-            http = {
-              requests = [
-                {
-                  path-beg = "/my-service"
-                }
-              ]
+endpoints         = {
+  "endpoint-label" = {
+    bind-protocol = "http"
+    bind-port     = 0
+    service-name  = "my-service"
+    acls          = [
+      {
+        http = {
+          requests = [
+            {
+              path-beg = "/my-service"
             }
-          }
-        ]
+          ]
+        }
       }
-    }
+    ]
+  }
+}
 ```
 
 #### Supplying customized HAProxy template configuration
@@ -250,39 +250,39 @@ Modify the `endpoints` section declared within the `bundle.conf` as such.
 From:
 
 ```
-    system             = "my-bundle"
-    systemVersion      = "1.1"
-    endpoints          = {
-      "endpoint-label" = {
-        bind-protocol  = "http"
-        bind-port      = 0
-        services       = ["http://:6789/my-service"]
-      }
-    }
+system             = "my-bundle"
+systemVersion      = "1.1"
+endpoints          = {
+  "endpoint-label" = {
+    bind-protocol  = "http"
+    bind-port      = 0
+    services       = ["http://:6789/my-service"]
+  }
+}
 ```
 
 To:
 
 ```
-    endpoints         = {
-      "endpoint-label" = {
-        bind-protocol = "http"
-        bind-port     = 0
-        service-name  = "my-service"
-        acls          = [
-          {
-            http = {
-              requests = [
-                {
-                  path-beg = "/my-service"
-                  rewrite = "/"
-                }
-              ]
+endpoints         = {
+  "endpoint-label" = {
+    bind-protocol = "http"
+    bind-port     = 0
+    service-name  = "my-service"
+    acls          = [
+      {
+        http = {
+          requests = [
+            {
+              path-beg = "/my-service"
+              rewrite = "/"
             }
-          }
-        ]
+          ]
+        }
       }
-    }
+    ]
+  }
+}
 ```
 
 ###### Supplying customized HAProxy configuration
@@ -311,7 +311,7 @@ backend my_www_backend
 
 ```
 
-The snippet above will expose other HTTP endpoint at port `9443`, this value can be replaced with any valid port number accordingly.
+The snippet above will expose other HTTP endpoints at port `9443`, this value can be replaced with any valid port number accordingly.
 
 ##### Host header match
 
@@ -342,7 +342,7 @@ BundleKeys.endpoints := Map(
 )
 ```
 
-Where `my-service` is the service name for the endpoint for the purpose of service lookup.
+Where `my-service` is the service name of the endpoint for the purpose of service lookup.
 
 ###### Migrating bundle.conf
 
@@ -351,41 +351,41 @@ Modify the `endpoints` section declared within the `bundle.conf` as such.
 From:
 
 ```
-    system             = "my-bundle"
-    systemVersion      = "1.1"
-    endpoints          = {
-      "endpoint-label" = {
-        bind-protocol  = "http"
-        bind-port      = 0
-        services       = ["http://www.acme.com"]
-      }
-    }
+system             = "my-bundle"
+systemVersion      = "1.1"
+endpoints          = {
+  "endpoint-label" = {
+    bind-protocol  = "http"
+    bind-port      = 0
+    services       = ["http://www.acme.com"]
+  }
+}
 ```
 
 To:
 
 ```
-    endpoints         = {
-      "endpoint-label" = {
-        bind-protocol = "http"
-        bind-port     = 0
-        service-name  = "my-service"
-        acls          = [
-          {
-            http = {
-              requests = [
-                {
-                  path-beg = "/"
-                }
-              ]
+endpoints         = {
+  "endpoint-label" = {
+    bind-protocol = "http"
+    bind-port     = 0
+    service-name  = "my-service"
+    acls          = [
+      {
+        http = {
+          requests = [
+            {
+              path-beg = "/"
             }
-          }
-        ]
+          ]
+        }
       }
-    }
+    ]
+  }
+}
 ```
 
-Where `my-service` is the service name for the endpoint for the purpose of service lookup.
+Where `my-service` is the service name of the endpoint for the purpose of service lookup.
 
 
 ###### Supplying customized HAProxy configuration
@@ -413,7 +413,7 @@ backend my_www_backend
 
 ```
 
-The snippet above will expose other HTTP endpoint at port `9443`, this value can be replaced with any valid port number accordingly.
+The snippet above will expose other HTTP endpoints at port `9443`, this value can be replaced with any valid port number accordingly.
 
 ### Migrating TCP-based services
 
@@ -446,30 +446,30 @@ Modify the `endpoints` section declared within the `bundle.conf` as such.
 From:
 
 ```
-    endpoints         = {
-      "logbroker" = {
-        bind-protocol = "tcp"
-        bind-port     = 0
-        services      = ["http://:6379/redis"]
-      }
-    }
+endpoints         = {
+  "logbroker" = {
+    bind-protocol = "tcp"
+    bind-port     = 0
+    services      = ["http://:6379/redis"]
+  }
+}
 ```
 
 To:
 
 ```
-    endpoints         = {
-      "logbroker" = {
-        bind-protocol = "tcp"
-        bind-port     = 0
-        service-name  = "redis"
-        acls          = [
-          {
-            tcp = {
-              requests = [6379]
-            }
-          }
-        ]
+endpoints         = {
+  "logbroker" = {
+    bind-protocol = "tcp"
+    bind-port     = 0
+    service-name  = "redis"
+    acls          = [
+      {
+        tcp = {
+          requests = [6379]
+        }
       }
-    }
+    ]
+  }
+}
 ```
