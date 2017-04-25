@@ -1,15 +1,15 @@
 # Command line interface (CLI)
 
-ConductR provides REST API which allows you as the operator to:
+ConductR provides a REST API which allows you as the operator to:
 
 * query the information on loaded bundles and running services
 * manage the lifecycle of bundles (load, run, stop, unload)
 
 The API can be used by any HTTP client, but ConductR comes with CLI tool implemented in Python. To get the latest version of the CLI install it locally as a pip package.
 
-## New CLI installation
+## Installation
 
-The CLI is distributed as a "native" distribution for Windows, OS X and Linux. Lightbend hosts these native images at bintray: https://bintray.com/lightbend/generic/conductr-cli. Download an archive that is suitable for your environment and then place the resultant package in a place accessible from your `PATH`. For example, on Unix, please copy the contents of archive to your `/usr/local/bin` folder.
+The CLI is distributed as a "native" distribution for Windows, OS X and Linux. Lightbend hosts these native images at Bintray: https://bintray.com/lightbend/generic/conductr-cli. Download an archive that is suitable for your environment and then place the resultant package in a place accessible from your `PATH`. For example, on Unix, please copy the contents of archive to your `/usr/local/bin` folder.
 
 To verify the installation type:
 
@@ -55,13 +55,11 @@ cd #back to your home folder so we know where we're playing
 echo "export POLL_INTERVAL=500ms" >> ./visualizer-poll-interval.sh
 ```
 
-Once the configuration file is ready, we need to package it up to a bundle. We can use the `shazar` command provided by the CLI which zips configuration files and appends secure digest of the archive to the created bundle files.
+Once the configuration file is ready, we can load it directly into ConductR. The configuration is always provided as the second parameter to the `conduct load` command.
 
 ```bash
-shazar ./visualizer-poll-interval.sh
+conduct load visualizer ./visualizer-poll-interval.sh
 ```
-
-The configuration is now ready to be loaded along with a bundle. Configuration is always provided as the second param to the `conduct load` command.
 
 ## Accessing the Visualizer
 

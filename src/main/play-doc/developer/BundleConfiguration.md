@@ -208,6 +208,14 @@ conduct load webserver-015f73613aa48d397b0dbab6d7f96d687c56d72a275a5ea43d7da44a2
 
 Where `webserver-015f73613aa48d397b0dbab6d7f96d687c56d72a275a5ea43d7da44a21c27482.zip` is the application bundle.
 
+Alternatively, you can also provide the configuration directory directly to `conduct load` if that better fits your workflow. In this case, the CLI will automatically create a configuration bundle for you.
+
+```bash
+conduct load webserver-015f73613aa48d397b0dbab6d7f96d687c56d72a275a5ea43d7da44a21c27482.zip test-config
+```
+
+
+
 ### Configuration Bundle Files
 
 It is also possible to include files in addition to the `runtime-config.sh` and/or `bundle.conf` file(s). To do this, create one or more files or sub folders with files alongside these files. Your `runtime-config.sh` script is then responsible for copying the additional files to the location that your application or service requires.

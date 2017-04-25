@@ -21,17 +21,26 @@ In addition, Docker images can be run from "universal" bundles. The following se
 * [Producing a docker bundle that uses a Dockerfile](#producing-a-docker-bundle-that-uses-a-dockerfile)
 
 ## Producing an OCI bundle with Docker
-ConductR is capable of running images that have been exported from Docker. To do this, use the `bndl` tool to convert a docker image into a ConductR bundle. Behind the scenes, we're using the standard OCI Image format so you can be sure your images are free of vendor lock-in. Additionally, this approach doesn't require Docker to be installed in production; ConductR provides everything necessary to run these images.
+ConductR is capable of running images that have been exported from Docker. To do this, you use the `bndl` tool to convert a docker image into a ConductR bundle. Behind the scenes, we're using the standard OCI Image format so you can be sure your images are free of vendor lock-in. Additionally, this approach doesn't require Docker to be installed in production; ConductR provides everything necessary to run these images.
 
-The following command will load your docker image directly into ConductR.
+The following command will fetch the image `dockercloud/hello-world` with tag `stdout` from DockerHub and load it directly into ConductR. If the tag is omitted, `latest` is used.
 
 ```bash
-docker save my-image | bndl | conduct load
+conduct load dockercloud/hello-world:stdout
 ```
 
-If you'd rather save the resulting bundle to a file, you can do this using `bndl -o <filename>`.
+Private registries are also supported using traditional notation.
+
 ```bash
-docker save my-image | bndl -o my-bundle.zip
+conduct load some-registry.bintray.io/some-project/some-image:some-tag
+```
+
+
+
+If you'd rather save the resulting bundle to a file, you can do this using `docker save` and `bndl -o <filename>`.
+```bash
+docker pull dockercloud/hello-world:stdout
+docker save dockercloud/hello-world:stdout | bndl -o dockercloud-hello-world.zip
 ```
 
 

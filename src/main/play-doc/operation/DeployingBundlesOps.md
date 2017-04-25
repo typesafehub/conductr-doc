@@ -17,7 +17,7 @@ conduct load --host 172.17.0.1 visualizer
 
 > Substitute `172.17.0.1` with the address of a ConductR core on your cluster. `192.168.10.1` is the default address when using the developer sandbox.
 
-Note that by default, bundles have a maximum size of 100MB. This can be altered via the `akka.http.server.parsing.max-content-length` setting.
+Note that by default, bundles have a maximum size of 1GB. This can be altered via the `akka.http.server.parsing.max-content-length` setting.
 
 Use `conduct info` command to list all loaded bundles. You should see that the Visualizer is replicated but not running (note that the example below shows 3 replications - you'll only get that if you have 3 or more nodes as the bundle cannot replicate beyond the cluster size).
 
@@ -100,6 +100,22 @@ conduct load reactive-maps-frontend
 
 Bundles can be published to Bintray using the [sbt-bintray-bundle](https://github.com/sbt/sbt-bintray-bundle) plugin.
 
+### Docker resolver
+
+The Docker resolver accepts the name and optional tag of a docker image. It allows you to load images from a Docker registry directly into ConductR.
+
+```
+conduct load my-docker-image:my-tag
+```
+
+### stdin resolver
+
+The stdin resolver can be useful for composing programs together in UNIX-based fashion. For example, the following command uses `docker save` and `conduct load` to export your local Docker image into ConductR.
+
+```
+docker save my-local-docker-image:my-tag | conduct load
+```
+
 
 ## Bundle shorthand expression
 
@@ -111,12 +127,12 @@ The shorthand bundle expression has the following format:
 
 The usage of the shorthand expression is best illustrated with the following example.
 
-Shorthand Expression                                                                       | Resolved to
--------------------------------------------------------------------------------------------|------------
-reactive-maps-frontend                                                                     | Latest version of the `reactive-maps-frontend` bundle hosted within `organization` called `typesafe` and `repository` called `bundle`.
-reactive-maps-frontend:1.0.0                                                               | Latest version of the `reactive-maps-frontend` bundle having `tag` of `1.0.0` hosted within `organization` called `typesafe` and `repository` called `bundle`.
+Shorthand Expression                                                                                 | Resolved to
+-----------------------------------------------------------------------------------------------------|------------
+reactive-maps-frontend                                                                               | Latest version of the `reactive-maps-frontend` bundle hosted within `organization` called `typesafe` and `repository` called `bundle`.
+reactive-maps-frontend:1.0.0                                                                         | Latest version of the `reactive-maps-frontend` bundle having `tag` of `1.0.0` hosted within `organization` called `typesafe` and `repository` called `bundle`.
 reactive-maps-frontend:1.0.0.beta.1-023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2 | `reactive-maps-frontend` bundle having `tag` of `1.0.0-beta.1` and `digest` of `023f9da2243a0751c2e231b452aa3ed32fbc35351c543fbd536eea7ec457cfe2` hosted within `organization` called `typesafe` and `repository` called `bundle`.
-my-company/secret-repo/super-bundle:0.1.0                                                     | Latest version of the `super-bundle` bundle having `tag` of `0.1.0` hosted within `organization` called `my-company` and `repository` called `secret-repo`.
+my-company/secret-repo/super-bundle:0.1.0                                                            | Latest version of the `super-bundle` bundle having `tag` of `0.1.0` hosted within `organization` called `my-company` and `repository` called `secret-repo`.
 
 
 ## Implementing your own custom resolver
@@ -165,8 +181,10 @@ In the example above, once the supplied `uri` is resolved to either HTTP URL or 
 ```
 resolvers = [
   my_resolver,
+  conductr_cli.resolvers.stdin_resolver,
+  conductr_cli.resolvers.uri_resolver,
   conductr_cli.resolvers.bintray_resolver,
-  conductr_cli.resolvers.uri_resolver
+  conductr_cli.resolvers.docker_resolver
 ]
 ```
 
