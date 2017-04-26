@@ -8,6 +8,10 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 
 > Note: failure to size your bundle's memory as being large enough will cause the Linux OOM killer to terminate all bundles being managed by a conductr-agent on a given host. This is a [known issue with Mesos](https://issues.apache.org/jira/browse/MESOS-3333#). Unfortunately the problem is also difficult to diagnose. Please ensure that your app has plenty of resident memory declared. Think generally in terms of 128MiB increments when going beyond 384MiB.
 
+## 2.0.5 eslite release Monday, April 26th, 2017
+
+1. Fix a condition where eslite would lose data if items had already been logged for a given id.
+
 ## 2.0.5 Monday, March 13th, 2017
 
 1. The internal `check` command would still fill up the /tmp in some circumstances. We changed how we package this command to fully resolve the issue.
