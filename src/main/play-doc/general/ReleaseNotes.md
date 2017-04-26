@@ -30,6 +30,14 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.0-alpha.3 - Wednesday April 26th, 2017
+
+* Enhanced licensing to exclude counting proxy style agents in the license count e.g. agents with a role of "haproxy". This then prevents proxy style agents from being counted as licensed agents and blocking the potential of non-proxy agents to receive resource offers; particularly on Mesos.
+
+## 2.1.0-alpha.2
+
+* Bad release process - ignore.
+
 ## 2.1.0-alpha.1 - Saturday April 8th, 2017
 
 * Improvements to the reporting of bundles failing given a lack of resources.
