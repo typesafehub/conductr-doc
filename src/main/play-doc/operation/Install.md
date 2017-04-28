@@ -30,6 +30,12 @@ On Ubuntu 14.10 and newer, you can use the built in package manager.
 sudo apt-get install openjdk-8-jdk
 ```
 
+Note, newly launched instances may require a repository update, for example on Ubuntu and Debian run:
+
+```bash
+sudo apt-get update
+```
+
 On RHEL/CentOS 7, you can use the built in package manager.
 
 ```bash
@@ -64,18 +70,23 @@ echo 'PATH="/opt/my-jdk/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin"' 
 
 ## Installing ConductR on the first machine
 
-ConductR comprises of the ConductR Core and ConductR Agent. ConductR Core is responsible for cluster-wide scaling and replication decision making, as well as hosting the application files or the bundles. ConductR Agent is responsible for executing the application processes. The ConductR Core and the ConductR Agent are run as separate processes, and hence separate services within the operating system.
+ConductR comprises of the ConductR Core and ConductR Agent. ConductR Core is responsible for cluster-wide scaling
+ and replication decision making, as well as hosting the application files or the bundles. ConductR Agent is responsible
+ for executing the application processes. The ConductR Core and the ConductR Agent are run as separate processes,
+ and hence separate services within the operating system.
 
-This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simplify the installation and configuration instructions, we are going to use the hostname command. Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
+This tutorial uses three systems with the addresses `172.17.0.{1,2,3}`. To simplify the installation and configuration
+ instructions, we are going to use the hostname command to export the host's IP address as `HOSTIP`.
+ Please ensure the hostname is set correctly or substitute your addresses as appropriate for `$(hostname -i)`, below.
 
 > It is *very* important that you use an IP address when configuring or reaching ConductR. DNS provides a layer of indirection that you will not want. You should always be mindful of the specific network interface that you bind a service to, including ConductR - if only for reasons of security. Along those lines, binding to 0.0.0.0 (any network interface) should always be avoided.
 
 ```bash
-sudo hostname $(hostname -i)
-echo $(hostname)
+export HOSTIP=$(hostname -i)
+echo $(HOSTIP)
 ```
 
-> If the result of `echo $(hostname)` above is not an IP address then you will probably need to use `ifconfig` in order to list the network interfaces that you have and then choose one.
+> If the result of `echo $(HOSTIP)` above is not an IP address then you will probably need to use `ifconfig` in order to list the network interfaces that you have and then choose one.
 
 ### Installing ConductR Core on the first machine
 The tutorial also assumes that you have obtained the `conductr_%PLAY_VERSION%_all.deb` Debian or `conductr_%PLAY_VERSION%-1.noarch.rpm` Rpm package.
@@ -96,40 +107,30 @@ or
 ConductR Core is automatically registered as a service and started. ConductR provides cluster and application information as well as its control interface via a REST API exposed as part of the ConductR Core.
 
 ```bash
-[172.17.0.1]$ curl -s 127.0.0.1:9005/v2/members | python3 -m json.tool
+export CONDUCTR_IP=$(hostname -i)
+[172.17.0.1]$ conduct members
 ```
 
-A typical response contains the current members of the cluster (shown here as just one), the address of the node that the queried control server is running on and a list of unreachable nodes (shown here as empty).
+A typical response contains the current members of the cluster (shown here as just one),
+ the address of the node that the queried control server is running on and a list
+ of unreachable nodes (shown here as empty).
 
-``` json
-{
-  "members": [
-    {
-      "node": "akka.tcp://conductr@127.0.0.1:9004",
-      "nodeUid": "-1595142725",
-      "roles": [
-        "web"
-      ],
-      "status": "Up"
-    }
-  ],
-  "selfNode": "akka.tcp://conductr@127.0.0.1:9004",
-  "selfNodeUid": "-1595142725",
-  "unreachable": []
-}
+``` bash
+UID         ADDRESS                             ROLES       STATUS  REACHABLE
+-890829264  akka.tcp://conductr@127.0.0.1:9004  replicator  Up            Yes
 ```
 
 The IP addresses in the response indicate that ConductR Core is listening to the `localhost` address. To be able to form an inter-machine cluster, ConductR Core must be configured to listen to the machine's host interface. This can be enabled adding a property declaration for `CONDUCTR_IP` to the start command as follows:
 
 ```bash
-[172.17.0.1]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/conductr.ini
+[172.17.0.1]$ echo -DCONDUCTR_IP=$(HOSTIP) | sudo tee -a /usr/share/conductr/conf/conductr.ini
 [172.17.0.1]$ sudo service conductr restart
 ```
 
 Check for the cluster information once again, but now use the host address of the machine.
 
 ```bash
-[172.17.0.1]$ curl -s $(hostname):9005/v2/members | python3 -m json.tool
+[172.17.0.1]$ conduct members
 ```
 
 The ConductR Core service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
@@ -154,8 +155,8 @@ ConductR Agent is automatically registered as a service and started.
 ConductR Agent needs to be connected to a ConductR core node in order for ConductR to run any application process. To establish this connection, configure ConductR Agent as such:
 
 ```bash
-[172.17.0.1]$ echo -Dconductr.agent.ip=$(hostname) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-[172.17.0.1]$ echo --core-node $(hostname):9004 | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo -Dconductr.agent.ip=$(HOSTIP) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo --core-node $(HOSTIP):9004 | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 ```
 
 Once configured, restart the ConductR Agent service.
@@ -179,10 +180,23 @@ To increase the verbosity of the ConductR Core logging you can use this command:
 [172.17.0.1]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr/conf/conductr.ini
 ```
 
+You must restart the ConductR Core service for this change to take effect.
+
+```bash
+[172.17.0.1]$sudo service conductr restart
+
+```
+
+
 Similarly for ConductR Agent:
 
 ```bash
 [172.17.0.1]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+```
+
+```bash
+[172.17.0.1]$sudo service conductr-agent restart
+
 ```
 
 ### Optional dependencies
@@ -201,6 +215,9 @@ ConductR supports running applications and services within Docker. If you plan o
 ## Installing ConductR on the remaining machines
 
 _Repeat each step in this section also on the `172.17.0.2` and `172.17.0.3` machine._
+
+For a three node cluster, we recommend that you install both the Core and Agent on all three nodes.
+For larger clusters, 3 core-only nodes can manage many agent-only nodes. An Agent must be install for a node to execute bundles.
 
 First ensure that the following ports are available between the machines forming the cluster:
 
@@ -223,7 +240,7 @@ sudo yum install conductr_%PLAY_VERSION%-1.noarch.rpm
 then
 
 ```bash
-[172.17.0.2]$ echo -DCONDUCTR_IP=$(hostname) | sudo tee -a /usr/share/conductr/conf/conductr.ini
+[172.17.0.2]$ echo -DCONDUCTR_IP=$(HOSTIP) | sudo tee -a /usr/share/conductr/conf/conductr.ini
 [172.17.0.2]$ echo --seed 172.17.0.1:9004 | sudo tee -a /usr/share/conductr/conf/conductr.ini
 [172.17.0.2]$ sudo service conductr restart
 ```
@@ -231,7 +248,7 @@ then
 You should now see a new node in the cluster members list by using the following query:
 
 ```bash
-[172.17.0.2]$ curl -s 172.17.0.2:9005/v2/members | python3 -m json.tool
+[172.17.0.2]$ conduct members
 ```
 
 ### Installing ConductR Agent on the remaining machines
@@ -250,8 +267,8 @@ or
 Next, you'll need to configure a couple of settings in `conductr-agent.ini` and grant some privileges. ConductR uses [runc](https://runc.io/) to spawn and run OCI-based bundles. Since `runc` makes use of [cgroups](https://en.wikipedia.org/wiki/Cgroups), the OCI component of ConductR must be granted root access by making an entry in `sudoers`. Great care has been taken to ensure only this component requires root privileges. 
 
 ```bash
-[172.17.0.1]$ echo -Dconductr.agent.ip=$(hostname) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-[172.17.0.1]$ echo --core-node $(hostname):9004 | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo -Dconductr.agent.ip=$(HOSTIP) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo --core-node $(HOSTIP):9004 | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 [172.17.0.1]$ echo "conductr-agent ALL=(root) NOPASSWD:SETENV: /usr/share/conductr-agent/bin/conductr-oci" | sudo tee -a /etc/sudoers
 [172.17.0.1]$ sudo service conductr-agent restart
 ```
@@ -690,47 +707,19 @@ sudo service conductr restart
 
 ### Check the cluster
 ConductR provides cluster and application information as well as its control interface via a REST API.
+Use the CLI to view cluster membership
 
  ```bash
-curl -s $(hostname -i):9005/v2/members | python3 -m json.tool
+conduct members
 ```
 
 A typical response contains the current members of the cluster (shown here is a three node cluster), the address of the node that the queried control server is running on and a list of unreachable nodes (shown here as empty).
 
-``` json
-{
-    "members": [
-        {
-            "node": "akka.tcp://conductr@10.0.1.10:9004",
-            "nodeUid": "-810451778",
-            "roles": [
-                "web"
-            ],
-            "status": "Up"
-        },
-        {
-            "node": "akka.tcp://conductr@10.0.2.20:9004",
-            "nodeUid": "280222358",
-            "roles": [
-                "web"
-            ],
-            "status": "Up"
-        },
-        {
-            "node": "akka.tcp://conductr@10.0.3.30:9004",
-            "nodeUid": "1503330106",
-            "roles": [
-                "web"
-            ],
-            "status": "Up"
-        }
-
-    ],
-    "selfNode": "akka.tcp://conductr@10.0.2.20:9004",
-    "selfNodeUid": "280222358",
-    "unreachable": []
-}
-
+``` bash
+UID         ADDRESS                             ROLES       STATUS  REACHABLE
+1503330106  akka.tcp://conductr@10.0.1.10:9004  replicator  Up            Yes
+280222358   akka.tcp://conductr@10.0.2.20:9004  replicator  Up            Yes
+-690829234  akka.tcp://conductr@10.0.3.30:9004  replicator  Up            Yes
 ```
 
 ### Configuring ConductR Agent
@@ -740,8 +729,8 @@ _Repeat each step in this section on each node running the agent service._
 ConductR Agent needs to be connected to a ConductR core node in order for ConductR to run any application process. To establish this connection, configure ConductR Agent as such:
 
 ```bash
-[172.17.0.1]$ echo -Dconductr.agent.ip=$(hostname) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-[172.17.0.1]$ echo --core-node $(hostname):9004 | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo -Dconductr.agent.ip=$(HOSTIP) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
+[172.17.0.1]$ echo --core-node $(HOSTIP):9004 | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
 ```
 
 Once configured, restart the ConductR Agent service.
@@ -776,9 +765,13 @@ _Execute this step once for the entire cluster. This step would need to be repea
 
 These instructions for loading and running the ConductR-HAProxy bundle require the [[CLI|CLI]] to be installed. Continue with the next step once [[ConductR CLI|CLI]] is installed.
 
-Load and run the ConductR-HAProxy bundle from the [bundles repo](https://bintray.com/typesafe/bundle) as follows. Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster. In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
+Load and run the ConductR-HAProxy bundle from the [bundles repo](https://bintray.com/typesafe/bundle) as follows.
+ Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster.
+ In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
+ We'll export the env var `CONDUCTR_IP` to target the local node.
 
 ```bash
+export CONDUCTR_IP=$(hostname -i)
 conduct load conductr-haproxy
 conduct run conductr-haproxy --scale 3
 ```
@@ -933,7 +926,7 @@ frontend monitor
 
 ### Running the HAProxy Docker container
 
-Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(hostname). To set the hostname, pass the ip address to hostname.
+Please ensure the hostname is set correctly or substitute your addresses as appropriate for $(HOSTIP). To set the hostname, pass the ip address to hostname.
 
 ```bash
 sudo hostname $(hostname -i)
@@ -942,14 +935,14 @@ sudo hostname $(hostname -i)
 Run the HAProxy Docker container.
 
 ```
-$ docker run -d --name haproxy  -p $(hostname):80:80 -p $(hostname):443:443 -p $(hostname):8999:8999 -p $(hostname):9000:9000 -p $(hostname):9999:9999 -p $(hostname):65535:65535 -v /etc/haproxy:/usr/local/etc/haproxy:ro haproxy:1.5
+$ docker run -d --name haproxy  -p $(HOSTIP):80:80 -p $(HOSTIP):443:443 -p $(HOSTIP):8999:8999 -p $(HOSTIP):9000:9000 -p $(HOSTIP):9999:9999 -p $(HOSTIP):65535:65535 -v /etc/haproxy:/usr/local/etc/haproxy:ro haproxy:1.5
 ```
 
 The above container has `haproxy` as its name and uses configuration file is located at `/etc/haproxy/haproxy.cfg`. The directory `/etc/haproxy` is mounted within the container on `/usr/local/etc/haproxy`. This will allow updates to `/etc/haproxy/haproxy.cfg` to be visible within the container.
 
 Any application bundle service ports must be exposed for proxying. The container started above exposes the ports `80`, `443`, `8999`, `9000`, `9999`, and `65535.` This is to expose ports for HTTP/HTTPS and statistics as well as for applications on `9000`, ConductR Visualizer on `9999` and for the HAProxy test endpoint. You can include additional ports or port ranges for your endpoints using the `-p` option as required.
 
-NOTE: The ports exposed by the container is bound the address such as`10.0.7.118` to be used as the service delivery interface for the node using the `hostname` command.  You must verify or set your system hostname or otherwise substitute the $(hostname) in the above example with the correct IP address for  your environment.
+NOTE: The ports exposed by the container is bound the address such as`10.0.7.118` to be used as the service delivery interface for the node using the `hostname` command.  You must verify or set your system hostname or otherwise substitute the $(HOSTIP) in the above example with the correct IP address for  your environment.
 
 Run `docker ps -a` to ensure the container has been started successfully.
 
@@ -962,7 +955,7 @@ CONTAINER ID        IMAGE               COMMAND                CREATED          
 An additional check can be performed by using `curl` command against the HAProxy test endpoint.
 
 ```
-$ curl -v http://$(hostname):65535/test
+$ curl -v http://$(HOSTIP):65535/test
 *   Trying 10.0.7.118...
 * Connected to 10.0.7.118 (10.0.7.118) port 65535 (#0)
 > GET /test HTTP/1.1
