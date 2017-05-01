@@ -230,7 +230,9 @@ First ensure that the following ports are available between the machines forming
 * 9006 - Bundle streaming between ConductR nodes
 * 10000 to 10999 - the default range of ports allocated to bundle component endpoints
 
-On most systems `netstat` can be used to check port status, for example: `netstat -an | grep 9004` to check port `9004`.
+On most systems `netstat` can be used to check port status.
+ For example use: `netstat -an | grep 9004` to check that status of port `9004`.
+ The port is in-use if `netstat` shows the _local address_ as being in the `LISTEN` or `ESTABLISHED` state.
 
 ### Installing ConductR Core on the remaining machines
 
