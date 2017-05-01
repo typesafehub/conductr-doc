@@ -133,7 +133,7 @@ Check for the cluster information once again, but now use the host address of th
 [172.17.0.1]$ conduct members
 ```
 
-The ConductR Core service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
+The ConductR Core service runs under the `conductr` user along with the `conductr` group. Its install location is `/usr/share/conductr`.
 
 ### Installing ConductR Agent on the first machine
 
@@ -170,7 +170,10 @@ The ConductR Agent service runs under the `conductr-agent` user along with the `
 
 ### Consolidated Logging
 
-Enabling consolidated logging will require configuration for each machine where ConductR is installed. [[Consolidated logging|ConsolidatedLogging]] section describes the steps required which allow you to select the appropriate logging method for you. ConductR is bundled with an Elasticsearch based solution and is configured for that by default.
+Lightbend's consolidated logging feature is based upon Elasticsearch and requires access to an Elasticsearch engine
+ to work using the default configuration.
+ The [[Consolidated logging|ConsolidatedLogging]] section describes the steps required which allow you to select the
+ appropriate logging method for you.
 
 By default ConductR's logging is quite sparse. Unless an error or warning occurs then there will be no log output.
 
@@ -180,13 +183,12 @@ To increase the verbosity of the ConductR Core logging you can use this command:
 [172.17.0.1]$ echo -Dakka.loglevel=debug | sudo tee -a /usr/share/conductr/conf/conductr.ini
 ```
 
-You must restart the ConductR Core service for this change to take effect.
+As with all `conductr.ini` file changes, you must restart the ConductR Core service for this change to take effect.
 
 ```bash
 [172.17.0.1]$sudo service conductr restart
 
 ```
-
 
 Similarly for ConductR Agent:
 
@@ -198,6 +200,9 @@ Similarly for ConductR Agent:
 [172.17.0.1]$sudo service conductr-agent restart
 
 ```
+
+Please note that Elasticsearch is not required however `conduct logs` and `conduct events` does require
+ Elasticsearch as described in [[Consolidated logging|ConsolidatedLogging]].
 
 ### Optional dependencies
 
@@ -224,6 +229,8 @@ First ensure that the following ports are available between the machines forming
 * 9004 - Akka remoting for ConductR
 * 9006 - Bundle streaming between ConductR nodes
 * 10000 to 10999 - the default range of ports allocated to bundle component endpoints
+
+On most systems `netstat` can be used to check port status, for example: `netstat -an | grep 9004` to check port `9004`.
 
 ### Installing ConductR Core on the remaining machines
 
@@ -273,7 +280,14 @@ Next, you'll need to configure a couple of settings in `conductr-agent.ini` and 
 [172.17.0.1]$ sudo service conductr-agent restart
 ```
 
-Install optional dependencies if required. Each ConductR Agent node requires the same optional dependencies to be installed.
+Some bundles may require specific node configuration before the bundle can be executed on that node.
+ Configuring a node for dynamic proxying with HAProxy for example, requires root access configuration that cannot be
+ performed by a runtime bundle initialization script. A node is assigned the `haproxy` role to indicate that the prerequisite
+ steps have been performed.
+
+If your bundles requires specific dependencies in order to execute, install those dependencies now.
+ All others nodes expected to be run such bundles should have the same optional dependencies installed.
+ Use a custom [role](ClusterConfiguration#Roles) such as `my-role` if only a subset of nodes will be able to execute the bundle.
 
 ## Installing a Proxy
 
@@ -340,7 +354,8 @@ ConductR-HAProxy bundle listens for bundle changes within ConductR and updates t
 
 _Perform each step in this section on all nodes: `172.17.0.1`, `172.17.0.2` and `172.17.0.3`_.
 
-ConductR-HAProxy bundle must be installed on all nodes where HAProxy is installed, and these nodes can be distinguished by the `haproxy` role. Assign the `haproxy` role to the nodes where the proxy will be hosted.
+ConductR-HAProxy bundle must be installed on all nodes where HAProxy is installed, and these nodes can be
+ distinguished by the `haproxy` role. Assign the `haproxy` [role](ClusterConfiguration#Roles) to the nodes where the proxy will be hosted.
 
 Append the `haproxy` role to the default `web` role as follows:
 
@@ -768,7 +783,7 @@ These instructions for loading and running the ConductR-HAProxy bundle require t
 Load and run the ConductR-HAProxy bundle from the [bundles repo](https://bintray.com/typesafe/bundle) as follows.
  Scale ConductR-HAProxy so that ConductR-HAProxy is running on every proxy node in the cluster.
  In our case we have 3 nodes where the proxy is expected to be running, so we scale up the ConductR-HAProxy to 3 instances.
- We'll export the env var `CONDUCTR_IP` to target the local node.
+ We'll export the env var `CONDUCTR_IP` to target the local node. You can also use the `--host` option to specify the target.
 
 ```bash
 export CONDUCTR_IP=$(hostname -i)
