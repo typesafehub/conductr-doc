@@ -50,7 +50,12 @@ The setup of Elasticsearch depends on the ConductR mode or if you want to use an
 
 ### Elasticsearch on Standalone ConductR cluster
 
-To deploy Elasticsearch to your standalone ConductR cluster, use the `conductr-elasticsearch` bundle. This bundle is hosted in the [Typesafe bundles](https://bintray.com/typesafe/bundle/conductr-elasticsearch) repository on Bintray. The CLI will resolve the bundle from Bintray when specifying the bundle name `conductr-elasticsearch` during `conduct load`. Also, a default configuration for a typical production environment has been provided in the [bundle-configuration](https://bintray.com/typesafe/bundle-configuration/elasticsearch-prod) repository.
+To deploy Elasticsearch to your standalone ConductR cluster, use the `conductr-elasticsearch` bundle.
+ This bundle is hosted in the [Typesafe bundles](https://bintray.com/typesafe/bundle/conductr-elasticsearch) repository on Bintray.
+ The CLI will resolve the bundle from Bintray when specifying the bundle name `conductr-elasticsearch` during `conduct load`.
+ The `conductr-elasticsearch` bundle will run as a single node without any configuration.
+ A clustering configuration more typical of a production environment has been provided in the [bundle-configuration](https://bintray.com/typesafe/bundle-configuration/elasticsearch-prod) repository.
+ One should run multiple instances when using production mode to avoid data loss.
 
 `conductr-elasticsearch` is using the the role `elasticsearch`. Make sure that the ConductR Agent nodes which should run Elasticsearch have this role assigned in `conductr-agent.ini`. This role will determine which nodes will be eligible to run `conductr-elasticsearch` and are to be configured accordingly.
 
