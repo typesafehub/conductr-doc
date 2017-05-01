@@ -27,13 +27,7 @@ Install Java 8 as the default JRE on the system.
 On Ubuntu 14.10 and newer, you can use the built in package manager.
 
 ```bash
-sudo apt-get install openjdk-8-jdk
-```
-
-Note, newly launched instances may require a repository update, for example on Ubuntu and Debian run:
-
-```bash
-sudo apt-get update
+sudo apt-get update && sudo apt-get install openjdk-8-jdk
 ```
 
 On RHEL/CentOS 7, you can use the built in package manager.
@@ -172,6 +166,8 @@ The ConductR Agent service runs under the `conductr-agent` user along with the `
 
 Lightbend's consolidated logging feature is based upon Elasticsearch and requires access to an Elasticsearch engine
  to work using the default configuration.
+ Please note that Elasticsearch is not required however `conduct logs` and `conduct events` does require
+ Elasticsearch as described in [[Consolidated logging|ConsolidatedLogging]].
  The [[Consolidated logging|ConsolidatedLogging]] section describes the steps required which allow you to select the
  appropriate logging method for you.
 
@@ -201,9 +197,6 @@ Similarly for ConductR Agent:
 
 ```
 
-Please note that Elasticsearch is not required however `conduct logs` and `conduct events` does require
- Elasticsearch as described in [[Consolidated logging|ConsolidatedLogging]].
-
 ### Optional dependencies
 
 #### Docker
@@ -222,7 +215,7 @@ ConductR supports running applications and services within Docker. If you plan o
 _Repeat each step in this section also on the `172.17.0.2` and `172.17.0.3` machine._
 
 For a three node cluster, we recommend that you install both the Core and Agent on all three nodes.
-For larger clusters, 3 core-only nodes can manage many agent-only nodes. An Agent must be install for a node to execute bundles.
+For larger clusters, 3 core-only nodes can manage many agent-only nodes. An Agent must be installed for a node to be able execute bundles.
 
 First ensure that the following ports are available between the machines forming the cluster:
 
@@ -957,9 +950,12 @@ $ docker run -d --name haproxy  -p $(HOSTIP):80:80 -p $(HOSTIP):443:443 -p $(HOS
 
 The above container has `haproxy` as its name and uses configuration file is located at `/etc/haproxy/haproxy.cfg`. The directory `/etc/haproxy` is mounted within the container on `/usr/local/etc/haproxy`. This will allow updates to `/etc/haproxy/haproxy.cfg` to be visible within the container.
 
-Any application bundle service ports must be exposed for proxying. The container started above exposes the ports `80`, `443`, `8999`, `9000`, `9999`, and `65535.` This is to expose ports for HTTP/HTTPS and statistics as well as for applications on `9000`, ConductR Visualizer on `9999` and for the HAProxy test endpoint. You can include additional ports or port ranges for your endpoints using the `-p` option as required.
+Any application bundle service ports must be exposed for proxying. The container started above exposes the ports `80`, `443`, `8999`, `9000`, `9999`, and `65535.`
+ This is to expose ports for HTTP/HTTPS and statistics as well as for applications on `9000`, ConductR Visualizer on `9999` and for the HAProxy test endpoint.
+ You can include additional ports or port ranges for your endpoints using the `-p` option as required.
 
-NOTE: The ports exposed by the container is bound the address such as`10.0.7.118` to be used as the service delivery interface for the node using the `hostname` command.  You must verify or set your system hostname or otherwise substitute the $(HOSTIP) in the above example with the correct IP address for  your environment.
+NOTE: The ports exposed by the container must be bound to the cluster address, generally the internal IP address, to be used as the service delivery interface for the node using the `hostname` command.
+  You must verify or set your system hostname or otherwise substitute the $(HOSTIP) in the above example with the correct IP address for  your environment.
 
 Run `docker ps -a` to ensure the container has been started successfully.
 
