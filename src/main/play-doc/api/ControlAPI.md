@@ -285,7 +285,7 @@ nrOfCpus            | The minimum number of cpus required to run the bundle (can
 roles               | An array of strings representing the roles that a bundle plays in a ConductR cluster. These roles are matched for eligibility with cluster members when searching for one to load and scale on. Only cluster members with matching roles will be selected.
 scale               | The requested number of instance(s) of the bundle to be started and run.
 services            | An array of string URIs providing the addresses for a given endpoint's proxying.
-system              | The name of a system that the bundle belongs to. Systems are strings that may be used by a number of bundles in order to associate them. ConductR provides a guarantee that bundles belonging to the same system are started with the first one in isolation to the starting of the rest. This behavior can be leverage to form clusters where the first node must form the cluster and other nodes may then join it.
+system              | The name of a cluster system that the bundle belongs to. Cluster systems are strings that may be used by a number of bundles in order to associate them. ConductR provides a guarantee that bundles belonging to the same cluster system are started with the first one in isolation to the starting of the rest. This behavior can be leverage to form clusters where the first node must form the cluster and other nodes may then join it.
 uid                 | The unique identifier of a ConductR member within an `address`
 uniqueAddress       | An object describing the unique address of a member of ConductR's cluster.
 
