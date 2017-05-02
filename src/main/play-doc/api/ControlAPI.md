@@ -213,7 +213,8 @@ Content-Type: application/json
       "diskSpace": {diskSpace},
       "roles": {roles},
       "bundleName": "{bundleName}",
-      "tags": {tags}
+      "tags": {tags},
+      "annotations": {annotations}
     },
     "bundleConfig": {
       "endpoints": {
@@ -272,6 +273,7 @@ endpoints           | The endpoint declaration of a bundle component expressed a
 Field               | Description
 --------------------|------------
 address             | The location of a ConductR member.
+annotations         | An optional HOCON string representing additional metadata that you may wish to associate with a bundle. Key names should be in accordance with the OCI image annotation conventions. Annotations relate to metadata that should be associated with a bundle, but is of no direct concern to ConductR itself. Note that while you may upload many annotations, only those annotations that are declared by ConductR core's `conductr.control-server.core-annotation-paths` will be included here (which, by default, is just `com.lightbend.conductr.application-ids`)
 affinity            | The bundle identifier that references a different bundle. If specified, the current bundle will be run on the same host where the specified bundle is currently running.
 bindPort            | The network port that is used by a bundle component to bind to an interface. This may be the same value as the `hostPort` when running outside of a container.
 bindProtocol        | The network protocol that is used by a bundle component to bind to an interface.
@@ -294,7 +296,7 @@ pid                 | The operating system process identifier of a bundle's supe
 roles               | An array of strings representing the roles that a bundle plays in a ConductR cluster. These roles are matched for eligibility with cluster members when searching for one to load and scale on. Only cluster members with matching roles will be selected.
 scale               | The requested number of instance(s) of the bundle to be started and run.
 services            | An array of string URIs providing the addresses for a given endpoint's proxying.
-system              | The name of a system that the bundle belongs to. Systems are strings that may be used by a number of bundles in order to associate them. ConductR provides a guarantee that bundles belonging to the same system are started with the first one in isolation to the starting of the rest. This behavior can be leverage to form clusters where the first node must form the cluster and other nodes may then join it.
+system              | The name of a cluster system that the bundle belongs to. Cluster systems are strings that may be used by a number of bundles in order to associate them. ConductR provides a guarantee that bundles belonging to the same cluster system are started with the first one in isolation to the starting of the rest. This behavior can be leverage to form clusters where the first node must form the cluster and other nodes may then join it.
 tags                | An array of strings that can be used to further qualify a bundle name. These are often represented as versions e.g. "1.0.0-beta.1", "version1" etc.
 uid                 | The unique identifier of a ConductR member within an `address`
 uniqueAddress       | An object describing the unique address of a member of ConductR's cluster.
