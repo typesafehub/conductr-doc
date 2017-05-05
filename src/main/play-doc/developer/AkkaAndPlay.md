@@ -163,6 +163,7 @@ Cluster(system).registerOnMemberRemoved {
     }
   }.start()
 }
+```
 
 ## play25-conductr-bundle-lib
 
