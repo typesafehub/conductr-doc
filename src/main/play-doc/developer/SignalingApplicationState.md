@@ -20,7 +20,7 @@ The library comes in multiple flavours:
 To use it add one of the libraries as a dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "1.6.0"
+libraryDependencies += "com.typesafe.conductr" %% "scala-conductr-bundle-lib" % "1.9.0"
 ```
 
 The Java and Scala / JDK library have no dependencies other than the JDK and as such, a blocking implementation is used for its HTTP calls (the JDK offers no non-blocking APIs for this). Using the Akka or Play library will ensure that the library is consistent with the respective Akka or Play application and that non-blocking implementations are used:
@@ -46,25 +46,4 @@ After reading the following sections, you may also wish to refer to [the referen
 
 ConductR uses your application's exit code to determine whether it should be restarted in order to reform the cluster. Following POSIX conventions, applications with non-zero exit codes are considered failed and will be restarted, while applications exiting with exit code 0 will be viewed as having exited normally, and thus ConductR will take no action.
 
-This is particularly important for Akka applications using [Split Brain Resolver](http://doc.akka.io/docs/akka/rp-current/scala/split-brain-resolver.html) with the `registerOnMemberRemoved` callback to shut down the ActorSystem after a split brain downing decision has been made. A non-zero return code must be issued to ensure that ConductR is instructed to recover the cluster to its previous state.
-
-This is how to shut down the ActorSystem and exit the JVM such that the application will be restarted by ConductR after being downed by Split Brain Resolver:
-```scala
-Cluster(system).registerOnMemberRemoved {
-  // exit JVM with a non-zero exit code when ActorSystem has been terminated
-  system.registerOnTermination(System.exit(-1))
-  // shut down ActorSystem
-  system.terminate()
-
-  // In case ActorSystem shutdown takes longer than 10 seconds,
-  // exit the JVM forcefully.
-  // We must spawn a separate thread to not block current thread,
-  // since that would have blocked the shutdown of the ActorSystem.
-  new Thread {
-    override def run(): Unit = {
-      if (Try(Await.ready(system.whenTerminated, 10.seconds)).isFailure)
-        System.exit(-1)
-    }
-  }.start()
-}
-```
+For Akka cluster based applications additionally refer to [how to shut down your service](AkkaAndPlay#Shutting_Down).
