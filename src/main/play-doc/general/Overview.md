@@ -159,7 +159,7 @@ The above declares that the component's static endpoint is http based and binds 
 
 ##### Reactive Starting
 
-A distinctive feature of ConductR is that it relies on bundle components telling it when they have started. The view is that the bundle component is in the best position to signal when it is ready. A small library that only depends on JDK 1.6 is provided and the developer makes one very simple call that will take care of the start-signalling to ConductR. Alternatively the developer may use a publicized HTTP/REST api in order to provide this signal themselves.
+A distinctive feature of ConductR is that it relies on bundle components telling it when they have started. The view is that the bundle component is in the best position to signal when it is ready. A small library with limited dependencies is provided and the developer makes one very simple call that will take care of the start-signalling to ConductR. Alternatively the developer may use a publicized HTTP/REST api in order to provide this signal themselves.
 
 ConductR also provides a fall-back mechanism of polling endpoints to determine whether they have become available. This mechanism is used when a bundle component's source code cannot be adapted.
 

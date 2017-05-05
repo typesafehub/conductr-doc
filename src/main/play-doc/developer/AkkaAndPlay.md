@@ -100,15 +100,14 @@ In order for an application or service to take advantage of this guarantee provi
 
 ```scala
 import com.typesafe.conductr.bundlelib.akka.Env
-import com.typesafe.config.ConfigFactory
+import com.typesafe.conductr.lib.akka.ConnectionContext
 
-val config = Env.asConfig
-val systemName = sys.env.getOrElse("BUNDLE_SYSTEM", "MyApp1")
-val systemVersion = sys.env.getOrElse("BUNDLE_SYSTEM_VERSION", "1")
-val app1 = ActorSystem(s"$systemName-$systemVersion", config.withFallback(ConfigFactory.load()))
+val systemName = Env.mkSystemName("MyApp1")
+val config = Env.asConfig(systemName)
+implicit val app1 = ActorSystem(systemName, config.withFallback(ConfigFactory.load()))
 ```
 
-Clusters will then be formed correctly. The above call of `Env.asConfig` looks for an endpoint named `akka-remote` by default. Therefore you must declare the Akka remoting port as a bundle endpoint. The following endpoint declaration within a `build.sbt` shows how:
+Clusters will then be formed correctly. The above call of `mkSystemName` correctly forms an Akka cluster system name (falling back to `MyApp1` when used outside of ConductR) and `Env.asConfig` looks for an endpoint named `akka-remote` by default. Therefore you must declare the Akka remoting port as a bundle endpoint. The following endpoint declaration within a `build.sbt` shows how:
 
 ```scala
 BundleKeys.endpoints := Map("akka-remote" -> Endpoint("tcp"))
@@ -142,6 +141,30 @@ akka.cluster.down-removal-margin = 30 seconds
 > Always consult the Akka SBR documentation for details on the above parameters and to determine the best strategy for your particular application/service.
 
 With any downing strategy, you should consider the availability requirements of your application/service. If the application/service requires high availability then we suggest running at least 3 instances of it, and always an odd number in order to facilitate downing strategy decisions that rely on quorums (such as "keep majority").
+
+#### Shutting Down
+
+Shutting down is particularly important for Akka applications using [Split Brain Resolver](http://doc.akka.io/docs/akka/rp-current/scala/split-brain-resolver.html) with the `registerOnMemberRemoved` callback to shut down the ActorSystem after a split brain downing decision has been made. A non-zero return code must be issued to ensure that ConductR is instructed to recover the cluster to its previous state.
+
+This is how to shut down the ActorSystem and exit the JVM such that the application will be restarted by ConductR after being downed by Split Brain Resolver:
+```scala
+Cluster(system).registerOnMemberRemoved {
+  // exit JVM with a non-zero exit code when ActorSystem has been terminated
+  system.registerOnTermination(System.exit(-1))
+  // shut down ActorSystem
+  system.terminate()
+
+  // In case ActorSystem shutdown takes longer than 10 seconds,
+  // exit the JVM forcefully.
+  // We must spawn a separate thread to not block current thread,
+  // since that would have blocked the shutdown of the ActorSystem.
+  new Thread {
+    override def run(): Unit = {
+      if (Try(Await.ready(system.whenTerminated, 10.seconds)).isFailure)
+        System.exit(-1)
+    }
+  }.start()
+}
 
 ## play25-conductr-bundle-lib
 
