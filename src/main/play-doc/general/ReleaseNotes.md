@@ -30,6 +30,13 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.0-alpha.4 - Wednesday May 8th, 2017
+
+* Certain annotations may now be explicitly declared in order to be shared across core nodes.
+* Volume support for OCI images.
+* `conductr-haproxy` has been updated so it does not generate backend declarations where there are no actual endpoints - this could cause unexpected 503 errors.
+* Agent re-balancing on the loss of core nodes has been enhanced to catch a situation that would result in "orphaned agents" i.e. agents appearing in the list of agents that should no longer be there.
+
 ## 2.1.0-alpha.3 - Wednesday April 26th, 2017
 
 * Enhanced licensing to exclude counting proxy style agents in the license count e.g. agents with a role of "haproxy". This then prevents proxy style agents from being counted as licensed agents and blocking the potential of non-proxy agents to receive resource offers; particularly on Mesos.
