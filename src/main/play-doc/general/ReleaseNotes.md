@@ -36,6 +36,12 @@ The contents of annotations are generally outside of the scope of what ConductR 
 * Volume support for OCI images.
 * `conductr-haproxy` has been updated so it does not generate backend declarations where there are no actual endpoints - this could cause unexpected 503 errors.
 * Agent re-balancing on the loss of core nodes has been enhanced to catch a situation that would result in "orphaned agents" i.e. agents appearing in the list of agents that should no longer be there.
+* ***Note**: This release has a defect in the `.rpm` and `.deb` agent packages that prevents the agent from starting. As a workaround, run the following command:* 
+    ```bash
+    sudo mkdir -p /home/conductr-agent && \
+    sudo chown conductr-agent:conductr-agent /home/conductr-agent && \
+    sudo systemctl restart conductr-agent
+    ```
 
 ## 2.1.0-alpha.3 - Wednesday April 26th, 2017
 
