@@ -45,7 +45,7 @@ The contents of annotations are generally outside of the scope of what ConductR 
 
 ## 2.1.0-alpha.3 - Wednesday April 26th, 2017
 
-* Enhanced licensing to exclude counting proxy style agents in the license count e.g. agents with a role of "haproxy". This then prevents proxy style agents from being counted as licensed agents and blocking the potential of non-proxy agents to receive resource offers; particularly on Mesos.
+* Enhanced licensing to exclude counting proxy style agents in the license count e.g. agents with a role of "haproxy". This then prevents proxy style agents from being counted as licensed agents and blocking the potential of non-proxy agents to receive resource offers; particularly on Mesos. A consequence of this change is that agent roles are now correctly reported when ConductR is run on DC/OS.
 
 ## 2.1.0-alpha.2
 
