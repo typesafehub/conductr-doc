@@ -8,7 +8,7 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 
 > Note: failure to size your bundle's memory as being large enough will cause the Linux OOM killer to terminate all bundles being managed by a conductr-agent on a given host. This is a [known issue with Mesos](https://issues.apache.org/jira/browse/MESOS-3333#). Unfortunately the problem is also difficult to diagnose. Please ensure that your app has plenty of resident memory declared. Think generally in terms of 128MiB increments when going beyond 384MiB.
 
-## 2.0.6 eslite release Monday, May 10th, 2017
+## 2.0.6 release Monday, May 10th, 2017
 
 1. ConductR HAProxy: ensure frontend is generated only when one or more backend server is present
 2. Fixed a problem with the agent rebalancing given the addition/removal of core members, particularly when both an agent was stopped and the core that looks after that particualr agent is stopped. Prior to this change this could result in orhpaned agents where the "observed by" column of `conduct agents` would be blank indefinitely. Bundles would also be avoided to be scheduled on this agent even if another agent was started for the same machine.
