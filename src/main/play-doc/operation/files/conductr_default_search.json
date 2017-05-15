@@ -8,11 +8,11 @@
       "hits": 0,
       "columns": [
         "header.pri.severity",
-        "data.mdc.bundleName",
+        "data.mdc@49285.bundleId",
         "message",
-        "data.mdc.class",
+        "data.mdc@49285.class",
         "header.hostname",
-        "data.mdc.requestId"
+        "data.mdc@49285.requestId"
       ],
       "sort": [
         "header.timestamp",
