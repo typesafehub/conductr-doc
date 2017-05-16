@@ -20,8 +20,8 @@ The following sub-sections describe each log type and how they are distinguished
 
 Bundle events describe what has happened to a bundle in terms of whether it has loaded, been replicated to a node, scaled up or down, whether resources cannot be found to scale and so forth. The following structured data items determine that a log message represents a bundle event:
 
-* data.mdc@49285.bundleId:`$bundleId` OR data.mdc@49285.bundleId:`$bundleName`
-* data.mdc@49285.tag:conductr
+* `data.mdc@49285.bundleId:$bundleId` OR `data.mdc@49285.bundleId:$bundleName`
+* `data.mdc@49285.tag:conductr`
 
 Note that `$bundleName` is used for some ConductR events where there is no bundle identifier available e.g. when loading a bundle.
 
@@ -29,8 +29,8 @@ Note that `$bundleName` is used for some ConductR events where there is no bundl
 
 Bundle logs provide the stdout and stderr output of your bundle and are identified in a similar manner to events, only there will be no "conductr" tag:
 
-* data.mdc.bundleId:`$bundleId`
-* Missing data.mdc.tag:conductr
+* `data.mdc.bundleId:$bundleId`
+* Missing `data.mdc.tag:conductr`
 
 Note also that the severity level of this log message will indicate `INFO` for stdout and `ERROR` for stderr.
 
@@ -38,7 +38,7 @@ Note also that the severity level of this log message will indicate `INFO` for s
 
 ConductR's logs are always identified given the absence of a bundle identifier tag.
 
-* Missing (data.mdc.bundleId:`$bundleId` AND data.mdc.bundleId:`$bundleName`)
+* Missing (`data.mdc.bundleId:$bundleId` AND `data.mdc.bundleName:$bundleName`)
 
 ## Setting up Elasticsearch
 
@@ -334,23 +334,37 @@ The `Discover` tab has now selected fields in the left field pane. Also, these f
 
 The `conductr_default_search` custom search selects these fields:
 
-Name                | Description
---------------------|---------------------
-Time                | Timestamp
-header.pri.severity | Log level
-data.mdc.bundleName | Name of the bundle. The log messages of ConductR itself do not contain any bundle name.
-message             | Log message
-data.mdc.class      | Application class which produced the log message
-header.hostname     | ConductR node
-data.mdc.requestId  | Unique log message request id
+Name                     | Description
+-------------------------|---------------------
+Time                     | Timestamp
+header.pri.severity      | Log level
+data.mdc@49285.bundleId  | Id of the bundle
+message                  | Log message
+data.mdc@49285.class     | Application class which produced the log message
+header.hostname          | ConductR node
+data.mdc@49285.requestId | Unique log message request id
 
 ### Filtering log messages
 
-Every field can be used to filter log messages. You can also apply multiple filters. To filter the log messages by a bundle add the filter `data.mdc.bundleName` to the search by clicking on `data.mdc.bundleName` in the left field pane. This displays the available bundles you can filter on. Select a bundle by clicking on the respective magnifier icon.
+Every field can be used to filter log messages. You can also apply multiple filters.
+
+#### Filter by bundle
+
+To filter the log messages by a bundle, enter the following search string into the search field. Replace `$bundleId` with the respective bundle id:
+
+```
+data.mdc@49285.bundleId:$bundleId AND _missing_:data.mdc@49285.tag
+```
 
 [[images/kibana_filter_by_bundle.png]]
 
-To select only the log messages from ConductR itself, filter again by bundle name. This time, create a query where the bundle name is `null` by entering `data.mdc.bundleName is null` into the search field:
+#### Filter by ConductR log messages
+
+To select the log messages from the ConductR core and agents nodes itself, filter by a missing bundleId and bundleId:
+
+```
+_missing_:data.mdc@49285.bundleId AND _missing_:data.mdc@49285.bundleName
+```
 
 [[images/kibana_filter_by_conductr.png]]
 
