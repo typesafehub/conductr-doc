@@ -16,7 +16,6 @@ Choose on of the following installation guides to get started:
 
 * x86/64 bit Debian or Rpm based Linux system (recommended: Ubuntu 16.04 LTS or RHEL/CentOS 7)
 * Oracle or OpenJDK Java Runtime Environment 8 (JRE 8)
-* Python 3.4
 * Debian or Rpm package of ConductR Core
 * Debian or Rpm package of ConductR Agent
 
@@ -129,7 +128,7 @@ The IP addresses in the response indicate that ConductR Core is listening to the
 Check for the cluster information once again, but now use the host address of the machine.
 
 ```bash
-[172.17.0.1]$ curl -s $(hostname):9005/v2/members | python3 -m json.tool
+[172.17.0.1]$ conduct members
 ```
 
 The ConductR Core service runs under the `conductr` user along with the `conductr` group. Its pid file is written to: `/var/run/conductr/running.pid` and its install location is `/usr/share/conductr`.
@@ -231,7 +230,7 @@ then
 You should now see a new node in the cluster members list by using the following query:
 
 ```bash
-[172.17.0.2]$ curl -s 172.17.0.2:9005/v2/members | python3 -m json.tool
+[172.17.0.2]$ conduct members
 ```
 
 ### Installing ConductR Agent on the remaining machines
