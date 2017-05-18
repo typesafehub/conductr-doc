@@ -6,6 +6,7 @@ This release broadly consists of the following functionality:
 
 * [Open Container Initiative (OCI) support](#OCI-Support);
 * [a licensing mechanism to enable free usage](#Free-Licensing); and
+* [external service registration](#External-Service-Registration); and
 * [Tagging & Annotations](#Tagging-And-Annotations).
 
 ### OCI Support
@@ -18,6 +19,22 @@ The new licensing mechanism permits a single ConductR Agent to be used absolutel
 
 Please visit the [migration guide](MigrationGuide#Production_Suite_Licensing) for additional instructions.
 
+### External Service Registration
+
+Since 2.0, ConductR has supported a DNS SRV record fallback mechanism for service discovery i.e. if a service cannot be discovered as being hosted by ConductR, then DNS SRV lookups can be performed in order to resolve the service's location. This was disabled for standalone mode, but enabled for DC/OS installation so that Elasticsearch lookups can utilize the DC/OS hosted service.
+
+As of 2.1, ConductR replaces the 2.0 mechanism with something considerably more flexible. Any service name may be registered via ConductR's configuration to exist as an external service given one of the following mappings:
+
+* an explicit IP and port
+* DNS and port
+* DNS SRV host 
+
+One service name may have many mappings. A mapping may also contain user credentials (http basic auth at this point) and a root context path.
+
+The mechanism's most significant advantage comes with not having to re-configure your services to locate services outside of those hosted by ConductR. Therefore Kafka, Elasticsearch, Cassandra and others can be readily located with no code change for your services.
+
+For more information see the [chapter on external service discovery](ExternalServices) in order to determine how this new external service registration feature may be utilized.
+
 ### Tagging and Annotations
 
 #### Tagging
@@ -29,6 +46,18 @@ When selecting a bundle by its bundle name, you may now also use one of a number
 The notion of metadata with containers is quite popular noting that bundles also describe containers. The use-cases for metadata with containers has been popularised with Docker labels, Kubernetes annotations and OCI annotations. As of 2.1, bundles may now hold metadata in the form of annotations. These annotations are very similar to [OCI image annotations](https://github.com/opencontainers/image-spec/blob/master/annotations.md) with the extension that annotation values are expressed using HOCON, specifically [Typesafe Config](https://github.com/typesafehub/config). 
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
+
+## 2.1.0-beta.1 - Wednesday May 24th, 2017
+
+* External service lookup support
+* Rename of "production suite" to "enterprise suite".
+* Various improvements to OCI including volume support.
+* `runtime-config.sh` files can now exist with regular bundles as well as configuration bundles.
+* Improved `check` command given a `--any-addresses` flag that permits any one of a given number of addresses being satisfied to cause the signalling of a successful startup.
+* Fixed two important issues around agent monitoring. One was another edge case around orphaned agents, and the other was around an Akka cluster client issue.
+* There was a problem now fixed when subscribing to /service-hosts/<bundle>/events where no stop events were coming through.
+* Volume support for OCI and Docker containers
+* Fixed a problem in relation to scaling when running OCI within Docker (sandbox/OCI use cases involing a scale of more than one).
 
 ## 2.1.0-alpha.4 - Wednesday May 8th, 2017
 

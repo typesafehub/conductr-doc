@@ -31,7 +31,7 @@ akka {
       unhandled = on
     }
 
-    enable-additional-serialization-bindings = on
+    allow-java-serialization = off
 
     serializers {
       conductr-core-proto  = "com.typesafe.conductr.CoreProtobufSerializer"
@@ -39,10 +39,6 @@ akka {
     }
 
     serialization-bindings {
-      "java.io.Serializable"                     = none
-      "java.lang.String"                         = java
-      "akka.dispatch.sysmsg.Watch"               = java
-
       "com.typesafe.conductr.CoreRemotableMessage"  = conductr-core-proto
       "com.typesafe.conductr.AgentRemotableMessage" = conductr-agent-proto
     }
@@ -91,7 +87,7 @@ akka {
     "akka.cluster.ddata.DistributedData"
   ]
 
-  http.parsing.max-content-length = 200m
+  http.parsing.max-content-length = 1024m
 
   # We fallback on DNS SRV records if we cannot resolve services within ConductR
   io.dns {
@@ -273,6 +269,12 @@ conductr {
     # drop a member from the cluster etc.
     cluster-management-timeout = 5 seconds
 
+    # The amount of time to wait on retrieving a license
+    lookup-license-timeout = 5 seconds
+
+    # The amount of time to wait on loading a license
+    load-license-timeout = 5 seconds
+
     # The amount of time to wait when querying for logs or events for a particular bundle.
     log-repository-lookup-timeout = 5 seconds
 
@@ -294,6 +296,22 @@ conductr {
 
     # The maximum size of a bundle configuration given that it is read into memory
     max-bundle-conf-size = 8k
+
+    # A list of paths into a bundle's annotations that should be retained in memory
+    # with ConductR core. Rather than retain the entire annotation structure, we are
+    # explicit given that there is a cost to gossiping them across the cluster.
+    # By default we include an annotation identified for the purposes of denoting
+    # what "application" a bundle "belongs" to. This particular field ends up
+    # providing a good hint for other tools (such as our GUI) to discern what
+    # "services" (bundles) constitute an application. Note that ConductR core
+    # doesn't concern itself with "applications"; this is purely an external
+    # concern, hence it being an annotation.
+    core-annotation-paths = ["com.lightbend.conductr.application-ids"]
+
+    # The number of bundle configurations we'll cache in memory when requesting
+    # HOCON configuration of a loaded bundle. From a memory consumption perspective,
+    # multiply this value by max-bundle-conf-size.
+    bundle-conf-cache-max-capacity = 50
 
     sse {
       state {
@@ -388,6 +406,7 @@ conductr {
     bundle-scaler-scaling-timeout   = 10 seconds
     bundle-scaler-launching-timeout = 2 minutes
     bundle-scaler-starting-timeout  = 10 minutes
+    bundle-scaler-stopping-timeout  = 2 seconds
 
     # Timeout value for an idle system scaler.
     system-scaler-idle-timeout = 2 minutes
@@ -411,6 +430,18 @@ conductr {
     # bundle scale.
     membership-settling-time = 5 seconds
 
+    # The license agent count applies only to non-proxy nodes; proxy nodes are a bit special and can
+    # be considered as a system service.
+    #
+    # Proxy agents cannot be considered for licensing as this would then mean that a single node cluster wouldn't
+    # be able to run both a proxy agent and a non-proxy agent. Furthermore, if 3 conductr-haproxy agents were brought
+    # online prior to non-proxy agents, and the license limit was 3 agents, then they'd be no capacity to run
+    # regular bundles.
+    #
+    # There is no guarantee as to the order by which agents join the core cluster, hence needing to be
+    # able to exclude proxy agents. Note also that this role consideration is only made when
+    # resource-provider.match-offer-roles is enabled.
+    licensed-agent-excluded-proxy-role = haproxy
   }
 
   service-locator-server {
@@ -422,8 +453,30 @@ conductr {
     # The max time it should take for a service lookup to occur internally.
     locate-timeout = 5 seconds
 
-    # Whether to fallback to DNS SRV lookups if local locator lookups fail
-    dns-srv-fallback = off
+    # This structure provides the ability to configure ConductR with default
+    # translations between a service name and its external addresses. External
+    # addresses are provided as an array and can be one of a resolved address,
+    # a unresolved DNS name along with a port or an unresolved DNS SRV name.
+    # A URI scheme for demarking DNS SRV records is provided and takes inspiration from
+    # https://tools.ietf.org/html/draft-jennings-http-srv-03. In addition to
+    # http+srv and https+srv, tcp+srv and udp+srv are also permitted. Note that
+    # DNS SRV names are often not valid hostnames given the use of the underscore
+    # character. However we interpret DNS SRV hosts using a URI's authority,
+    # additionally adopting the URI convention of userinfo within authority.
+    #
+    # Note that user info and paths may be specified as per URI conventions.
+    #
+    # Examples for all 3 types:
+    #
+    #     external-service-addresses {
+    #       "elastic-search" = [
+    #         "http://10.0.1.1:9005",                                                     # resolved address
+    #         "https://user@pass:my-elastic-search.com:9000/some-path-in",                # unresolved DNS
+    #         "https+srv://_client-port._elasticsearch-executor._tcp.elasticsearch.mesos" # unresolved DNS SRV
+    #       ]
+    #     }
+    #
+    external-service-addresses {}
 
     cache {
       # The max age a service name lookup should be cached for by a client.
@@ -491,13 +544,40 @@ contrail {
 # Lightbend Monitoring configuration
 cinnamon {
 
-  instrumentation = off
+  instrumentation = on
 
-  akka.actors {
-    "/user/*" {
-      report-by = class
+  akka {
+    actors {
+      "/user/*" {
+        report-by = class
+      }
+    }
+
+    cluster {
+      domain-events = on
+      member-events = on
+      singleton-events = on
+      split-brain-resolver-events = on
+    }
+
+    dispatchers {
+      time-information {
+        names = ["*"]
+      }
+    }
+
+    remote {
+      serialization-timing = on
+      failure-detector-metrics = on
     }
   }
+
+  chmetrics {
+    reporters += "statsd-reporter"
+
+    statsd-reporter.dogstatsd.enabled = on
+  }
+
 }
 
 # ConstructR configuration
@@ -825,6 +905,13 @@ conductr {
     launcher-agent-name = "mesos-launcher-agent"
   }
 
+  # We lean on the Mesos Elasticsearch instead of one managed by ConductR
+  service-locator-server {
+    external-service-addresses {
+      "elastic-search" = ["http+srv://_client-port._elasticsearch-executor._tcp.elasticsearch.mesos"]
+    }
+  }
+
   mesos-scheduler-client {
     # The address of the Mesos master instance.
     # The address can be either a Zookeeper or Mesos master address.
@@ -908,8 +995,16 @@ conductr {
     mesos-executor {
       name = "conductr-agent"
 
-      # The start command of a Mesos executor (the conduct agent) that gets invoked on executor startup.
+      # The start command of a Mesos executor (the ConductR agent) that gets invoked on executor startup.
       start-command = "$(pwd)/conductr-agent-*/bin/conductr-agent"
+
+      # Additional settings that are invoked when the ConductR agent is started in Mesos mode.
+      # It is possible to override any system property of the ConductR agent configuration, e.g. akka.loglevel
+      # or options that are used when starting the agent process, e.g. --core-system-name
+      # The specified settings are overwriting the default settings of the start command.
+      # Each setting is separated by a whitespace e.g.
+      # """-Dakka.loglevel="DEBUG" -Dconductr.agent.storage-dir="/some-dir" --core-system-name my-core-system-name"""
+      additional-agent-settings = ""
 
       # Log level of the ConductR agent. Defaults to the loglevel of the ConductR core node.
       loglevel = ${akka.loglevel}
@@ -966,9 +1061,6 @@ conductr {
     dns-srv-fallback = on
   }
 }
-
-# We lean on the Mesos Elasticsearch instead of one managed by ConductR
-contrail.syslog.server.service-locator.service-name = "_client-port._elasticsearch-executor._tcp.elasticsearch.mesos"
 ```
 
 ### ConductR Agent Configuration

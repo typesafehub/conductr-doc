@@ -61,6 +61,150 @@ Returns a list of host and port of the running service given a service name.
 ### Request
 
 ```
+GET {SERVICE_LOCATOR}/v2/service-hosts/{service-name}
+```
+
+Field            | Description
+-----------------|------------
+SERVICE\_LOCATOR | The environment variable value of the same name. This environment variable translates to an http address e.g. `http://10.0.1.22:9008` given that ConductR is running on `10.0.1.22` with a service locator port bound to 9008.
+service-name     | The name of the service required and expressed as a path e.g. `/customers`.
+
+#### Success
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[
+  {
+    "protocol":"http",
+    "ipv4Host":"10.11.23.22",
+    "port":7001
+  },
+  {
+    "protocol":"http",
+    "ipv4Host":"10.11.23.22",
+    "port":7002
+  }
+]
+```
+
+Where `10.11.23.22:7001` and `10.11.23.22:7002` are the host and host port of the service which is currently running. The following table shows the complete list of fields available to a reply:
+
+Field            | Description
+-----------------|------------
+authorization    | This presently holds just `basic` reflecting HTTP basic authorization. Optional.
+ipv4Host         | The IPv4 representation of the address. Optional.
+ipv6Host         | The IPv6 representation of the address. Optional (generally favor IPv6 addresses if there are both).
+path             | The root context path to prepend to any other path in the case of HTTP. Optional.
+port             | The port to connect to.
+protocol         | The protocol to be used for connectivity.
+userInfo         | HTTP user info supplied as a username and password delimited with a `:`. Optional but mandatory if `authorization` reflects `basic`.
+
+#### Success - Empty Result
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+[]
+```
+
+Either the service has not been started, or the service requested cannot be found as it is unknown to ConductR.
+
+#### Failure
+
+Other status codes should also be treated as a failure.
+
+## Receive hosts events
+
+Returns stream of Server Sent Event (SSE) given a service name. The Server Sent Event will be invoked when a particular service is running or stopped.
+
+### Request
+
+```
+GET {SERVICE_LOCATOR}/v2/service-hosts/{service-name}/events?event={event-name}
+```
+
+Field            | Description
+-----------------|------------
+SERVICE\_LOCATOR | The environment variable value of the same name. This environment variable translates to an http address e.g. `http://10.0.1.22:9008` given that ConductR is running on `10.0.1.22` with a service locator port bound to 9008.
+service-name     | The name of the service required and expressed as a path e.g. `/customers`.
+event-name       | Optional. The name of the event to be filtered. Valid values are either `running` or `stopped`.
+
+#### Success
+
+```
+HTTP/1.1 200 OK
+Content-Type: text/event-stream
+
+data:{"protocol":"http","port":7001,"ipv4Host":"10.11.23.22"}
+event:running
+
+data:{"protocol":"http","port":7001,"ipv4Host":"10.11.23.22"}
+event:stopped
+```
+
+Where the two events above indicates the service being running and stopped on `10.11.23.22:7001`.
+
+Heartbeat events are also emitted so that the connection is kept alive through http proxies. SSE heartbeats are empty lines.
+
+As with other [/v2/service-hosts replies](#List-hosts-service), `authorization`, `userinfo`, `ipv6` and `path` may also be supplied.
+
+#### Failure
+
+Other status codes should also be treated as a failure.
+
+## Find host service
+
+Returns the host and port of the running service given a service name and host ip.
+
+### Request
+
+```
+GET {SERVICE_LOCATOR}/v2/service-hosts/{service-name}/{host-ip}
+```
+
+Field            | Description
+-----------------|------------
+SERVICE\_LOCATOR | The environment variable value of the same name. This environment variable translates to an http address e.g. `http://10.0.1.22:9008` given that ConductR is running on `10.0.1.22` with a service locator port bound to 9008.
+service-name     | The name of the service required and expressed as a path e.g. `/customers`.
+host-ip          | The ip address of the service to be queried.
+
+#### Success
+
+```json
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "protocol":"http",
+  "ipv4Host":"10.11.23.22",
+  "port":7001
+}
+```
+
+Where `10.11.23.22:7001` is the host and host port of the service which is currently running.
+
+As with other [/v2/service-hosts replies](#List-hosts-service), `authorization`, `userinfo`, `ipv6` and `path` may also be supplied.
+
+#### Failure
+
+```
+HTTP/1.1 404 Not Found
+```
+
+Either the service is not started, or the service requested cannot be found as it is unknown to ConductR.
+
+Other status codes should also be treated as a failure.
+
+## List hosts service (deprecated - use the [/v2](#List-hosts-service) path instead)
+
+Returns a list of host and port of the running service given a service name.
+
+### Request
+
+```
 GET {SERVICE_LOCATOR}/service-hosts/{service-name}
 ```
 
@@ -98,7 +242,7 @@ Either the service has not been started, or the service requested cannot be foun
 
 Other status codes should also be treated as a failure.
 
-## Receive hosts events
+## Receive hosts events (deprecated - use the [/v2](#Receive-hosts-events) path instead)
 
 Returns stream of Server Sent Event (SSE) given a service name. The Server Sent Event will be invoked when a particular service is running or stopped.
 
@@ -135,7 +279,7 @@ Heartbeat events are also emitted so that the connection is kept alive through h
 
 Other status codes should also be treated as a failure.
 
-## Find host service
+## Find host service (deprecated - use the [/v2](#Find-host-service) path instead)
 
 Returns the host and port of the running service given a service name and host ip.
 

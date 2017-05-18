@@ -13,4 +13,5 @@ DynamicProxyConfiguration:Dynamic proxy configuration
 LogFiles:Log Files
 BundleHousekeeping:Bundle Housekeeping
 ContinuousDeliverySetupOps: Continuous Delivery Setup
+ExternalServices:External Service Discovery
 ConfigurationRef:Configuration Reference
