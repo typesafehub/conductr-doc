@@ -16,7 +16,6 @@ Choose on of the following installation guides to get started:
 
 * x86/64 bit Debian or Rpm based Linux system (recommended: Ubuntu 16.04 LTS or RHEL/CentOS 7)
 * Oracle or OpenJDK Java Runtime Environment 8 (JRE 8)
-* Python 3.4
 * Debian or Rpm package of ConductR Core
 * Debian or Rpm package of ConductR Agent
 
