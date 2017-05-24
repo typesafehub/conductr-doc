@@ -61,7 +61,7 @@ roles                | The types of node in the cluster that this bundle can be 
 service-name	     | Discussed [below](#Endpoints).
 acls     			 | Discussed [below](#Endpoints).
 start-command        | Command line args required to start the component. Paths are expressed relative to the component's bin folder. The default is to use the bash script in the bin folder. Arguments can be passed to a Docker container run command via a special `dockerArgs` command should additional args be required: `start-command = ["dockerArgs","-v","/var/lib/postgresql/data:/var/lib/postgresql/data"]`.
-system               | The name of a cluster system that the bundle belongs to. Cluster systems are strings that may be used by a number of bundles in order to associate them. ConductR provides a guarantee that bundles belonging to the same cluster system are started with the first one in isolation to the starting of the rest. This behavior can be leverage to form clusters where the first node must form the cluster and other nodes may then join it.
+system               | The name of a cluster system that the bundle belongs to. Cluster systems are strings that may be used by a number of bundles in order to associate them. ConductR provides a guarantee that bundles belonging to the same cluster system are started with the first one in isolation to the starting of the rest. This behavior can be leverage to form clusters where the first node must form the cluster and other nodes may then join it. See also [Java memory](CreatingBundles#More-on-memory).
 system-version       | A version to associate with a system. This setting defaults to the value of compatibilityVersion.
 version				 | The version of the bundle.conf file. Should be set to `1`.
 
