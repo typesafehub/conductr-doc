@@ -265,7 +265,7 @@ or
 [172.17.0.1]$ sudo yum install conductr-agent-%PLAY_VERSION%-1.noarch.rpm
 ```
 
-Next, you'll need to configure a couple of settings in `conductr-agent.ini` and grant some privileges. ConductR uses [runc](https://runc.io/) to spawn and run OCI-based bundles. Since `runc` makes use of [cgroups](https://en.wikipedia.org/wiki/Cgroups), the OCI component of ConductR must be granted root access by making an entry in `sudoers`. Great care has been taken to ensure only this component requires root privileges. 
+Next, you'll need to configure a couple of settings in `conductr-agent.ini` and grant some privileges. ConductR uses [runc](https://runc.io/) to spawn and run OCI-based bundles. Since `runc` makes use of [cgroups](https://en.wikipedia.org/wiki/Cgroups), the OCI component of ConductR must be granted root access by making an entry in `sudoers`. Great care has been taken to ensure only this component requires root privileges.
 
 ```bash
 [172.17.0.1]$ echo -Dconductr.agent.ip=$(HOSTIP) | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
@@ -325,6 +325,12 @@ On RHEL and CentOS it may also be neccessary to [disable default requiretty](htt
 
 ```bash
 [172.17.0.1]$ echo 'Defaults: conductr-agent  !requiretty' | sudo tee -a /etc/sudoers
+```
+
+Also if you have SELinux enabled on RHEL and CentOS, execute the following command to allow HAProxy to bind to any port.
+
+```bash
+[172.17.0.1]$ sudo setsebool haproxy_connect_any 1
 ```
 
 HAProxy reload script is located in `/usr/bin/reloadHAProxy.sh` by default. ConductR-HAProxy will install its reload script in this location upon startup.
@@ -678,6 +684,12 @@ On RHEL and CentOS it may also be neccessary to [disable default requiretty](htt
 [172.17.0.1]$ echo 'Defaults: conductr-agent  !requiretty' | sudo tee -a /etc/sudoers
 ```
 
+Also if you have SELinux enabled on RHEL and CentOS, execute the following command to allow HAProxy to bind to any port.
+
+```bash
+[172.17.0.1]$ sudo setsebool haproxy_connect_any 1
+```
+
 #### Optional dependencies
 
 ##### Docker
@@ -890,7 +902,13 @@ We will limit the bundle's sudo privileges to running `/usr/bin/reloadHAProxy.sh
 On RHEL and CentOS it may also be neccessary to [disable default requiretty](https://bugzilla.redhat.com/show_bug.cgi?id=1020147) for the named execution user in `sudoers`.
 
 ```bash
-$ echo 'Defaults: {executor-user}  !requiretty' | sudo tee -a /etc/sudoers
+[172.17.0.1]$ echo 'Defaults: {executor-user}  !requiretty' | sudo tee -a /etc/sudoers
+```
+
+Also if you have SELinux enabled on RHEL and CentOS, execute the following command to allow HAProxy to bind to any port.
+
+```bash
+[172.17.0.1]$ sudo setsebool haproxy_connect_any 1
 ```
 
 Skip the next section and scroll down to ["Loading and Running ConductR-HAProxy Bundle"](#Loading_and_Running_ConductR-HAProxy_Bundle).
