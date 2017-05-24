@@ -8,7 +8,7 @@ Choose on of the following installation guides to get started:
 
 # Linux Installation
 
-> In order to obtain the Debian or RPM installations of ConductR then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
+> In order to obtain the Debian or RPM installations of ConductR then please [visit our downloads page](https://www.lightbend.com/product/conductr/download). To get started with ConductR in general then [please visit our getting started page](https://www.lightbend.com/platform/enterprise-suite).
 
 > This is a tutorial for installing ConductR on Linux in production mode. It shows how this is done for a small cluster of 3 machines. If you are looking for a non-production Linux installation (for example, a QA environment that is close to production), be sure to read about [how to setup for non-production](ClusterSetupConsiderations#Setting-up-for-non-production) after reading the remainder of this page.
 
@@ -815,9 +815,7 @@ The following guide will outline the steps to deploy and run ConductR as a frame
 
 ## Deploy ConductR into DC/OS cluster
 
-Obtain the ConductR's application definition JSON.
-
-> In order to obtain the JSON required for installations of ConductR on DC/OS then please [contact our sales department](https://www.lightbend.com/company/contact). To evaluate ConductR in general then [please visit our product page](http://www.lightbend.com/products/conductr) which provides instructions on getting started. Otherwise if you are looking to use ConductR for free from a development perspective then please [head over to our developer section](DevQuickStart).
+[Obtain the ConductR's application definition JSON](https://www.lightbend.com/product/conductr/dcosdownload).
 
 In `Services`, post the JSON file to deploy the ConductR Service. This can be done using json mode of the 'Deploy New Service' dialog. Refer to DC/OS documentation for deployment steps given the application definition JSON.
 
