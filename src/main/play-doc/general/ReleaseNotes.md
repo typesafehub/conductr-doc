@@ -8,6 +8,10 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 
 > Note: failure to size your bundle's memory as being large enough will cause the Linux OOM killer to terminate all bundles being managed by a conductr-agent on a given host. This is a [known issue with Mesos](https://issues.apache.org/jira/browse/MESOS-3333#). Unfortunately the problem is also difficult to diagnose. Please ensure that your app has plenty of resident memory declared. Think generally in terms of 128MiB increments when going beyond 384MiB.
 
+## 2.0.7 release Friday, May 26th, 2017
+
+1. Fixed two important issues around agent monitoring. One was another edge case around orphaned agents, and the other was around an Akka cluster client issue. We strongly recommend updating to this release in order to improve resilience around agent connectivity.
+
 ## 2.0.6 release Monday, May 10th, 2017
 
 1. ConductR HAProxy: ensure frontend is generated only when one or more backend server is present
