@@ -511,7 +511,8 @@ Content-Type: application/json
   {
     "address": "{address}",
     "roles": {roles},
-    "observedBy": {observed-by}
+    "observedBy": {observed-by},
+    "resourceAvailable": {resourceAvailable}
   }
 ]
 ```
@@ -523,6 +524,7 @@ Field               | Description
 address             | A uri describing the agent node.
 roles               | An array of strings representing the roles that the ConductR cluster agent is able to handle. Role names are user-supplied with exception to `web`.
 observedBy          | An array of ConductR core members that the agent has connected to. An agent is generally connected to just one core member at a time, but it is possible for there to be zero, or more than one for a short period of time during re-connects.
+resourceAvailable   | An optional field indicating the number of CPU cores, memory (bytes) and disk space (bytes), available to the agent's machine.
 
 
 #### Failure

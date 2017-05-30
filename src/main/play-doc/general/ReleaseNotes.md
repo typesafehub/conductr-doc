@@ -47,6 +47,10 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.0-beta.2 - ???
+
+* The /agents endpoint now returns a field named `resourceAvailable` where such information is available. The field describes the resources available to the agent's machine.
+
 ## 2.1.0-beta.1 - Wednesday May 24th, 2017
 
 * External service lookup support
