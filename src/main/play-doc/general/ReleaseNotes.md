@@ -50,6 +50,7 @@ The contents of annotations are generally outside of the scope of what ConductR 
 ## 2.1.0-beta.2 - ???
 
 * The /agents endpoint now returns a field named `resourceAvailable` where such information is available. The field describes the resources available to the agent's machine.
+* A `hostName` is now also returned when performing a service locator lookup - if there is one. This is done so that TLS connections can be correctly established with external services.
 
 ## 2.1.0-beta.1 - Wednesday May 24th, 2017
 

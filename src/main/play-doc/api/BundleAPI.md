@@ -41,7 +41,7 @@ Cache-Control: max-age={max-age}
 
 Field        | Description
 -------------|------------
-location-url | The location of the requested service less the first component which is the service name, but including any trailing parts to the path requested e.g. `/customers/123` would result in `http://10.0.1.22:10121/123` supposing that service's host address is `10.0.1.22`, and the endpoint service host port is `10121`. If the protocol for the service was TCP then that will be reflected in the returned location's protocol field. For example looking up `/jms` may yield `tcp://10.0.1.22:10121`.
+location-url | The location of the requested service less the first component which is the service name, but including any trailing parts to the path requested e.g. `/customers/123` would result in `http://10.0.1.22:10121/123` supposing that service's host address is `10.0.1.22`, and the endpoint service host port is `10121`. If the protocol for the service was TCP then that will be reflected in the returned location's protocol field. For example looking up `/jms` may yield `tcp://10.0.1.22:10121`. Note also that if a service has a hostname then this hostname will be returned in place of an IP address. Hostnames are required for TLS connectivity in order to validate certificates.
 max-age      | The Time-To-Live (TTL) seconds before it is recommended to retain any previous value returned by this service. You should also evict any cached value if any subsequent request on the `location-url` fails.
 
 #### Failure
@@ -94,6 +94,7 @@ Where `10.11.23.22:7001` and `10.11.23.22:7002` are the host and host port of th
 Field            | Description
 -----------------|------------
 authorization    | This presently holds just `basic` reflecting HTTP basic authorization. Optional.
+hostName         | The hostname associated with the service. Optional.
 ipv4Host         | The IPv4 representation of the address. Optional.
 ipv6Host         | The IPv6 representation of the address. Optional (generally favor IPv6 addresses if there are both).
 path             | The root context path to prepend to any other path in the case of HTTP. Optional.
