@@ -50,7 +50,7 @@ http://dcos-host/mesos >> Find the executor with a task name "conductr-agent-boo
 * Find the pid of the ConductR executor:
 
 ```bash
-ps aux | grep [c]onductr.agent.ConductRAgent | awk '{print $2}'
+ps aux | grep [c]onductr.agent.ConductrAgent | awk '{print $2}'
 ```
 
 * Terminate the executor on the host by using the retrieved pid:
