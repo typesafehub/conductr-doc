@@ -1,24 +1,32 @@
 # Consolidated Logging
 
-When multiple machines are involved in a cluster, it quickly becomes difficult to view the log files of distributed applications. ConductR allows the logging output of itself and the bundles that it executes to be directed to a "syslog collector". Syslog is a widely used protocol for UNIX-based machines and is supported by a number of cloud-based log providers, as well as local operating system support.
+When multiple machines are involved in a cluster, it quickly becomes difficult to view the log files of distributed applications.
+ ConductR allows the logging output of itself and the bundles that it executes to be directed to a "syslog collector".
+ Syslog is a widely used protocol for UNIX-based machines and is supported by a number of cloud-based log providers, as well as local operating system support.
 
-The syslog collector can send the log messages to any kind of logging solution. ConductR provides bundles for Elasticsearch and Kibana as an opt-in logging infrastructure. How to configure Elasticsearch and Kibana or other popular logging solutions are described in the next sections.
+The syslog collector can send the log messages to any kind of logging solution. ConductR provides bundles for Elasticsearch
+ and Kibana as an opt-in logging infrastructure. How to configure Elasticsearch and Kibana or other popular logging solutions
+ are described in the next sections.
 
 ## Logging Structure
 
-Before discussing the types of logging available to you, it will be useful to understand the nature of ConductR logs. There are 3 types of logs:
+Before discussing the types of logging available to you, it will be useful to understand the nature of ConductR logs.
+ There are 3 types of logs:
 
 1. Bundle events
 2. Bundle logs
 3. ConductR logs
 
-All of these types of logs will be sent to the one log collector. They are distinguished given [Syslog's definition of structured data](https://tools.ietf.org/html/rfc5424) and ConductR's usage of it.
+All of these types of logs will be sent to the one log collector. They are distinguished given
+ [Syslog's definition of structured data](https://tools.ietf.org/html/rfc5424) and ConductR's usage of it.
 
 The following sub-sections describe each log type and how they are distinguished.
 
 ### Bundle Events
 
-Bundle events describe what has happened to a bundle in terms of whether it has loaded, been replicated to a node, scaled up or down, whether resources cannot be found to scale and so forth. The following structured data items determine that a log message represents a bundle event:
+Bundle events describe what has happened to a bundle in terms of whether it has loaded, been replicated to a node,
+ scaled up or down, whether resources cannot be found to scale and so forth. The following structured data items
+ determine that a log message represents a bundle event:
 
 * `data.mdc@49285.bundleId:$bundleId` OR `data.mdc@49285.bundleId:$bundleName`
 * `data.mdc@49285.tag:conductr`
@@ -27,7 +35,8 @@ Note that `$bundleName` is used for some ConductR events where there is no bundl
 
 ### Bundle Logs
 
-Bundle logs provide the stdout and stderr output of your bundle and are identified in a similar manner to events, only there will be no "conductr" tag:
+Bundle logs provide the stdout and stderr output of your bundle and are identified in a similar manner to events,
+ only there will be no "conductr" tag:
 
 * `data.mdc.bundleId:$bundleId`
 * Missing `data.mdc.tag:conductr`
@@ -183,7 +192,7 @@ Specify the ingest node bulk endpoint of your customized Elasticsearch instance 
 echo \
   -Dconductr.service-locator-server.external-service-addresses.elastic-search.0=https://<user>:<password>@es.rsyslog-service.com:443/api/v1/<dataspace>/ingest/elasticsearch/ \
   sudo tee -a /usr/share/conductr/conf/conductr.ini
-sudo /etc/init.d/conductr restart
+sudo service conductr restart
 ```
 
 The Elasticsearch bundle that we provide in Standalone mode has been configured to support back-pressure when receiving
@@ -373,23 +382,23 @@ To configure ConductR Core for RSYSLOG:
 echo \
   -Dconductr.service-locator-server.external-service-addresses.elastic-search.0=http://127.0.0.1:514 \
   sudo tee -a /usr/share/conductr/conf/conductr.ini
-sudo /etc/init.d/conductr restart
+sudo service conductr restart
 ```
 
 ...and to configure RSYSLOG:
 
 ```bash
-[172.17.0.1]$ echo '$ModLoad imtcp' | sudo tee -a /etc/rsyslog.d/conductr.conf
-[172.17.0.1]$ echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
-[172.17.0.1]$ sudo service rsyslog restart
+echo '$ModLoad imtcp' | sudo tee -a /etc/rsyslog.d/conductr.conf
+echo '$InputTCPServerRun 514' | sudo tee -a /etc/rsyslog.d/conductr.conf
+sudo service rsyslog restart
 ```
 
 Viewing `/var/log/syslog` (Ubuntu) or `/var/log/messages` (RHEL) will then show ConductR and bundle output.
 
 ## Setting up Humio
 
-A popular cloud service is [Humio](https://humio.com/). Humio is a service for viewing distributed logs
- with "like tail and grep with aggregations and graphs built-in". Once you create an account with Humio, you will be provided with a host and ingest token.
+A popular cloud service is [Humio](https://humio.com/). Humio is a log management service for developers
+ that is "like tail and grep with aggregations and graphs built-in". Once you create an account with Humio, you will be provided with a host and ingest token.
  With this information, you can configure a static endpoint.
 
 Supposing that the host assigned to your at Humio is `go.humio.com` you configure ConductR Core as:
@@ -399,10 +408,10 @@ Supposing that the host assigned to your at Humio is `go.humio.com` you configur
 echo \
   -Dconductr.service-locator-server.external-service-addresses.elastic-search.0=https://<ingest token>@go.humio.com:443/api/v1/dataspaces/<dataspace>/ingest/elasticsearch/ \
   sudo tee -a /usr/share/conductr/conf/conductr.ini
-sudo /etc/init.d/conductr restart
+sudo service conductr restart
 ```
 Where `<ingest token>` is your Humio `ingest token` and `<dataspace>` the name of your `dataspace`.
- See [https://go.humio.com/docs/integrations/log-shippers/logstash/index.html] for further details.
+ See the [Humio Doc](https://go.humio.com/docs/integrations/log-shippers/logstash/index.html) for further details.
 
 ## Other solutions
 
@@ -421,7 +430,7 @@ To view ConductR Core logs at `debug` level, configure ConductR as:
 echo \
   -Dakka.loglevel=debug | \
   sudo tee -a /usr/share/conductr/conf/conductr.ini
-sudo /etc/init.d/conductr restart
+sudo service conductr restart
 ```
 
 similarly for the ConductR Agent:
@@ -430,7 +439,7 @@ similarly for the ConductR Agent:
 echo \
   -Dakka.loglevel=debug | \
   sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-sudo /etc/init.d/conductr-agent restart
+sudo service conductr-agent restart
 ```
 
 With this setting only ConductR `debug` level logs will be visible. In other words, `debug` level messages from frameworks and libraries utilized by ConductR will not be visible.
@@ -442,7 +451,7 @@ echo \
   -Droot.loglevel=debug \
   -Dakka.loglevel=debug | \
   sudo tee -a /usr/share/conductr/conf/conductr.ini
-sudo /etc/init.d/conductr restart
+sudo service conductr restart
 ```
 
 similarly for the ConductR Agent:
@@ -452,7 +461,7 @@ echo \
   -Droot.loglevel=debug \
   -Dakka.loglevel=debug | \
   sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-sudo /etc/init.d/conductr-agent restart
+sudo service conductr-agent restart
 ```
 
 With this setting debug messages from various frameworks and libraries utilized by ConductR will be visible, e.g. debug messages from Akka.
