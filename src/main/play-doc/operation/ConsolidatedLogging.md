@@ -174,38 +174,32 @@ In case you modify the name of the Elasticsearch service, please override the ab
 
 ### External Elasticsearch cluster
 
-You can configure ConductR to use another Elasticsearch cluster for events and logging. Here are some considerations for you if you should choose this path.
+You can configure ConductR to use another Elasticsearch cluster for events and logging.
+ Here are some considerations for you if you should choose this path.
 
-Firstly, you must tell ConductR Core where your customized Elasticsearch instance is, and also turn off ConductR service locating it given the fixed location:
+Specify the ingest node bulk endpoint of your customized Elasticsearch instance in the ConductR Core configuration file:
 
 ```bash
 echo \
-  -Dcontrail.syslog.server.host=<some-ip> \
-  -Dcontrail.syslog.server.port=<some-port> \
-  -Dcontrail.syslog.server.service-locator.enabled=off | \
+  -Dconductr.service-locator-server.external-service-addresses.elastic-search.0=https://<user>:<password>@es.rsyslog-service.com:443/api/v1/<dataspace>/ingest/elasticsearch/ \
   sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo /etc/init.d/conductr restart
 ```
 
-similarly for ConductR Agent:
-
-```bash
-echo \
-  -Dcontrail.syslog.server.host=<some-ip> \
-  -Dcontrail.syslog.server.port=<some-port> \
-  -Dcontrail.syslog.server.service-locator.enabled=off | \
-  sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-sudo /etc/init.d/conductr-agent restart
-```
-
-The Elasticsearch bundle that we provide in Standalone mode has been configured to support back-pressure when receiving event and logging data from ConductR. By default, Elasticsearch will accept bulk index requests regardless of whether it will process them. This means that under certain load conditions, Elasticsearch could lose data being sent to it. To counter this, here is the configuration we use for Elasticsearch (we have chosen a sharding factor of 5, substitute yours accordingly):
+The Elasticsearch bundle that we provide in Standalone mode has been configured to support back-pressure when receiving
+ event and logging data from ConductR. By default, Elasticsearch will accept bulk index requests regardless of whether
+ it will process them. This means that under certain load conditions, Elasticsearch could lose data being sent to it.
+ To counter this, here is the configuration we use for Elasticsearch (we have chosen a sharding factor of 5, substitute yours accordingly):
 
 ```
 threadpool.bulk.type: fixed
 threadpool.bulk.queue_size: 5
 ```
 
-The goal of the above settings is for Elasticsearch to reject bulk index requests if it does not have the resources to process them immediately. In the case of ConductR as a provider of bulk index messages, ConductR will buffer its messages until Elasticsearch is ready to process them. ConductR will also roll up messages within its buffer and prioritize them by severity (lowest priority messages are rolled up first).
+The goal of the above settings is for Elasticsearch to reject bulk index requests if it does not have the resources to
+ process them immediately. In the case of ConductR as a provider of bulk index messages, ConductR will buffer its
+ messages until Elasticsearch is ready to process them. ConductR will also roll up messages within its buffer and
+ prioritize them by severity (lowest priority messages are rolled up first).
 
 Here are some cluster settings to consider for Elasticsearch:
 
@@ -370,30 +364,16 @@ _missing_:data.mdc@49285.bundleId AND _missing_:data.mdc@49285.bundleName
 
 ## Setting up RSYSLOG
 
-ConductR logs via the syslog protocol using TCP destined conventionally on port 514. Debian distributions such as Ubuntu come with the [RSYSLOG](http://www.rsyslog.com/) logging service and so its configuration is shown next. Other distributions may require installing RSYSLOG.
+ConductR logs via the syslog protocol using TCP destined conventionally on port 514.
+ Debian distributions such as Ubuntu come with the [RSYSLOG](http://www.rsyslog.com/) logging service and so its configuration is shown next. Other distributions may require installing RSYSLOG.
 
 To configure ConductR Core for RSYSLOG:
 
 ```bash
 echo \
-  -Dcontrail.syslog.server.host=127.0.0.1 \
-  -Dcontrail.syslog.server.port=514 \
-  -Dcontrail.syslog.server.elasticsearch.enabled=off \
-  -Dcontrail.syslog.server.service-locator.enabled=off | \
+  -Dconductr.service-locator-server.external-service-addresses.elastic-search.0=http://127.0.0.1:514 \
   sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo /etc/init.d/conductr restart
-```
-
-and ConductR Agent:
-
-```bash
-echo \
-  -Dcontrail.syslog.server.host=127.0.0.1 \
-  -Dcontrail.syslog.server.port=514 \
-  -Dcontrail.syslog.server.elasticsearch.enabled=off \
-  -Dcontrail.syslog.server.service-locator.enabled=off | \
-  sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-sudo /etc/init.d/conductr-agent restart
 ```
 
 ...and to configure RSYSLOG:
@@ -406,41 +386,30 @@ sudo /etc/init.d/conductr-agent restart
 
 Viewing `/var/log/syslog` (Ubuntu) or `/var/log/messages` (RHEL) will then show ConductR and bundle output.
 
-## Setting up Papertrail
+## Setting up Humio
 
-A popular cloud service is [Papertrail](https://papertrailapp.com/). Papertrail is a very simple "tail like" service for viewing distributed logs. Once you configure an account with Papertrail, you will be provided with a host and port. With this information, you can configure a static endpoint.
+A popular cloud service is [Humio](https://humio.com/). Humio is a service for viewing distributed logs
+ with "like tail and grep with aggregations and graphs built-in". Once you create an account with Humio, you will be provided with a host and ingest token.
+ With this information, you can configure a static endpoint.
 
-**Important**: ConductR logs over TCP so make sure that you configure papertrail so that it accepts plain text connections: _Accounts/Log Destinations/Edit Settings/Accept connections via_
+Supposing that the host assigned to your at Humio is `go.humio.com` you configure ConductR Core as:
 
-Supposing that the address assigned to your at Papertrail is `logs2.papertrailapp.com` and `38564`  you configure ConductR Core as:
 
 ```bash
 echo \
-  -Dcontrail.syslog.server.host=logs2.papertrailapp.com \
-  -Dcontrail.syslog.server.port=38564 \
-  -Dcontrail.syslog.server.elasticsearch.enabled=off \
-  -Dcontrail.syslog.server.service-locator.enabled=off | \
+  -Dconductr.service-locator-server.external-service-addresses.elastic-search.0=https://<ingest token>@go.humio.com:443/api/v1/dataspaces/<dataspace>/ingest/elasticsearch/ \
   sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo /etc/init.d/conductr restart
 ```
-
-and ConductR Agent as:
-
-```bash
-echo \
-  -Dcontrail.syslog.server.host=logs2.papertrailapp.com \
-  -Dcontrail.syslog.server.port=38564 \
-  -Dcontrail.syslog.server.elasticsearch.enabled=off \
-  -Dcontrail.syslog.server.service-locator.enabled=off | \
-  sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
-sudo /etc/init.d/conductr-agent restart
-```
+Where `<ingest token>` is your Humio `ingest token` and `<dataspace>` the name of your `dataspace`.
+ See [https://go.humio.com/docs/integrations/log-shippers/logstash/index.html] for further details.
 
 ## Other solutions
 
-ConductR is compatible with any log aggregator speaking the syslog protocol. The log messages of a bundle are written to `stdout` and `stderr`. When using another logging infrastructure we recommend to deploy this infrastructure inside the ConductR cluster. You do not want to send lots of log traffic across the internet. Another approach is to use a syslog collector such as [rsyslog](http://www.rsyslog.com/) to filter the log messages before sending them to the logging cloud service.
-
-**Important**: ConductR logs over TCP so make sure that configure your logging infrastructure accordingly.
+ConductR is compatible with any log aggregator speaking the syslog protocol.
+ The log messages of a bundle are written to `stdout` and `stderr`. When using another logging infrastructure we recommend
+ to deploy this infrastructure inside the ConductR cluster. You do not want to send lots of log traffic across the internet.
+ Another approach is to use a syslog collector such as [rsyslog](http://www.rsyslog.com/) to filter the log messages before sending them to the logging cloud service.
 
 ## Controlling ConductR log level
 
