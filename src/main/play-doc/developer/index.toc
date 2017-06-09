@@ -5,6 +5,7 @@ ConductrSandbox:Managing ConductR sandbox
 CreatingBundles: Creating bundles
 DeployingBundles:Deploying bundles
 BundleConfiguration:Bundle configuration
+SandboxBundleDev: Sandbox bundle development
 ResolvingServices:Resolving other services
 AkkaAndPlay:Bundle library flavors
 BundleEnvironmentVariables:Environment variables
