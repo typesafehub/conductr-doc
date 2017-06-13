@@ -47,10 +47,17 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
-## 2.1.0-beta.2 - ???
+## 2.1.0 - Thursday June 13th, 2017
+
+* OCI dependency updates
+* Akka updates which fixes a customer-reported remoting bug along with various other bug fixes
+
+## 2.1.0-rc.1 - Wednesday June 7th, 2017
 
 * The /agents endpoint now returns a field named `resourceAvailable` where such information is available. The field describes the resources available to the agent's machine.
 * A `hostName` is now also returned when performing a service locator lookup - if there is one. This is done so that TLS connections can be correctly established with external services.
+* OCI cgroups functionality such that cpu and memory constraints are automaticallly applied.
+* Graceful agent shutdown now occurs when a Mesos executor is terminated, thus freeing executors from Mesos correctly.
 
 ## 2.1.0-beta.1 - Wednesday May 24th, 2017
 
