@@ -31,7 +31,7 @@ The ConductR Core service must be restarted after changes to the `conductr.ini` 
 
 The configuration file `/usr/share/conductr-agent/conf/conductr-agent.ini` is the primary configuration file for the ConductR Agent service. This file is used to specify ConductR Agent settings, such as `-Dconductr.agent.roles` used during installation. See the comments section of the `conductr-agent.ini` file for more examples.
 
-Akka module configuration can also be set using this file. For example, to assign a ConductR node the roles of `megaIOPS` and `muchMem` instead of the default, `web`, set `akka.cluster.roles` in `conductr-agent.ini`:
+Akka module configuration can also be set using this file. For example, to assign a ConductR node the roles of `megaIOPS` and `muchMem` instead of the default, `web`, set `conductr.agent.roles` in `conductr-agent.ini`:
 
 ```bash
 echo -Dconductr.agent.roles.0=megaIOPS | sudo tee -a /usr/share/conductr-agent/conf/conductr-agent.ini
