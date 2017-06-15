@@ -554,6 +554,7 @@ SG-AGENT-PRIVATE Inbound Rules
 | :------ | :-----  | :---------- | :-------------- | :-------------------------------------------- |
 | SSH     | TCP     | 22          | SG-BASTION      | Remote SSH Access                             |
 | Custom  | TCP     | 2552        | SG-CORE         | Akka Remoting from Core to Agent              |
+| HTTP    | TCP     | 10000-10999 | SG-CORE         | Proxy access from Core to Agent               |
 | HTTP    | TCP     | 10000-10999 | SG-AGENT-PUBLIC | Proxy access from ConductR public agent nodes |
 
 
