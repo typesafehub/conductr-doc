@@ -2,7 +2,9 @@
 
 ConductR's method of delivering third-party service support embraces the [Open Container Initiative](https://www.opencontainers.org/) specifications. A vendor simply needs to provide a Docker or OCI image and ConductR can then take care of deploying and scaling it across your cluster.
 
-We've spent a lot of effort ensuring that essential services will work correctly in a ConductR cluster. Below, you'll find a curated list of common applications and the required arguments to load them into your cluster.
+We've spent a lot of effort ensuring that essential services will work correctly in a ConductR cluster. Below, you'll find a curated list of common applications and the required arguments to load them into your cluster. This is especially useful for getting started quickly during development as installing these services is often not trivial.
+
+Note that operating these services in production requires a lot of domain-specific knowledge. As such, we recommend you weigh the benefits of managing them yourself with ConductR versus using a hosted solution in combination with ConductR's [external service support](ExternalServices).  
 
 * [Elasticsearch](#Elasticsearch)
 * [Kafka](#Kafka)
