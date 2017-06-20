@@ -79,7 +79,7 @@ In the example above the bundle shorthand expression `reactive-maps-backend-regi
 
 ## Built-in bundle resolvers
 
-The CLI comes with built-in URI and Bintray resolvers which comes into play when `conduct load` command is invoked.
+The CLI comes with a number of built-in resolvers that come into play when `conduct load` command is invoked.
 
 ### URI resolver
 
