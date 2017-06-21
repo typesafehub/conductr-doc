@@ -127,7 +127,7 @@ The `javaOptions` values declare the maximum and minimum heap size for your appl
 `BundleKeys.memory` is used for locating machines with enough resources to run your application, and so it is particularly important to size it before you go to production.
 
 ## Producing an OCI bundle with Docker
-ConductR is capable of running images that have been exported from Docker. To do this, you can use the `bndl` tool to convert a Docker image into a ConductR bundle. Behind the scenes, we're using the standard OCI Image format so you can be sure your images are free of vendor lock-in. Additionally, this approach doesn't require Docker to be installed in production; ConductR provides everything necessary to run these images.
+ConductR is capable of running images that have been exported from Docker. To do this, you can use the `bndl` tool to convert a Docker image into a ConductR bundle that employs the OCI Image format. Since this is an open standard, it helps manage vendor lock-in. Additionally, this approach doesn't require Docker to be installed in production; ConductR provides everything necessary to run these images.
 
 The following command will fetch the image `dockercloud/hello-world` with tag `stdout` from DockerHub and load it directly into ConductR. If the tag is omitted, `latest` is used.
 
