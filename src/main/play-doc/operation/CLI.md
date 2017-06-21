@@ -32,6 +32,10 @@ commands:
 ...
 ```
 
+## DC/OS
+
+The CLI is able to integrate with the DC/OS CLI e.g. `dcos conduct info` will render the current ConductR state on DC/OS. To setup CLI integration type `conduct setup-dcos`.
+
 ## Packaging configuration
 
 In addition to consuming services provided by ConductR, the CLI also provides a quick way of packaging custom configuration to a bundle. We will go through most of the CLI features by deploying the Visualizer bundle to ConductR that comes together with the ConductR installation. The Visualizer can be resolved and loaded from the [bundles repo](https://bintray.com/typesafe/bundle) using the `load` command.
@@ -48,18 +52,15 @@ Some applications require additional configuration when deployed to different en
 
 A strong feature of ConductR is that configuration may be coupled with a bundle at the time of loading. Thus a bundle can be associated with different configurations; perhaps one configuration for a test environment, and another for production. Furthermore, different versions of a bundle may be associated with the same configuration. Whatever the combination is, the bundle and its configuration that is loaded may always be distinguished from others given that unique identifiers are returned for them.
 
-Configuration files are executed just before a bundle starts. Let's create a configuration file that exports a `POLL_INTERVAL` environment variable containing a shorter than default poll interval (which is 100ms):
+Let's load the visualizer but specify the `POLL_INTERVAL` environment variable.
 
 ```bash
-cd #back to your home folder so we know where we're playing
-echo "export POLL_INTERVAL=500ms" >> ./visualizer-poll-interval.sh
+conduct load visualizer --env POLL_INTERVAL=500ms
 ```
 
-Once the configuration file is ready, we can load it directly into ConductR. The configuration is always provided as the second parameter to the `conduct load` command.
+This created a *configuration bundle* for you that contains a `runtime-config.sh` file and loaded it alongside the visualizer. This file will be executed by ConductR immediately before it starts your bundle.
 
-```bash
-conduct load visualizer ./visualizer-poll-interval.sh
-```
+> You could also create a `runtime-config.sh` yourself if you needed to implement more advanced logic. For more information on this and other configuration options, see "[Bundle Configuration](../developer/BundleConfiguration)".
 
 ## Accessing the Visualizer
 
@@ -74,10 +75,6 @@ conduct run --host 172.17.0.1 --scale 2 visualizer
 You should see another green circle start spinning, which means that another instance of Visualizer was started. Play around with more `conduct` commands and see how it affects ConductR cluster visualization.
 
 Our aim is to make using Lightbend ConductR by operators akin to using Play by developers; a joyful and productive experience! ConductR starts to shine when used in the context of managing more than 2 nodes; a common scenario for reactive applications. Go and spin those nodes up!
-
-## DC/OS
-
-The CLI is able to integrate with the DC/OS CLI e.g. `dcos conduct info` will render the current ConductR state on DC/OS. To setup CLI integration type `conduct setup-dcos`.
 
 ## HTTP Basic Authentication
 

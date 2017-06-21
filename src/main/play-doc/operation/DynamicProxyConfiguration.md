@@ -200,13 +200,11 @@ The custom reload script in the example above issued the `/usr/local/bin/haproxy
 
 Use the CLI to package the configuration override:
 
-```lang-none
-shazar /tmp/custom-haproxy-conf
-Created digested ZIP archive at ./custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
-
+```bash
+bndl -f configuration /tmp/custom-haproxy-conf -o custom-haproxy-conf.zip
 ```
 
-The generated file `custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip` is the configuration override that can be loaded alongside ConductR HAProxy bundle.
+The generated file `custom-haproxy-conf.zip` is the configuration override that can be loaded alongside ConductR HAProxy bundle.
 
 
 ### Load the custom HAProxy configuration template
@@ -215,7 +213,7 @@ _If there's an existing ConductR HAProxy running within ConductR, the running Co
 
 Once custom configuration override is generated, it can be loaded into ConductR, e.g:
 
-```lang-none
+```bash
 conduct load /tmp/conductr-haproxy-v2-0d24d10cb0d1af9bf9f7e0bf81778a61d2cc001f9393ef035cb343722da3ac87.zip /tmp/custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
 ```
 
@@ -436,13 +434,11 @@ These HTTP ports by will be exposed to the HAProxy docker container when the San
 
 Use the CLI to package the configuration override:
 
-```lang-none
-shazar /tmp/custom-haproxy-conf
-Created digested ZIP archive at ./custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
-
+```bash
+bndl -f configuration -o custom-haproxy-conf.zip /tmp/custom-haproxy-conf
 ```
 
-The generated file `custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip` is the configuration override that can be loaded alongside ConductR HAProxy bundle.
+The generated file `custom-haproxy-conf.zip` is the configuration override that can be loaded alongside ConductR HAProxy bundle.
 
 
 ### Load the custom HAProxy configuration template
@@ -451,8 +447,8 @@ _If there's an existing ConductR HAProxy running within ConductR, the running Co
 
 Once custom configuration override is generated, it can be loaded into ConductR, e.g:
 
-```lang-none
-conduct load /tmp/conductr-haproxy-v2-0d24d10cb0d1af9bf9f7e0bf81778a61d2cc001f9393ef035cb343722da3ac87.zip /tmp/custom-haproxy-conf-ffd0dcf76f4d565424a873022fbb39f3025d4239c87d307be3078b320988b052.zip
+```bash
+conduct load /tmp/conductr-haproxy-v2-0d24d10cb0d1af9bf9f7e0bf81778a61d2cc001f9393ef035cb343722da3ac87.zip custom-haproxy-conf.zip
 ```
 
 In the example above, the files required are placed within the `/tmp` directory. Replace the `/tmp` with the actual path to the files.
@@ -993,7 +989,17 @@ echo -Dconductr-haproxy.configurator.command.0="/bin/bash" | tee -a "${CONFIG_FI
 echo -Dconductr-haproxy.configurator.command.1="$CONFIG_DIR/reload-haproxy-nosudo.sh" | tee -a "${CONFIG_FILE}"
 ```
 
-Finally, you will need to use `shazar` to package the custom configuration bundle before loading it to ConductR as described above.
+Finally, you can use the following command to load `conductr-haproxy` with a custom configuration:
+
+```bash
+conduct load conductr-haproxy /tmp/custom-haproxy-conf
+```
+ 
+Should you wish to save the configuration bundle for use later, the following command will create a bundle file for you instead:
+
+```bash
+bndl /tmp/custom-haproxy-conf -f configuration -o ~/my-conductr-haproxy-config.zip
+```
 
 ## Troubleshooting
 
