@@ -47,6 +47,13 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.1 - Wednesday June 21st, 2017
+
+* There was an ancient bug in scheduling where resource offers were skipped given an ineligible offer followed by an eligible one.
+* Agents now shutdown bundles gracefully when terminating. Prior to this, bundles received SIGKILL on an agent restart/shutdown.
+* There was a problem that manifested in the Visualizer being unable to receive server sent events. This problem was recently introduced by Akka http disallowing `charset` not being accepted on all event endpoints.
+* There was a problem where conductr-haproxy would render a backend element for inactive bundles.
+
 ## 2.1.0 - Thursday June 13th, 2017
 
 * OCI dependency updates
