@@ -8,6 +8,15 @@ When using 2.0 it is important that you revisit your bundle's cpu and memory set
 
 > Note: failure to size your bundle's memory as being large enough will cause the Linux OOM killer to terminate all bundles being managed by a conductr-agent on a given host. This is a [known issue with Mesos](https://issues.apache.org/jira/browse/MESOS-3333#). Unfortunately the problem is also difficult to diagnose. Please ensure that your app has plenty of resident memory declared. Think generally in terms of 128MiB increments when going beyond 384MiB.
 
+## 2.0.8 release Wednesday, June 21st, 2017
+
+1. There was an ancient bug in scheduling where resource offers were skipped given an ineligible offer followed by an eligible one.
+2. Agents now shutdown bundles gracefully when terminating. Prior to this, bundles received SIGKILL on an agent restart/shutdown.
+3. There was a problem that manifested in the Visualizer being unable to receive server sent events. This problem was recently introduced by Akka http disallowing `charset` not being accepted on all event endpoints.
+4. There was a problem where conductr-haproxy would render a backend element for inactive bundles.
+5. Dependency refresh to the latest Akka 2.4 including an important bug fix for Akka remoting.
+6. Mesos executor shutdown is now performed with more grace.
+
 ## 2.0.7 release Friday, May 26th, 2017
 
 1. Fixed two important issues around agent monitoring. One was another edge case around orphaned agents, and the other was around an Akka cluster client issue. We strongly recommend updating to this release in order to improve resilience around agent connectivity.
