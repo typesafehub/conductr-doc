@@ -1039,8 +1039,8 @@ conductr {
           # Port range reserved for exposing endpoints for running bundles within ConductR.
           # ConductrR agent's port allocator settings will be configured based on this port range.
           allocated-ports = {
-            start = 10000
-            end = 10999
+            start = 11000
+            end = 11999
           }
 
           # Ports opened by the Agents to proxy requests from its Bundles to ConductR Core services, i.e.
