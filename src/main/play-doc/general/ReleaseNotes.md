@@ -1,5 +1,22 @@
 # ConductR release notes
 
+## 2.1.3
+* Update [DNS service locator](https://github.com/typesafehub/service-locator-dns) to `1.0.2`. This will ensure the hostname of an SRV record is properly forwarded.
+
+## 2.1.2
+
+* Upgrade to Akka HTTP `10.0.8`.
+* Ensure that Control Protocol API routing is sealed thus preserving rejections.
+* Move allocated port range in DCOS mode to avoid conflict with Marathon LB.
+* Improve bundle termination when Agent is unexpectedly terminated.
+
+## 2.1.1
+
+* Allow for several text/event-stream accept headers.
+* Visualizer no longer uses charset in accept headers.
+* Improvement on Agent's allowing bundle to gracefully stop when shutting down.
+* Fix scheduling bug where remaining resource offers are skipped given an ineligible offer.
+
 ## 2.1
 
 This release broadly consists of the following functionality:
@@ -27,7 +44,7 @@ As of 2.1, ConductR replaces the 2.0 mechanism with something considerably more 
 
 * an explicit IP and port
 * DNS and port
-* DNS SRV host 
+* DNS SRV host
 
 One service name may have many mappings. A mapping may also contain user credentials (http basic auth at this point) and a root context path.
 
@@ -43,7 +60,7 @@ When selecting a bundle by its bundle name, you may now also use one of a number
 
 #### Annotations
 
-The notion of metadata with containers is quite popular noting that bundles also describe containers. The use-cases for metadata with containers has been popularised with Docker labels, Kubernetes annotations and OCI annotations. As of 2.1, bundles may now hold metadata in the form of annotations. These annotations are very similar to [OCI image annotations](https://github.com/opencontainers/image-spec/blob/master/annotations.md) with the extension that annotation values are expressed using HOCON, specifically [Typesafe Config](https://github.com/typesafehub/config). 
+The notion of metadata with containers is quite popular noting that bundles also describe containers. The use-cases for metadata with containers has been popularised with Docker labels, Kubernetes annotations and OCI annotations. As of 2.1, bundles may now hold metadata in the form of annotations. These annotations are very similar to [OCI image annotations](https://github.com/opencontainers/image-spec/blob/master/annotations.md) with the extension that annotation values are expressed using HOCON, specifically [Typesafe Config](https://github.com/typesafehub/config).
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
@@ -77,7 +94,7 @@ The contents of annotations are generally outside of the scope of what ConductR 
 * Volume support for OCI images.
 * `conductr-haproxy` has been updated so it does not generate backend declarations where there are no actual endpoints - this could cause unexpected 503 errors.
 * Agent re-balancing on the loss of core nodes has been enhanced to catch a situation that would result in "orphaned agents" i.e. agents appearing in the list of agents that should no longer be there.
-* ***Note**: This release has a defect in the `.rpm` and `.deb` agent packages that prevents the agent from starting. As a workaround, run the following command:* 
+* ***Note**: This release has a defect in the `.rpm` and `.deb` agent packages that prevents the agent from starting. As a workaround, run the following command:*
     ```bash
     sudo mkdir -p /home/conductr-agent && \
     sudo chown conductr-agent:conductr-agent /home/conductr-agent && \
