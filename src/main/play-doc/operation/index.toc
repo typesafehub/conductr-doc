@@ -16,3 +16,4 @@ ContinuousDeliverySetupOps: Continuous Delivery Setup
 ThirdPartyServices:Third-Party Services
 ExternalServices:External Service Discovery
 ConfigurationRef:Configuration Reference
+Licensing:Licensing
