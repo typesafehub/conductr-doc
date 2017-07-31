@@ -79,6 +79,6 @@ In non-production environments it may be commonplace to shutdown whole clusters 
 
 When a cluster starts up in any environment it is important to license it before app bundles are loaded and run again. By retrieving your license manually as described in "Offline Mode", you can automate the licensing of a cluster whenever it's first started up.
 
-Remember that licenses expire, so set a reminder to occassionally retrieve an updated `./.conductr/license` file for your deployment script.
+Remember that licenses expire, so set a reminder to occassionally retrieve an updated `./.conductr/license` file for your deployment script.  An existing ConductR cluster and its running bundles will continue to run when the license expires.  New agents, or agents that try to rejoin after a failure, will not be able to join the cluster.
 
 In future versions of ConductR the license may be persisted to disk.
