@@ -69,7 +69,7 @@ When you issue `conduct info` you will see the same license details that were re
 
 ### Updating your License
 
-If you need to update the license on an already licensed cluster you can do so using the `--force` command switch. This is useful when you want to change the license to a different user or when your license is close to expiring.  Enter `conduct load-license --offline` and the command line and then follow the prompts to load a new license.
+If you need to update the license on an already licensed cluster you can do so using the `--force` command switch. This is useful when you want to change the license to a different user or when your license is close to expiring.  Enter `conduct load-license --force` and the command line and then follow the prompts to load a new license.
 
 ## Automate Licensing at Startup
 
