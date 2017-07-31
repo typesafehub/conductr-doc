@@ -16,7 +16,8 @@ sudo service conductr stop
 sudo rm /usr/share/conductr/conf/seed-nodes
 ```
 
-* The removal of `seed-nodes` file is done in preparation for the future ConductR cluster start. The removal of the `seed-nodes` file will ensure the node where the file is removed will be able to perform as the ConductR cluster leader upon the issue of the cluster startup.
+* The removal of `seed-nodes` file is done in preparation for the future ConductR cluster start. The removal of the `seed-nodes` file
+ will ensure the node where the file is removed will be able to perform as the ConductR cluster leader upon the issue of the cluster startup.
 
 * Stop the next ConductR Core node:
 
@@ -44,7 +45,9 @@ sudo service conductr-agent stop
 
 ## DC/OS mode
 
-> Do not Scale to 0, Suspend, or Destroy ConductR cluster directly from the Marathon UI without following the steps below. Doing so without following the steps below will cause the ConductR to be de-activated from DC/OS and forcefully detached from its still running tasks. These tasks will be orphaned and can't be terminated as it's no longer visible from DC/OS CLI's and Marathon's perspective.
+> Do not Scale to 0, Suspend, or Destroy ConductR cluster directly from the Marathon UI without following the steps below.
+ Doing so without following the steps below will cause the ConductR to be de-activated from DC/OS and forcefully detached from its still running tasks.
+ These tasks will be orphaned and can't be terminated as it's no longer visible from DC/OS CLI's and Marathon's perspective.
 
 * Retrieve the service id of the ConductR service:
 
@@ -54,7 +57,8 @@ NAME       HOST        ACTIVE  TASKS  CPU     MEM      DISK      ID
 conductr   10.0.1.118  True    0      11.8    42760.0  120804.0  my-conductr
 ```
 
-* Shutdown the ConductR service by using the `dcos service shutdown`. The command shuts down all ConductR executors on the Mesos agents and with it all tasks and bundles that have been created by ConductR. On Mesos master, the service is also marked as removed:
+* Shutdown the ConductR service by using the `dcos service shutdown`. The command shuts down all ConductR executors on the Mesos agents
+ and with it all tasks and bundles that have been created by ConductR. On Mesos master, the service is also marked as removed:
 
 ```bash
 dcos service shutdown my-conductr
@@ -66,8 +70,16 @@ dcos service shutdown my-conductr
 http://dcos-host/#services >> Services >> conductr >> More >> Suspend >> Suspend Service
 ```
 
-* To completely remove ConductR framework from DC/OS destroy the service:
+* Destroy the service:
 
 ```
 http://dcos-host/#services >> Services >> conductr >> More >> Destroy >> Destroy Service
 ```
+
+* Remove framework resource reservations by running the framework cleaner:
+
+```bash
+docker run mesosphere/janitor /janitor.py -z dcos-service-conductr
+```
+
+See the [DC/OS doc](https://docs.mesosphere.com/1.9/deploying-services/uninstall/#framework-cleaner) for more info on the framework cleaner.
