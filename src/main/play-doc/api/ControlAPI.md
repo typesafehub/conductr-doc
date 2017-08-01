@@ -35,6 +35,8 @@ POST /v2/bundles
 
 The following fields are provided as multipart/form-data fields:
 
+> The order of these multipart/form-data fields *is* significant and must be preserved. The fields are listed in the order that they are required.
+
 Field                | Description
 ---------------------|------------
 bundleConf           | The file that is the [bundle.conf](BundleConfiguration) of the bundle being uploaded. Typically this will be the [bundle.conf](BundleConfiguration) contained within the bundle file.
