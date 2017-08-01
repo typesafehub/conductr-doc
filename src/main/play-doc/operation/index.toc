@@ -15,3 +15,4 @@ BundleHousekeeping:Bundle Housekeeping
 ContinuousDeliverySetupOps: Continuous Delivery Setup
 ExternalServices:External Service Discovery
 ConfigurationRef:Configuration Reference
+Licensing:Licensing
