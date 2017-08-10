@@ -1,22 +1,5 @@
 # ConductR release notes
 
-## 2.1.3
-* Update [DNS service locator](https://github.com/typesafehub/service-locator-dns) to `1.0.2`. This will ensure the hostname of an SRV record is properly forwarded.
-
-## 2.1.2
-
-* Upgrade to Akka HTTP `10.0.8`.
-* Ensure that Control Protocol API routing is sealed thus preserving rejections.
-* Move allocated port range in DCOS mode to avoid conflict with Marathon LB.
-* Improve bundle termination when Agent is unexpectedly terminated.
-
-## 2.1.1
-
-* Allow for several text/event-stream accept headers.
-* Visualizer no longer uses charset in accept headers.
-* Improvement on Agent's allowing bundle to gracefully stop when shutting down.
-* Fix scheduling bug where remaining resource offers are skipped given an ineligible offer.
-
 ## 2.1
 
 This release broadly consists of the following functionality:
@@ -63,6 +46,28 @@ When selecting a bundle by its bundle name, you may now also use one of a number
 The notion of metadata with containers is quite popular noting that bundles also describe containers. The use-cases for metadata with containers has been popularised with Docker labels, Kubernetes annotations and OCI annotations. As of 2.1, bundles may now hold metadata in the form of annotations. These annotations are very similar to [OCI image annotations](https://github.com/opencontainers/image-spec/blob/master/annotations.md) with the extension that annotation values are expressed using HOCON, specifically [Typesafe Config](https://github.com/typesafehub/config).
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
+
+## 2.1.4 - Thursday August 10th, 2017
+
+* The ConductR agent's port allocator has been modified to issue ports in sequence, similar to how PIDs are issued by most operating systems. This ensures that ports will not be reused by other processes immediately after being deallocated, further improving the chances of Akka cluster processes to start.
+* There was a recent and accidental limitation on the number of bundles that the ConductR agent would run, caused by a thread pool misconfiguration. The agent should now be able to run at least 200 bundles on its node with no trouble using its default configuration.
+* Various strengthening improvements have been made to the bundle execution reconciliation process between ConductR agents and ConductR cores. It should now be less likely for an agent and core to become out of sync.
+* `conduct logs` was returning an empty result when Elasticsearch v.5.x was used. ConductR continues to support earlier versions of Elasticsearch as well as v.5.x.
+* Various improvements have been made to the ConductR agent's process management logic. These improvements further increase the resiliency around handling processes (bundles) that die unexpectedly.
+* Various improvements have been made to eliminate the number of log messages that were considered pollution and unecessary.
+* A small issue was found where the system version wasn't being considered when scaling multiple bundles of the same system, but distinct system versions. The change is to treat the combination of system and system version distinctly which results in faster system startup for these bundles.
+* The ConductR agent's reliability in terms of conveying resource information has been strengthened.
+
+## 2.1.3 - Wednesday July 19th, 2017
+
+* Update [DNS service locator](https://github.com/typesafehub/service-locator-dns) to `1.0.2`. This will ensure the hostname of an SRV record is properly forwarded.
+
+## 2.1.2 - Tuesday July 11th, 2017
+
+* Upgrade to Akka HTTP `10.0.8`.
+* Ensure that Control Protocol API routing is sealed thus preserving rejections.
+* Move allocated port range in DCOS mode to avoid conflict with Marathon LB.
+* Improve bundle termination when Agent is unexpectedly terminated.
 
 ## 2.1.1 - Wednesday June 21st, 2017
 
