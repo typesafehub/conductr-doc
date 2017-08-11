@@ -455,7 +455,7 @@ Upload the files required for ConductR installation and your EC2 key pair file t
 
 The ConductR installation files should be put in `conductr-ansible/conductr/files`. The file name must match the value of `CONDUCTR_PKG`, `CONDUCTR_AGENT_PKG`, and `HAPROXY_RELOAD_SCRIPT` in the vars file used.
 
-The content of the HAProxy reload script can be found in [Dynamic Proxy Configuration](#DynamicProxyConfiguration).
+The content of the HAProxy reload script can be found in [Dynamic Proxy Configuration](DynamicProxyConfiguration#specifying-custom-haproxy-reload-script).
 
 Your controller host is now ready to run plays.
 
