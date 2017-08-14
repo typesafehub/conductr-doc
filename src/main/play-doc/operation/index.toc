@@ -8,6 +8,7 @@ ClusterConfiguration:Cluster configuration
 ClusterUpgrade:Cluster upgrade
 ClusterRestart:Cluster restart
 ClusterStop:Cluster stop
+ClusterBackupRestore:Cluster backup & restore
 ClusterTroubleshooting:Cluster troubleshooting
 DynamicProxyConfiguration:Dynamic proxy configuration
 LogFiles:Log Files
