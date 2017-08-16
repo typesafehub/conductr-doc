@@ -3,52 +3,24 @@
 Once the application is ready for deployment, developers can view ConductR bundles as just yet another deployment target. We offer a few methods of building a bundle:
 
 1. Using an [sbt](http://www.scala-sbt.org/) plugin with your build
-2. Using `bndl` to create bundles from Docker images
-2. Using `shazar` (we invented that name!)
+2. Using `bndl` to create bundles from Docker images, OCI images, or application directories
 
 If you can make changes to the application or service then `sbt-conductr` is what you will typically use to produce a bundle. In fact you can even use sbt-conductr to produce bundles for other applications or services. However you may find yourself crafting a bundle from scratch and for the latter scenario. See the "legacy & third party bundles" section of the [bundles](BundleConfiguration#Legacy-&-third-party-bundles) document for more information on that, and for a deep dive on bundles in general. For now, let's look at bundling a project that you have control of.
 
 ConductR supports several different types of bundle components.
-  * OCI bundle components (introduced in 2.1) package an entire container in the bundle. They can be produced from Docker images. They run inside a container using `runc`.
+  * OCI bundle components (introduced in 2.1) package an entire container filesystem in the bundle. They can be produced from Docker images and run inside a container using `runc` but share access to the host's network.
   * Universal bundle components run directly on the host.
   * Docker bundle components build a provided `Dockerfile` and run the resulting image
   
 In addition, Docker images can be run from "universal" bundles. The following sections cover each of these scenarios:
 
-* [Producing an OCI bundle with Docker](#producing-an-oci-bundle-with-docker)
 * [Producing a universal bundle without Docker](#producing-a-universal-bundle-without-docker)
+* [Producing an OCI bundle with Docker](#producing-an-oci-bundle-with-docker)
 * [Producing a universal bundle that runs a Docker image](#producing-a-universal-bundle-that-runs-a-docker-image)
 * [Producing a docker bundle that uses a Dockerfile](#producing-a-docker-bundle-that-uses-a-dockerfile)
+* [Producing modified bundles with `bndl`](#producing-modified-bundles-with-`bndl`)
 
-## Producing an OCI bundle with Docker
-ConductR is capable of running images that have been exported from Docker. To do this, you use the `bndl` tool to convert a docker image into a ConductR bundle. Behind the scenes, we're using the standard OCI Image format so you can be sure your images are free of vendor lock-in. Additionally, this approach doesn't require Docker to be installed in production; ConductR provides everything necessary to run these images.
-
-The following command will fetch the image `dockercloud/hello-world` with tag `stdout` from DockerHub and load it directly into ConductR. If the tag is omitted, `latest` is used.
-
-```bash
-conduct load dockercloud/hello-world:stdout
-```
-
-Private registries are also supported using traditional notation.
-
-```bash
-conduct load some-registry.bintray.io/some-project/some-image:some-tag
-```
-
-
-
-If you'd rather save the resulting bundle to a file, you can do this using `docker save` and `bndl -o <filename>`.
-```bash
-docker pull dockercloud/hello-world:stdout
-docker save dockercloud/hello-world:stdout | bndl -o dockercloud-hello-world.zip
-```
-
-
-We attempt to extract as much information from the your docker image as possible. Any `EXPOSE` directives in your `Dockerfile` will automatically create corresponding service endpoints in `bundle.conf`. Support for persistent mounting of `VOLUME` directives is planned.
-
-Docker images can vary in size significantly and this can affect development/deployment time and consume additional system resources. Because of this, we recommend that you build your images ontop of a light-weight base image. [openjdk/8-jre-alpine](https://hub.docker.com/_/openjdk/) is a great choice as it's only ~80MB in size (~50MB when compressed). 
-
-## Producing a universal bundle without Docker
+## Producing a universal bundle
 
 With [sbt-conductr](https://github.com/typesafehub/sbt-conductr) you can produce a ConductR bundle for your application. sbt-conductr extends the [sbt-native-packager](https://github.com/sbt/sbt-native-packager#sbt-native-packager). Just as developers might use `sbt dist` or `sbt debian:packageBin` to produce production binaries of an application, the sbt `bundle:dist` task from sbt-conductr is used to produce ConductR application bundles.
 
@@ -154,9 +126,36 @@ The `javaOptions` values declare the maximum and minimum heap size for your appl
 
 `BundleKeys.memory` is used for locating machines with enough resources to run your application, and so it is particularly important to size it before you go to production.
 
+## Producing an OCI bundle with Docker
+ConductR is capable of running images that have been exported from Docker. To do this, you can use the `bndl` tool to convert a Docker image into a ConductR bundle that employs the OCI Image format. Since this is an open standard, it helps manage vendor lock-in. Additionally, this approach doesn't require Docker to be installed in production; ConductR provides everything necessary to run these images.
+
+The following command will fetch the image `dockercloud/hello-world` with tag `stdout` from DockerHub and load it directly into ConductR. If the tag is omitted, `latest` is used.
+
+```bash
+conduct load dockercloud/hello-world:stdout
+```
+
+Private registries are also supported using traditional notation.
+
+```bash
+conduct load some-registry.bintray.io/some-project/some-image:some-tag
+```
+
+If you'd rather save the resulting bundle to a file, you can do this using `docker save` and `bndl -o <filename>`.
+```bash
+docker pull dockercloud/hello-world:stdout
+docker save dockercloud/hello-world:stdout | bndl -o dockercloud-hello-world.zip
+```
+
+We attempt to extract as much information from the your docker image as possible. Any `EXPOSE` directives in your `Dockerfile` will automatically create corresponding service endpoints in `bundle.conf`. Any `VOLUME` directives will result in a host directory being mounted into the container at the declared path. If the defaults are not appropriate, they can be overridden using the `--volume` and `--endpoint` arguments.
+
+Volumes are stored in `$HOME/.conductr/volumes` and are namespaced by `bundle.conf` properties `name` and `compatibility-version`. These volumes are therefore persistent across cluster restarts.
+
+Docker images can vary in size significantly and this can affect development/deployment time and consume additional system resources. Because of this, we recommend that you build your images ontop of a light-weight base image. [openjdk/8-jre-alpine](https://hub.docker.com/_/openjdk/) is a great choice as it's only ~80MB in size (~50MB when compressed). 
+
 ## Producing a universal bundle that runs a Docker image
 
-If you'd prefer, or indeed require to run a Docker image directly then you can set up one via sbt. Here is a section of `conductr-kibana`'s build file:
+If you'd prefer, or indeed require to run a Docker image using `docker run` then you can set up one via sbt. Here is a section of `conductr-kibana`'s build file:
 
 ```scala
 import ByteConversions._
@@ -236,7 +235,12 @@ BundleKeys.startCommand := Seq.empty
 BundleKeys.checks := Seq(uri("docker+$POSTGRES_HOST"))
 ```
 
-> When deploying Docker bundles to the sandbox they won't work. The sandbox is using Docker itself and you cannot run Docker within Docker. For development purposes setup a single VM and configure it as per the regular Linux installation along with Docker. You'll then be able to test your Docker bundles locally.
+## Producing modified bundles with `bndl`
+If you already have a bundle, the CLI ships with a `bndl` command that can be used to modify its `bundle.conf` and `runtime-config.sh` files. Below is an example that updates the memory and CPU requirements for a bundle (`my-bundle.zip`) and produces a new bundle (`my-updated-bundle.zip`). Consult `bndl -h` for a list of other options.
+
+```bash
+bndl my-bundle.zip -o my-updated-bundle.zip --nr-of-cpus 2 --memory 2147483648 
+```
 
 ## Publishing bundles
 
