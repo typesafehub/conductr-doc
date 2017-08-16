@@ -277,7 +277,7 @@ Field               | Description
 address             | The location of a ConductR member.
 annotations         | An optional HOCON string representing additional metadata that you may wish to associate with a bundle. Key names should be in accordance with the OCI image annotation conventions. Annotations relate to metadata that should be associated with a bundle, but is of no direct concern to ConductR itself. Note that while you may upload many annotations, only those annotations that are declared by ConductR core's `conductr.control-server.core-annotation-paths` will be included here (which, by default, is just `com.lightbend.conductr.application-ids`)
 affinity            | The bundle identifier that references a different bundle. If specified, the current bundle will be run on the same host where the specified bundle is currently running.
-bindPort            | The network port that is used by a bundle component to bind to an interface. This may be the same value as the `hostPort` when running outside of a container.
+bindPort            | The network port that is used by a bundle component to bind to an interface. This may be the same value as the `hostPort` when running outside of Docker.
 bindProtocol        | The network protocol that is used by a bundle component to bind to an interface.
 bundleDigest        | The hex form of a digest representing the contents of the bundle.
 bundleFile          | The location of a bundle archive on disk.
