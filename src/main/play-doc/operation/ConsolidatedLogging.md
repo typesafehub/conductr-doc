@@ -190,7 +190,7 @@ Specify the ingest node bulk endpoint of your customized Elasticsearch instance 
 
 ```bash
 echo \
-  -Dconductr.service-locator-server.external-service-addresses.elastic-search.0=https://<user>:<password>@es.rsyslog-service.com:443/api/v1/<dataspace>/ingest/elasticsearch/ \
+  -Dconductr.service-locator-server.external-service-addresses.elastic-search.0=https://<user>:<password>@<elasticsearch-host>:443/_bulk/ \
   sudo tee -a /usr/share/conductr/conf/conductr.ini
 sudo service conductr restart
 ```
