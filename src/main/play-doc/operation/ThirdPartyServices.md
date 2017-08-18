@@ -53,7 +53,7 @@ conduct load confluentinc/cp-kafka \
 
 [MySQL](https://www.mysql.com/) is an open-source Relational Database Management System (RDBMS). The example below deploys the MySQL team's image to your ConductR cluster. For more information on this image and its arguments, refer to [MySQL](https://hub.docker.com/_/mysql/) on Docker Hub.
  
- ```bash
+```bash
 conduct load mysql:5.7 \
     --endpoint mysql-tcp-3306 \
         --service-name mysql \
@@ -79,7 +79,7 @@ conduct load postgres:9.6.3 \
 
 [ZooKeeper](https://zookeeper.apache.org/) is a distributed coordination service. The example below deploys [Confluent, Inc](https://www.confluent.io/)'s ZooKeeper image into your ConductR cluster. For more information on this image and its arguments, refer to [Confluent's Documentation](http://docs.confluent.io/current/cp-docker-images/docs/quickstart.html#zookeeper).
  
- ```bash
+```bash
 conduct load confluentinc/cp-zookeeper \
     --endpoint cp-zookeeper-tcp-2181 \
         --service-name zookeeper \
