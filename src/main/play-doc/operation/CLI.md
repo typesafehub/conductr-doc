@@ -133,3 +133,17 @@ If the ConductR Control Protocol is configurted to listen for requests on a port
 ```
 conduct info --host 172.17.0.1 -p 9055
 ```
+
+## Proxy Settings
+
+If the CLI is installed on a network that uses a proxy, the environment will need to be properly configured. The
+following points will help you configure your environment for proxy use.
+
+* Make sure your machine is configured using the `HTTP_PROXY` and `HTTPS_PROXY` environment variables.
+* When using the Developer Sandbox, you will also need to set the `NO_PROXY` environment variable to ensure that the
+CLI can communicate with ConductR.
+  * `export NO_PROXY=192.168.10.1,192.168.10.2,192.168.10.3`
+* When accessing a remote ConductR cluster, ensure that the proxy is configured to allow traffic to the nodes that
+ConductR is running on.
+* The CLI accesses the internet to resolve and download bundles, as well as to download the Developer Sandbox
+images. Your proxy will need to be configured to allow traffic to external hosts to support this functionality.
