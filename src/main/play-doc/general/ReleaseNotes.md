@@ -47,6 +47,16 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.5 - Wednesday August 23rd, 2017
+
+* A ConductR Agent no longer requires 1.9 cpus on DC/OS. The new agent runs with system defaults for cgroup `cpu.shares`. The agent's CPU requirement has been reduced to that of Marathon's lowest permissible value (0.01). This particular change should free up a considerable amount of CPU reservations on DC/OS for ConductR agents.
+* A fix has been applied so that the ConductR Agent logs to Elasticsearch when run on DC/OS.
+* There is further resiliency around avoiding agent's being left orphaned in a situation where both the agent and the member it connects to are restarted around the same time.
+* The ConductR agent has been greatly enhanced in the area of process management. Significantly less memory and improved CPU performance has been attained through using a non-blocking/asynchronous process manager in place of the JDK's.
+* Considerable profiling and tuning has been performed on the ConductR Agent in order to cater for a large volume of logs being output by bundles. Logs are now throttled to a burst level of 50 messages per second (configurable).
+* Akka security patches have been applied.
+* OCI: we now ensure that cpu.share cgroups are correctly set.
+
 ## 2.1.4 - Thursday August 10th, 2017
 
 * The ConductR agent's port allocator has been modified to issue ports in sequence, similar to how PIDs are issued by most operating systems. This ensures that ports will not be reused by other processes immediately after being deallocated, further improving the chances of Akka cluster processes to start.
