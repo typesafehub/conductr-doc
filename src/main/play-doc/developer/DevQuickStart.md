@@ -59,10 +59,12 @@ Now, you can go ahead and start the ConductR cluster locally. For that you shoul
 Afterwards, you can start the ConductR cluster by executing the following from within sbt:
 
 ```scala
-sandbox run 2.0.0 --feature visualization
+sandbox run 2.1.4 --feature visualization
 [info] Running ConductR...
 [info] Running container cond-0 exposing 192.168.10.1:9999...
 ```
+
+> Behind a proxy? You'll need to set the `NO_PROXY` environment variable. See [[Proxy Settings|CLI#Proxy-settings]] for more details.
 
 The `visualization` feature is simple Play application that visualizes the ConductR cluster state. Access the ConductR visualizer at `http://{sandbox-host-ip}:9909` where `sandbox-host-ip` is the host of your docker environment (`192.168.10.1` by default).
 

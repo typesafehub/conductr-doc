@@ -9,7 +9,7 @@ The `sandbox run` command starts a local ConductR cluster. In order to use this 
 Afterwards, start the sandbox inside the sbt session with:
 
 ```scala
-[my-app] sandbox run 2.0.0
+[my-app] sandbox run 2.1.4
 [info] Running ConductR...
 [info] Running container cond-0 exposing 192.168.59.103:9000...
 ```
@@ -21,7 +21,7 @@ Given the above you will then have a ConductR process running in the background 
 The sandbox contains handy features which can be optionally enabled during startup by specifying the `--feature` option, e.g.:
 
 ```scala
-[my-app] sandbox run 2.0.0 --feature visualization
+[my-app] sandbox run 2.1.4 --feature visualization
 [info] Running ConductR...
 [info] Running container cond-0 exposing 192.168.59.103:9000 192.168.59.103:9909...
 ```
