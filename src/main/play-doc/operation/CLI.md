@@ -136,8 +136,7 @@ conduct info --host 172.17.0.1 -p 9055
 
 ## Proxy Settings
 
-If the CLI is installed on a network that uses a proxy, the environment will need to be properly configured. The
-following points will help you configure your environment for proxy use.
+If the CLI is installed on a network that uses a proxy, the environment will need to be properly configured. The following points will help you configure your environment for proxy use.
 
 * Make sure your machine is configured using the `HTTP_PROXY` and `HTTPS_PROXY` environment variables.
 * When using the Developer Sandbox, you will also need to set the `NO_PROXY` environment variable to ensure that the
