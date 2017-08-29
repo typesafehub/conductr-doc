@@ -41,13 +41,13 @@ conduct restore backup.zip
 Once the backup is completed, it can be optionally combined with the restore command.
 
 ```bash
-conduct backup --ip 192.168.0.21 | conduct restore -backup - --ip 10.5.4.110
+conduct backup --ip 192.168.0.21 | conduct restore - --ip 10.5.4.110
 ```
 
 The `-` indicates that restore will be performed from stdout. An example is shown below.
 
 ```bash
-$ conduct backup --ip 192.168.0.21 | conduct restore -backup - --ip 10.5.4.110
+$ conduct backup --ip 192.168.0.21 | conduct restore - --ip 10.5.4.110
 Restoring bundle : continuous-delivery.
 [##################################################] 100%
 Loaded continuous-delivery with bundleId : 8972ab23bdbc6dddcb7b4d001c9a58fc
