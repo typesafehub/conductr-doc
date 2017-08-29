@@ -47,6 +47,11 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.6 - Wednesday August 30th, 2017
+* Fixed a configuration problem such that multiple ConductR clusters on DC/OS were not assigning their own sets of ports.
+* The ConductR framework id on DC/OS now embeds the ConductR version thus permitting an easier upgrade strategy.
+* There was an intermittent issue with cgroup housekeeping due to a race condition.
+
 ## 2.1.5 - Wednesday August 23rd, 2017
 
 * A ConductR Agent no longer requires 1.9 cpus on DC/OS. The new agent runs with system defaults for cgroup `cpu.shares`. The agent's CPU requirement has been reduced to that of Marathon's lowest permissible value (0.01). This particular change should free up a considerable amount of CPU reservations on DC/OS for ConductR agents.
