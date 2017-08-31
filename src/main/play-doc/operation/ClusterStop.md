@@ -45,38 +45,26 @@ sudo service conductr-agent stop
 
 ## DC/OS mode
 
-> Do not Scale to 0, Suspend, or Destroy ConductR cluster directly from the Marathon UI without following the steps below.
- Doing so without following the steps below will cause the ConductR to be de-activated from DC/OS and forcefully detached from its still running tasks.
- These tasks will be orphaned and can't be terminated as it's no longer visible from DC/OS CLI's and Marathon's perspective.
+> Do not destroy the ConductR cluster directly from the UI without following the steps below.
 
-* Retrieve the service id of the ConductR service:
-
-```bash
-dcos service
-NAME       HOST        ACTIVE  TASKS  CPU     MEM      DISK      ID
-conductr   10.0.1.118  True    0      11.8    42760.0  120804.0  my-conductr
-```
-
-* Shutdown the ConductR service by using the `dcos service shutdown`. The command shuts down all ConductR executors on the Mesos agents
- and with it all tasks and bundles that have been created by ConductR. On Mesos master, the service is also marked as removed:
-
-```bash
-dcos service shutdown my-conductr
-```
-
-* The ConductR framework instances are still running. Stop them by suspending the ConductR service via the DC/OS Services UI page:
+* Stop the ConductR service via the DC/OS Services UI page:
 
 ```
 http://dcos-host/#services >> Services >> conductr >> More >> Suspend >> Suspend Service
 ```
 
-* Destroy the service:
+* Wait for all of the related tasks in the DC/OS UI to stop. This takes a couple minutes. When complete, there will be
+  0 active tasks in the service group.
+
+* If reconfiguring, edit its JSON in the DC/OS UI and start the service again.
+
+* If uninstalling, destroy the service:
 
 ```
 http://dcos-host/#services >> Services >> conductr >> More >> Destroy >> Destroy Service
 ```
 
-* Remove framework resource reservations by running the framework cleaner:
+* If uninstalling, remove framework resource reservations by running the framework cleaner:
 
 ```bash
 docker run mesosphere/janitor /janitor.py -z dcos-service-conductr

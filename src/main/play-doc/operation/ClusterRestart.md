@@ -1,6 +1,7 @@
 # Restarting ConductR Cluster
 
-Restarting the entire ConductR cluster should only be considered in a face of disaster where all nodes have been lost. Choose one of the following sections depending on the ConductR mode:
+Restarting the entire ConductR cluster should only be considered in a face of disaster where all nodes have been lost. 
+Choose one of the following sections depending on the ConductR mode:
 
 * [Standalone mode](#Standalone-mode)
 * [DC/OS mode](#DC/OS-mode)
@@ -75,42 +76,28 @@ sudo service conductr-agent restart
 
 ## DC/OS mode
 
-> Do not Scale to 0, Suspend, or Destroy ConductR cluster directly from the Marathon UI without following the steps below. Doing so without following the steps below will cause the ConductR to be de-activated from DC/OS and forcefully detached from its still running tasks. These tasks will be orphaned and can't be terminated as it's no longer visible from DC/OS CLI's and Marathon's perspective.
+To restart the cluster in DC/OS mode, follow the steps below. You'll also want to follow these steps if you are deploying
+a configuration change. Note that upon cluster start, your bundles will need to be reloaded.
 
-* Retrieve the service id of the ConductR service:
+> Do not destroy the ConductR cluster directly from the UI without following the steps below.
 
-```bash
-dcos service
-NAME       HOST        ACTIVE  TASKS  CPU     MEM      DISK      ID
-conductr   10.0.1.118  True    0      11.8    42760.0  120804.0  my-conductr
-```
-
-* Shutdown the ConductR service by using the `dcos service shutdown`. The command shuts down all ConductR executors on the Mesos agents and with it all tasks and bundles that have been created by ConductR. On Mesos master, the service is also marked as removed:
-
-```bash
-dcos service shutdown my-conductr
-```
-
-* The ConductR framework instances are still running. Stop them by suspending the ConductR service via the DC/OS Services UI page:
+* Stop the ConductR service via the DC/OS Services UI page:
 
 ```
 http://dcos-host/#services >> Services >> conductr >> More >> Suspend >> Suspend Service
 ```
 
-* Once a service has been removed the id cannot be reused. Therefore, rename your service by editing the service configuration:
+* Wait for all of the related tasks in the DC/OS UI to stop. This takes a couple minutes. When complete, there will be
+  0 active tasks in the service group.
+
+* Once the service is indicated as Suspended, make any configuration changes if necessary.
 
 ```
-http://dcos-host/#services >> Services >> conductr >> Edit >> <Change ID> >> Deploy Changes
+http://dcos-host/#services >> Services >> conductr >> More >> Edit >> Review & Run >> Run Service
 ```
 
-* The previous step does not rename the existing service but instead create an additional service with the new id. Remove the old service:
+* Finally, start the service again, choosing an odd number of instances (3 recommended). This will start the ConductR framework instances and the executors on the Mesos agent:
 
 ```
-http://dcos-host/#services >> Services >> conductr >> More >> Destroy >> Destroy Service
-```
-
-* Navigate to the new service and start it. This will start the ConductR framework instances and the executors on the Mesos agent:
-
-```
-http://dcos-host/#services >> Services >> conductr >> Scale >> <Select number of ConductR framework instances> >> Scale Service
+http://dcos-host/#services >> Services >> conductr >> More >> Resume >> Resume Service
 ```
