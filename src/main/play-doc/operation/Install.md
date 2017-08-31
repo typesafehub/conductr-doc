@@ -826,6 +826,15 @@ Wait until the ConductR instance's health is marked as healthy before proceeding
 
 If more instances are required, scale ConductR to the desired total schedulers using the `Instances` within `Edit Service` not the `Scale` dialog. Ensure that all of the instances are healthy before proceeding. Multiple core schedulers are recommended for resilience however schedulers are not required on all nodes.
 
+##### DC/OS Proxy Nodes Advanced DC/OS Configuration
+
+When installing on DC/OS, ConductR uses the `slave_public` role to ensure that its agents run on all DC/OS agents, including
+public nodes. While this is a reasonable default for most installations, not all systems make use of ConductR's Dynamic Proxying.
+To disable this behavior and ensure that ConductR agents are only run on private nodes,
+append the following to the `cmd` string of the ConductR JSON service definition:
+
+```-Dconductr.mesos-scheduler-client.framework.role=slave_private```
+
 _To stop a deployed and running ConductR in DC/OS cluster, be sure to follow the instructions on the [Cluster Stop](ClusterStop#DC/OS-mode) page._
 
 ## Integrate with the DC/OS CLI
