@@ -833,7 +833,7 @@ public nodes. While this is a reasonable default for most installations, not all
 To disable this behavior and ensure that ConductR agents are only run on private nodes,
 append the following to the `cmd` string of the ConductR JSON service definition:
 
-```-Dconductr.mesos-scheduler-client.framework.role=slave_private```
+`-Dconductr.mesos-scheduler-client.framework.role=slave_private`
 
 _To stop a deployed and running ConductR in DC/OS cluster, be sure to follow the instructions on the [Cluster Stop](ClusterStop#DC/OS-mode) page._
 
