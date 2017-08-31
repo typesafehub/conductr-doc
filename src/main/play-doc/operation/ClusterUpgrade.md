@@ -8,7 +8,13 @@ On a per-cluster basis, incoming requests are directed from the old cluster to t
 
 ## Per node upgrade
 
-Per node upgrades are generally easier. However, they can only be performed across ConductR patch releases, e.g. 2.0.0 to 2.0.1. Use the [per cluster upgrade](#Per-cluster-upgrade) approach to perform a ConductR upgrade to a minor or major version, e.g. 2.0.0 to 2.1.0.
+> *A note for DC/OS users:* If you're using ConductR on DC/OS, you must use 
+the [per cluster upgrade](#Per-cluster-upgrade) approach as Per node upgrades are not supported.
+
+Per node upgrades are generally easier. However, they can only be performed across ConductR patch releases, e.g. 2.0.0 to 2.0.1, and
+are only supported by stand-alone installations.
+Use the [per cluster upgrade](#Per-cluster-upgrade) approach if you are running on DC/OS, or to perform a ConductR 
+upgrade to a minor or major version, e.g. 2.0.0 to 2.1.0.
 
 To perform a per node upgrade for ConductR Core, introduce new cluster members to the cluster. The new nodes could be created with updated versions of ConductR, Java, the Linux operating system or any other component installed during provisioning. As old members are removed from the cluster, bundles will be replicated to the new resources.
 
@@ -24,7 +30,21 @@ Be certain to ensure that sufficient resources for all roles are provisioned. St
 
 ## Per cluster upgrade
 
-To perform a per cluster upgrade, build a new cluster in isolation from the current running cluster. Once the new cluster is fully prepared, cut-over traffic using DNS, load balancers, routers, etc. Per cluster, upgrades may require more complex strategies for migrating data storage managed by the cluster.
+To perform a per cluster upgrade, build a new cluster in isolation from the current running cluster. Once the 
+new cluster is fully prepared, cut-over traffic using DNS, load balancers, routers, etc. Per cluster, 
+upgrades may require more complex strategies for migrating data storage managed by the cluster.
+
+> *A note for DC/OS users:* If you're using ConductR on DC/OS, ensure that you obtain a new copy of the `marathon.json` file from 
+[Enterprise Suite DC/OS](https://www.lightbend.com/platform/enterprise-suite/dcos/Linux) page. To allow simultaneous
+installations of ConductR on DC/OS, the port ranges used by a given ConductR release are cycled through four different
+sets. Be sure to only upgrade up to 3 minor releases at a time (e.g. 2.1.6 to 2.1.9 is supported, but 2.1.6 to 2.1.10 is not), 
+and also take great care to remove your old cluster once it is no longer in use.
+
+Once you've built your new cluster, use the CLI's `conduct backup` and `conduct restore` functionality to restore your
+bundles. See our [[CLI|CLI]] documentation for more details.
+
+Once your new cluster is running and traffic has been directed to it, stop and remove your old cluster by following 
+the [[Cluster Stop|ClusterStop]] instructions.
 
 ## Elasticsearch Verification
 
