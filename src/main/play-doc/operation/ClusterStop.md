@@ -54,7 +54,7 @@ http://dcos-host/#services >> Services >> conductr >> More >> Suspend >> Suspend
 ```
 
 * Wait for all of the related tasks in the DC/OS UI to stop. This takes a couple minutes. When complete, there will be
-  0 active tasks in the service group.
+0 active tasks in the service group.
 
 * If reconfiguring, edit its JSON in the DC/OS UI and start the service again.
 
