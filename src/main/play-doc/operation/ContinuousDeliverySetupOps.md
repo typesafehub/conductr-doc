@@ -33,6 +33,91 @@ ConductR's Continuous Delivery feature doesn't prescribe how the deployment pipe
 
 Another variation of this example is the omission of Bintray webhook in the process. The CI server may use `conduct deploy` command to promote the recently built bundle artefacts into staging environment instead of using the Bintray webhook.
 
+## Setting up CD pipeline from the CI machine
+
+Let's discuss the setup of the CD pipeline from the CI machine which will allow recently built artifact to be automatically deployed into a target ConductR cluster upon a successful build.
+
+### Overview
+
+A [bastion host](https://en.wikipedia.org/wiki/Bastion_host) will be required to allow CI machine to securely deploy recently built bundle or bundle configuration into a ConductR cluster. The bastion host will be configured to allow passwordless SSH access from the CI machine. Using the passwordless SSH mechanism, the CI machine will be able to remotely invoke the `conduct deploy` command on the bastion host.
+
+The `conduct deploy` allows resolving bundle and bundle configuration from locations such as Bintray, AWS S3, HTTP URL, or Docker registry. This means the deployment pipeline can be established with bundles or bundle configurations hosted on any of these location.
+
+Using this approach, the bundle and the bundle configuration are kept within the bastion host. This is desirable from security's stand point, especially since bundle configuration may contain credentials which may allow access to production system.
+
+The traffic between the CI machine and the bastion host will also be secured through SSH.
+
+### Requirements
+
+Continuous Delivery bundle relies on bundle name and compatibility version to select the existing bundles to be replaced. Because of this, the CD pipeline only works for the bundles whose name has not been modified.
+
+When deploying bundle and bundle configuration from S3, the full S3 URL of the bundle and bundle configuration must be supplied to the `conduct deploy` command. This also applies when deploying bundle and bundle configuration from HTTP URL. Bintray and Docker registry provides metadata which will allow resolution to the latest published version unlike S3 or HTTP URL.
+
+When using `sbt-bintray-bundle` to publish to Bintray, ensure the bundle is released immediately upon publishing. This will allow `conduct deploy` command to obtain the latest published version from Bintray.
+
+```
+bintrayReleaseOnPublish := true
+```
+
+### Bastion host setup
+
+The bastion host must be setup to allow SSH passwordless authentication from the CI machine. This allow secure access to the target ConductR cluster from an insecure network. Create a designated CI account on the bastion host which can be revoked at any given time - _never use the `root` user under any circumstances for the sake of security_.
+
+Next, the bastion host must be allowed to download the bundle and bundle configuration.
+
+If the bundle and bundle configuration is hosted on Bintray, this would mean creating `~/.bintray/.credentials` which contains the correct username and API key to download the bundle and the bundle configuration.
+
+If the bundle and bundle configuration is hosted on AWS S3, this would mean creating `~/.aws/credentials` which contains correct credentials to download the bundle and the bundle configuration. The [S3 Resolver](DeployingBundlesOps#s3-resolver) has further details on how to setup the `~/.aws/credentials` file.
+
+### CI machine setup
+
+Allow access from CI machine to the Bastion host using designated CI account through passwordless SSH. Execute [ssh-copy-id](https://www.ssh.com/ssh/copy-id) command from the CI machine, copying the CI user's SSH key into the designated account on the Bastion host to allow for passwordless authentication.
+
+Ensure the Bastion Host is registered in the list of `~/.ssh/known-hosts` of the CI machine. The simplest way to do this is to SSH from the CI machine into the Bastion host, and to accept the known host prompt if present. The process of accepting the known host prompt is only needed to be done once.
+
+### Initial bundle setup on the ConductR cluster
+
+Execute `conduct load` of an existing bundle version into your target cluster. Supply bundle configuration containing the environment specific configuration if required.
+
+Once this is done, execute `conduct run` to the desired scale.
+
+### Invoking deployment
+
+Assuming the build has passed and the artefact has been uploaded, the deployment should be invoked in the following manner.
+
+#### Artefacts published to Bintray
+
+Once the artifact is published successfully to Bintray, invoke the following SSH command to trigger the deployment from the Bastion host:
+
+```bash
+ssh -t -i <bastion.pem> <ci.user>@<bastion.host> conduct deploy -y <bundle shorthand> --host <cluster.ip>
+```
+
+* `<ci.user>` is the designated CI account existing on the Bation host.
+* `<bastion.pem>` is the SSH key belonging to the `<ci.user>` which has been copied to the Bastion host using `ssh-copy-id`.
+* `<bastion.host>` is the public IP or host address of the bastion host.
+* `<cluster.ip>` is the IP or host address of one of the ConductR core node accessible from the bastion host.
+* `<bundle shorthand>` is the [shorthand expression](DeployingBundlesOps#Bundle-shorthand-expression) of the bundle recently built and published to bintray.
+
+#### Artefacts published to Docker registry
+
+The invocation of the deploy command is similar to the artefacts published to Bintray. Since the CLI comes with built-in [Docker resolver](DeployingBundlesOps#docker-resolver), `<bundle shorthand>` should be pointed to the newly published Docker image on a particular registry.
+
+#### Artefacts published to S3
+
+The CLI [S3 resolver](DeployingBundlesOps#s3-resolver) accepts full S3 url as input, as such the completed built must supply the full S3 URL of the recently published bundle as the input to the deployment process.
+
+Once the artifact is published successfully to S3, invoke the following SSH command to trigger the deployment from the Bastion host:
+
+```bash
+ssh -t -i <bastion.pem> <ci.user>@<bastion.host> conduct deploy -y <bundle s3 url> --host <cluster.ip>
+```
+
+* `<ci.user>` is the designated CI account existing on the Bation host.
+* `<bastion.pem>` is the SSH key belonging to the `<ci.user>` which has been copied to the Bastion host using `ssh-copy-id`.
+* `<bastion.host>` is the public IP or host address of the bastion host.
+* `<cluster.ip>` is the IP or host address of one of the ConductR core node accessible from the bastion host.
+* `<bundle s3 url>` is the full S3 URL of the recently published bundle, i.e. `s3://my-bucket/path/to/my/bundle-file.zip`
 
 ## Requirements
 
