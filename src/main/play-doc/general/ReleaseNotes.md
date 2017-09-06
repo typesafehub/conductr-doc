@@ -47,6 +47,10 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.7 - Wednesday September 6th, 2017
+* There was a problem in relation to file descriptors not being closed by the new process manager. This could limit the number of bundles loaded/run.
+* The new process manager was not cleaning up all of its resources when a process exited, which could cause a memory leak. This has now been repaired.
+
 ## 2.1.6 - Wednesday August 30th, 2017
 * Fixed a configuration problem such that multiple ConductR clusters on DC/OS were not assigning their own sets of ports.
 * The ConductR framework id on DC/OS now embeds the ConductR version thus permitting an easier upgrade strategy.
