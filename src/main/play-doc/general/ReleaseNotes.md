@@ -1,5 +1,37 @@
 # ConductR release notes
 
+## 2.1.7
+
+* Upgrade `akka-contrib-extra` to `3.4.2`
+* Fix a bug causing processes to inherit the agent's file descriptors
+
+*Note: This release features a bug in the standalone Linux packaging. When
+installing, use `dpkg --force-overwrite` or `rpm --force` to workaround this issue.*
+
+## 2.1.6
+
+* Improvements to CGroup allocation and cleanup logic
+* Packaging on DC/OS changed to include the ConductR version in the service name
+
+## 2.1.5
+
+* Upgrade to Akka `2.4.20`
+* Ensure `eslite` works with new logging query
+* Various CD improvements
+* Ensure that orphaned agent state is properly cleaned up
+* CGroups support now sets `cpu.shares`
+* Reduced DC/OS resource reservation as the agent now runs in its own CGroup
+* Switch to `NonBlockingProcess` for invoking processes
+
+## 2.1.4
+
+* Alter port allocation logic to increase monotonically (with wraparound), similar to how operating systems issue PIDs.
+* Various improvements to ConductR's process management
+* Fix an issue preventing consolidated logging from fully working on newer versions of Elasticsearch
+* Various improvements to agent reconciliation and monitoring
+* System version now considered for system scaling
+
+
 ## 2.1.3
 * Update [DNS service locator](https://github.com/typesafehub/service-locator-dns) to `1.0.2`. This will ensure the hostname of an SRV record is properly forwarded.
 
