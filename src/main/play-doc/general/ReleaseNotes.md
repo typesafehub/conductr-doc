@@ -47,6 +47,12 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.8 - Tuesday September 12th, 2017
+* Fixed a name clash when installing from Debian and RPM packaging.
+* Fixed a cosmetic issue within conductr-haproxy when it published its telemetry.
+* Increased the default for the maximum size of a bundle configuration from 8k to 32k given that some customers were exceeding the former limit.
+* There was a cosmetic issue when attempting to set cgroups given no swap space. This problem has been resolved, and we also provide two new properties to disable cgroups (enabled by default). The settings belong to the conductr-agent and are `conductr.agent.run.enable-cpu-cgroups` and `conductr.agent.run.enable-memory-cgroups`.
+
 ## 2.1.7 - Wednesday September 6th, 2017
 * There was a problem in relation to file descriptors not being closed by the new process manager. This could limit the number of bundles loaded/run.
 * The new process manager was not cleaning up all of its resources when a process exited, which could cause a memory leak. This has now been repaired.
