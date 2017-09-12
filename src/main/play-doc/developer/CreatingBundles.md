@@ -151,7 +151,51 @@ We attempt to extract as much information from the your docker image as possible
 
 Volumes are stored in `$HOME/.conductr/volumes` and are namespaced by `bundle.conf` properties `name` and `compatibility-version`. These volumes are therefore persistent across cluster restarts.
 
-Docker images can vary in size significantly and this can affect development/deployment time and consume additional system resources. Because of this, we recommend that you build your images ontop of a light-weight base image. [openjdk/8-jre-alpine](https://hub.docker.com/_/openjdk/) is a great choice as it's only ~80MB in size (~50MB when compressed). 
+Docker images can vary in size significantly and this can affect development/deployment time and consume additional system resources. Because of this, we recommend that you build your images ontop of a light-weight base image. [openjdk:8-jre-alpine](https://hub.docker.com/_/openjdk/) is a great choice as it's only ~80MB in size (~50MB when compressed). 
+
+### An OCI example using sbt-conductr
+With the sbt-conductr plugin added to your project, you can use the sbt-native-packager to produce a Docker image and then the `conduct` command to load a saved Docker image. You may want to load your bundles using OCI so that Docker can handle any JVM dependencies e.g. you may have a service that requires the IBM JRE for Java 6. In general, where JVM based services are required, you probably do not need OCI and Docker as the JVM provides the requisite runtime. However, it can be done and it works well.
+
+Firstly, your project's usage of the native packager must use `ash` scripting instead of `bash` when using an `alpine` based distribution of Linux. To do this, see that your project has enabled the native packager's `AshScriptPlugin`. After this, ensure that your build expresses the correct Docker dependencies. In your sbt file:
+
+```
+dockerBaseImage := "openjdk:8-jre-alpine"
+```
+
+You must then publish your image. The following command will publish to your local machine registry:
+
+```
+sbt docker:publishLocal
+```
+
+> Use `docker:publish` in order to publish to a remote registry.
+> See the [sbt-native-packager documentation](http://www.scala-sbt.org/sbt-native-packager/formats/docker.html#configuration) for more information on the Docker configuration including the `AshScriptPlugin`.
+
+You are now ready to load the Docker image into ConductR. Assuming that the image name is `test-bundle:0.1.0`:
+
+```
+docker save test-bundle:0.1.0 | conduct load
+```
+
+At this point, note that your service will typically have some ACLs for a proxy configuration, and a service name in order to be discovered. The following commands enhance the above `conduct load` in order to configure these items:
+
+```
+docker save test-bundle:0.1.0 | \
+  bndl \
+    --endpoint test \
+    --bind-protocol http \
+    --service-name test-bundle \
+    --acl http:/test | \
+  conduct load
+```
+
+> Use `bndl -h` to discover more options around applying ConductR metadata to Docker and OCI images.
+
+Given the above loading, run the bundle:
+
+```
+conduct run test-bundle
+```
 
 ## Producing a universal bundle that runs a Docker image
 
