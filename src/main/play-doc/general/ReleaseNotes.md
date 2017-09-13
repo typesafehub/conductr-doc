@@ -47,6 +47,9 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.9 - Wednesday September 13th, 2017
+* The DC/OS agent script now ensures it has access to individual cgroup files before writing to them. This previously caused an issue when installing 2.1.7 and 2.1.8 on DC/OS.
+
 ## 2.1.8 - Tuesday September 12th, 2017
 * Fixed a name clash when installing from Debian and RPM packaging.
 * Fixed a cosmetic issue within conductr-haproxy when it published its telemetry.
