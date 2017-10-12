@@ -47,6 +47,12 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.10 - Wednesday, October 11th, 2017
+* Fixed a bug causing DC/OS executor arguments with white space to break
+* Added a setting, `conductr.control-server.log-all-requests`, to log all control protocol requests to the debug log
+* DC/OS executor no longer exits on startup if there is an issue configuring CGroups
+* Fixed another cosmetic issue within conductr-haproxy when it published its telemetry.
+
 ## 2.1.9 - Wednesday September 13th, 2017
 * The DC/OS agent script now ensures it has access to individual cgroup files before writing to them. This previously caused an issue when installing 2.1.7 and 2.1.8 on DC/OS.
 
