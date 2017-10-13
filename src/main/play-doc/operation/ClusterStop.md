@@ -60,8 +60,25 @@ http://dcos-host/#services >> Services >> conductr >> More >> Suspend >> Suspend
 
 * If uninstalling, destroy the service:
 
+#### DC/OS 1.8, 1.9
+
 ```
 http://dcos-host/#services >> Services >> conductr >> More >> Destroy >> Destroy Service
+```
+
+#### DC/OS 1.10
+
+Starting with DC/OS 1.10, you must use the `dcos marathon app list` and `dcos marathon app remove` commands to
+uninstall ConductR.
+
+```
+# Use dcos marathon app list to find the framework ID
+dcos marathon app list
+ID               MEM   CPUS  TASKS  HEALTH  DEPLOYMENT  WAITING  CONTAINER  CMD
+/conductr-2.1.9  1024   1     1/1    1/1       ---      False       N/A     GLOBIGNORE='*.tar.gz:*.tgz';...
+
+# Use dcos marathon app remove to remove ConductR
+dcos marathon app remove /conductr-2.1.9
 ```
 
 * If uninstalling, remove framework resource reservations by running the framework cleaner:
