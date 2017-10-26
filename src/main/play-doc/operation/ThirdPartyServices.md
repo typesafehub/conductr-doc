@@ -18,11 +18,11 @@ We've spent a lot of effort ensuring that essential services will work correctly
 ```bash
 conduct load docker.elastic.co/elasticsearch/elasticsearch:5.4.0 \
     --start-command '[
-        "bin/elasticsearch", 
-        "-Enetwork.bind_host=$ELASTICSEARCH_TCP_9200_BIND_IP", 
-        "-Ehttp.port=$ELASTICSEARCH_TCP_9200_BIND_PORT", 
-        "-Enetwork.publish_host=$BUNDLE_HOST_IP", 
-        "-Expack.security.enabled=false", 
+        "bin/elasticsearch",
+        "-Enetwork.bind_host=$ELASTICSEARCH_TCP_9200_BIND_IP",
+        "-Ehttp.port=$ELASTICSEARCH_TCP_9200_BIND_PORT",
+        "-Enetwork.publish_host=$BUNDLE_HOST_IP",
+        "-Expack.security.enabled=false",
         "-Ecluster.name=conductr"
     ]' \
     --volume es-data=/usr/share/elasticsearch/data \
@@ -52,7 +52,7 @@ conduct load confluentinc/cp-kafka \
 #### MySQL
 
 [MySQL](https://www.mysql.com/) is an open-source Relational Database Management System (RDBMS). The example below deploys the MySQL team's image to your ConductR cluster. For more information on this image and its arguments, refer to [MySQL](https://hub.docker.com/_/mysql/) on Docker Hub.
- 
+
 ```bash
 conduct load mysql:5.7 \
     --endpoint mysql-tcp-3306 \
@@ -60,7 +60,7 @@ conduct load mysql:5.7 \
         --bind-port 3306 \
     --volume mysql-data=/var/lib/mysql \
     --env MYSQL_ROOT_PASSWORD=my-secret-pw
- ```
+```
 
 #### PostgreSQL
 
@@ -78,7 +78,7 @@ conduct load postgres:9.6.3 \
 #### ZooKeeper
 
 [ZooKeeper](https://zookeeper.apache.org/) is a distributed coordination service. The example below deploys [Confluent, Inc](https://www.confluent.io/)'s ZooKeeper image into your ConductR cluster. For more information on this image and its arguments, refer to [Confluent's Documentation](http://docs.confluent.io/current/cp-docker-images/docs/quickstart.html#zookeeper).
- 
+
 ```bash
 conduct load confluentinc/cp-zookeeper \
     --endpoint cp-zookeeper-tcp-2181 \
@@ -88,4 +88,4 @@ conduct load confluentinc/cp-zookeeper \
     --volume zookeeper-secrets=/etc/zookeeper/secrets \
     --volume zookeeper-log=/var/lib/zookeeper/log \
     --env 'ZOOKEEPER_CLIENT_PORT=$CP_ZOOKEEPER_TCP_2181_BIND_PORT'
- ```
+```
