@@ -47,7 +47,11 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
-## 2.1.10 - Wednesday, October 11th, 2017
+## 2.1.12 - Wednesday November 8th, 2017
+* Added `bundleName` to the consolidated logging when available .
+* Fixed a bug causing consolidated logging to fail if a bundle emitted a line longer than 2048 characters.
+
+## 2.1.10 - Wednesday October 11th, 2017
 * Fixed a bug causing DC/OS executor arguments with white space to break
 * Added a setting, `conductr.control-server.log-all-requests`, to log all control protocol requests to the debug log
 * DC/OS executor no longer exits on startup if there is an issue configuring CGroups
