@@ -47,6 +47,10 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.13 - Monday December 4th, 2017
+* Fixed a bug to ensure disk storage resource is calculated from the configured storage directory.
+* Fixed a bug causing failure when a bundle is scaling down during agent being unreachable.
+
 ## 2.1.12 - Wednesday November 8th, 2017
 * Added `bundleName` to the consolidated logging when available .
 * Fixed a bug causing consolidated logging to fail if a bundle emitted a line longer than 2048 characters.
@@ -71,7 +75,7 @@ The contents of annotations are generally outside of the scope of what ConductR 
 * The new process manager was not cleaning up all of its resources when a process exited, which could cause a memory leak. This has now been repaired.
 
 *Note: This release features a bug in the standalone Linux packaging. When
-installing the core and agent on the same machine, you may need to 
+installing the core and agent on the same machine, you may need to
 use `dpkg --force-overwrite` or `rpm --force` to workaround this issue.*
 
 
