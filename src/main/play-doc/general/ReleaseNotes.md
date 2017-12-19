@@ -47,6 +47,9 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.14 - Monday December 18th, 2017
+* Fixed a bug causing a house keeping warning to be logged when it shouldn't be
+
 ## 2.1.13 - Monday December 4th, 2017
 * Fixed a bug to ensure disk storage resource is calculated from the configured storage directory.
 * Fixed a bug causing failure when a bundle is scaling down during agent being unreachable.
