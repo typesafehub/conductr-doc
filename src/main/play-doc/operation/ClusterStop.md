@@ -60,14 +60,23 @@ http://dcos-host/#services >> Services >> conductr >> More >> Suspend >> Suspend
 
 * If uninstalling, destroy the service:
 
+#### DC/OS 1.8, 1.9
+
 ```
 http://dcos-host/#services >> Services >> conductr >> More >> Destroy >> Destroy Service
 ```
 
-* If uninstalling, remove framework resource reservations by running the framework cleaner:
+#### DC/OS 1.10
 
-```bash
-docker run mesosphere/janitor /janitor.py -z dcos-service-conductr
+Starting with DC/OS 1.10, you must use the `dcos marathon app list` and `dcos marathon app remove` commands to
+uninstall ConductR.
+
 ```
+# Use dcos marathon app list to find the framework ID
+dcos marathon app list
+ID               MEM   CPUS  TASKS  HEALTH  DEPLOYMENT  WAITING  CONTAINER  CMD
+/conductr-2.1.9  1024   1     1/1    1/1       ---      False       N/A     GLOBIGNORE='*.tar.gz:*.tgz';...
 
-See the [DC/OS doc](https://docs.mesosphere.com/1.9/deploying-services/uninstall/#framework-cleaner) for more info on the framework cleaner.
+# Use dcos marathon app remove to remove ConductR
+dcos marathon app remove /conductr-2.1.9
+```
