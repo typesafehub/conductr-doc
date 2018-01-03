@@ -175,11 +175,16 @@ The Elasticsearch cluster has successfully started if the state is equal to `TAS
 By default, ConductR automatically writes the log messages and events to the Elasticsearch service. It uses the DNS SRV record of the service to resolve it.
 
 ```
-contrail.syslog.server.service-locator.service-name="_client-port._elasticsearch-executor._tcp.elasticsearch.mesos"
+-Dconductr.service-locator-server.external-service-addresses.elastic-search.0="http+srv://_client-port._elasticsearch-executor._tcp.elasticsearch.mesos"
 ```
 
 In case you modify the name of the Elasticsearch service, please override the above configuration key in the ConductR service configuration accordingly.
 
+If you're using the `elastic` package instead of `elasticsearch`, note that the service name has changed. You'll need to specify the address of Elasticsearch in your Marathon configuration (under the `cmd` key):
+
+```
+-Dconductr.service-locator-server.external-service-addresses.elastic-search.0=http+srv://_coordinator-0-node._tcp.elastic.mesos
+```
 
 ### External Elasticsearch cluster
 
