@@ -47,6 +47,9 @@ The notion of metadata with containers is quite popular noting that bundles also
 
 The contents of annotations are generally outside of the scope of what ConductR itself is concerned with.
 
+## 2.1.15 - Monday February 5th, 2018
+* Default to not enabling cgroups memory limit, as this often leads to unexpected killing of bundles
+
 ## 2.1.14 - Monday December 18th, 2017
 * Fixed a bug causing a house keeping warning to be logged when it shouldn't be
 
