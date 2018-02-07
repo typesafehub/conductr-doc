@@ -1,5 +1,7 @@
 # ConductR Documentation
 
+*Note that this project is EOL as of 2018-01-31.*
+
 Documentation for conductr.lightbend.com
 
 Feel free to contribute and correct!
