@@ -183,7 +183,7 @@ In case you modify the name of the Elasticsearch service, please override the ab
 If you're using the `elastic` package instead of `elasticsearch`, note that the service name has changed. You'll need to specify the address of Elasticsearch in your Marathon configuration (under the `cmd` key):
 
 ```
--Dconductr.service-locator-server.external-service-addresses.elastic-search.0=http+srv://_coordinator-0-node._tcp.elastic.mesos
+-Dconductr.service-locator-server.external-service-addresses.elastic-search.0=http://coordinator.elastic.l4lb.thisdcos.directory:9200
 ```
 
 ### External Elasticsearch cluster
