@@ -6,6 +6,10 @@ Documentation for conductr.lightbend.com
 
 Feel free to contribute and correct!
 
+## Dev Notes
+
+This project has a few branches for the different versions of ConductR. `master` tracks the unreleased 2.2 version. Most changes should be made on both the `master` and `2.1` branches. You'll want to look into `git cherry-pick` to help facilitate this.
+
 ## How to run ConductR doc locally
 
 You will require `sass` or `compass` on the `PATH`. Refer to [compass installation](http://compass-style.org/install/) or [sass installation](http://sass-lang.com/install) for the actual installation step for your platform.
